@@ -55,3 +55,11 @@ bitchThing a b = [x*2 | x <- [a..b], rem x 7 == 0]
 --------------------------------------------------------------------------------
 
 length' x = sum [1 | _ <- x]  -- Replaces each element with 1 and then sums it.
+
+-- Will return c. c is the list only if c is in ['A'..'Z']
+removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]
+
+-- For each value in x, it will check if it is in y. (I think it's like a for loop idk)
+-- It returns a list of True's and False's for each check.
+-- We dont need to add a filter with <,> like in the previous func, because we want all values converted.
+elemWithLists x y = [ if c `elem` y then True else False | c <- x]
