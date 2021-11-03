@@ -4,10 +4,12 @@
 main() {
 	int c;
 
+	printf("Input: ");
 	while (1) {
 		if ((c = getchar()) != EOF) {
 			if (c == 10) {
 				printf("c was not EOF, but was newline. EOF value: %d\n", EOF);	// 1-7
+				printf("Input: ");
 			} else {
 				printf("c was not EOF, instead: %3d | ", c);	// Use %c for the char value (same as putchar())
 				putchar(c);
