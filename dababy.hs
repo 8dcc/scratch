@@ -10,9 +10,9 @@ doubleIf2Digits x = if x > 99
 doubleIf2Digits' x = (if x > 99 then x else x*2) + 1
 
 --------------------------------------------------------------------------------
--- LISTS
+-- LISTS (actually tuples but its ok)
 
-imalist = [[1, 2, 3, 4], [4, 3, 2, 1]]
+imatuple = [[1, 2, 3, 4], [4, 3, 2, 1]]
 
 firstElementOfAList x = head x
 lastElementOfAList x = last x
@@ -63,3 +63,13 @@ removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]
 -- It returns a list of True's and False's for each check.
 -- We dont need to add a filter with <,> like in the previous func, because we want all values converted.
 elemWithLists x y = [ if c `elem` y then True else False | c <- x]
+
+--------------------------------------------------------------------------------
+-- LISTS NOW FR
+
+imalistfr = ("Bruh", 12, ["Suck", "My", "Dick"])
+imashortlist = ("First item", "Second item")
+
+firstItemFromAList x = fst x  -- Will only work with a pair (List of 2 items)
+firstItemFromAList' = fst imashortlist !! 3  -- Will return 's' because strings are tuples
+secondItemFromAList x = snd x  -- Will only work with a pair
