@@ -2,7 +2,8 @@
 
 #include <stdio.h>
 
-#define TABSTOP_LEN 4  // The length of the file "columns"
+#define TABSTOP_LEN 4		// The length of the file "columns"
+#define TAB_REPLACEMENT '-'	// Char that will replace tabs
 
 int main() {
 	char c;
@@ -21,7 +22,7 @@ int main() {
 				spaces_to_write = 4 - spaces_to_write;
 
 				for (int n = 0; n < spaces_to_write; n++) {
-					putchar('-');
+					putchar(TAB_REPLACEMENT);
 				}
 			} else {
 				putchar(c);  // Fuck printf
