@@ -1,4 +1,4 @@
-### `detab.c`:
+## `detab.c`
 Sample input:
 ```
 	test! one tab
