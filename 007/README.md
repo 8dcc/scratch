@@ -47,6 +47,21 @@ test 7 spaces mid line		 ENDOFLINE
 test 4 spaces mid line	  ENDOFLINE
 test 3 spaces mid line	 ENDOFLINE
 test 2 spaces mid line	ENDOFLINE
-
 ```
 *Have in mind github doesn't use 4 space tabs*
+
+## `fold_lines.c`
+Sample input (one line):
+```
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore 1 2 3 4 dolore magna aliqua.
+```
+Output with `MAX_OUTPUT_SIZE 40`:
+```
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit, sed do eiusmod tempor
+incididunt ut labore et dolore magna
+aliqua. Lorem ipsum dolor sit amet,
+consectetur adipiscing elit, sed do
+eiusmod tempor incididunt ut labore 1 2
+3 4 dolore magna aliqua.
+```
