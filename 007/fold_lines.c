@@ -1,3 +1,5 @@
+// 1-22 Better
+
 #include <stdio.h>
 
 #define MAX_LINE_SIZE 500
