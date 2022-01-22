@@ -1,3 +1,5 @@
+// 1-22 Bad
+
 #include <stdio.h>
 
 #define MAX_LINE_SIZE 255
