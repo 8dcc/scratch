@@ -65,3 +65,10 @@ consectetur adipiscing elit, sed do
 eiusmod tempor incididunt ut labore 1 2
 3 4 dolore magna aliqua.
 ```
+
+## `remove_comments.c`
+You can remove the comments from the source itself by doing:
+```bash
+remove_comments.out < remove_comments.c > remove_comments_removed.c
+```
+You can check the result file [here](https://github.com/r4v10l1/c-stuff/blob/main/007/remove_comments_removed.c).
