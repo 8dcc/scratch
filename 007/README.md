@@ -72,3 +72,49 @@ You can remove the comments from the source itself by doing:
 remove_comments.out < remove_comments.c > remove_comments_removed.c
 ```
 You can check the result file [here](https://github.com/r4v10l1/c-stuff/blob/main/007/remove_comments_removed.c).
+
+
+## `syntax_checker.c`
+Need to fix multiple parentheses (Check first comment on the file).
+
+Output of `syntax_checker.out < test.c`:
+```c
+There was an error in the following line:
+int main() {	// Single line not working
+           ^
+
+There was an error in the following line:
+	for (int n = 0; n < 5; n++) { printf("PISS\n");
+                                    ^
+
+There was an error in the following line:
+			test(balls;
+                            ^
+
+There was an error in the following line:
+}	// Same here
+^
+
+---------------------------------------------
+Total lines: 13
+```
+`test.c`:
+```c
+#include <stdio.h>
+
+/*
+ * (
+ * '
+ */
+
+int main() {	// Single line not working
+	for (int n = 0; n < 5; n++) { printf("CUM\n"); }
+	for (int n = 0; n < 5; n++) { printf("PISS\n");
+
+			test(balls;
+}	// Same here
+```
+Used settings:
+- `DEBUG_PRINT 1`
+- `BUFFER_SIZE 1000`
+- `TAB_SIZE 8`
