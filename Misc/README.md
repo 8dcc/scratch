@@ -1,0 +1,3 @@
+### `encode.c`
+Will read a filename, read each character of it and wirte to `encoded.txt` each character with the defined `OFFSET`.
+- [ ] Would be easier to just use pipes (`./encoded.out < input.txt > output.txt`) or use a better method to read the input (backspaces for example).
