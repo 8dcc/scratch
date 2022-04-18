@@ -15,6 +15,14 @@ fn main() {
 	println("\n------ Strings ------")
 	mut mut_string_example := "boringCamelCaseString"
 	mut_string_example = "I am a mut string example!"
+	/*
+	>String values are immutable. You cannot mutate elements:
+	>  mut s := 'hello 🌎'
+	>  s[0] = `H` // not allowed
+	>error: cannot assign to s[i] since V strings are immutable
+
+	However, I can do it with strings (not with runes)...
+	*/
 	println("mut_string_example         -> $mut_string_example")
 	string_escaped := "   \x41\123\r->\n"		// x41 hex -> 65 dec -> 'A'
 	print(string_escaped)
