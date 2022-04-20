@@ -1,16 +1,23 @@
 
 fn main() {
+	println("variables.v")
+	println("Program for testing and trying the variable types and interactions in V")
+	println("General syntax in most cases:")
+	println("variable_name -> value -> type")
+	/* ----------------------- */
 	println("\n------ Variables ------")
 	// unused_var_example := 420
 	example_var := 123
-	println("example_var    -> $example_var")
+	println("${'example_var':-20} -> ${example_var:5} -> ${typeof(example_var).name}")
 	two_times := example_var * 2
-	println("two_times      -> $two_times")
+	println("${'two_times':-20} -> ${two_times:5} -> ${typeof(two_times).name}")
+	example_float := 10.5
+	println("${'example_float':-20} -> ${example_float:5.1} -> ${typeof(example_float).name}")
 
 	println("\n------ Mut variables ------")
 	mut mutable_var := example_var / 2
 	mutable_var = 6969
-	println("mutable_var    -> $mutable_var")
+	println("${'mutable_var':-20} -> $mutable_var")
 
 	println("\n------ Strings ------")
 	mut mut_string_example := "boringCamelCaseString"
@@ -23,17 +30,23 @@ fn main() {
 
 	However, I can do it with strings (not with runes)...
 	*/
-	println("mut_string_example         -> $mut_string_example")
+	println("${'mut_string_example':-20} -> $mut_string_example")
+	mut_string_example += " [Text got appended to me!]"
+	println("${'mut_string_example':-20} -> $mut_string_example")
 	string_escaped := "   \x41\123\r->\n"		// x41 hex -> 65 dec -> 'A'
-	print(string_escaped)
+	print(string_escaped)	// Note that the \n is from the escaped string
 
-	println("\n------ Conversion tests ------")
-	string_n_example := "100"
-	int_from_string := string_n_example.int() + 1
-	println("int_from_string (+1)       -> $int_from_string")
-	println("int_conversion_test (f)    -> ${int_conversion_test(int(3.5))}")
+	println("\n------ Runes ------")
+	rune_test := `\u6969`	// Random ass chinese character
+	println("${'rune_test':-20} -> ${rune_test:-20} -> ${typeof(rune_test).name}")
+	rune_test_s := rune_test.str()
+	println("${'rune_test_s':-20} -> ${rune_test_s:-20} -> ${typeof(rune_test_s).name}")
+	rune_test_b := rune_test.bytes()
+	println("${'rune_test_b':-20} -> ${rune_test_b:-20} -> ${typeof(rune_test_b).name}")
+	rune_test2 := `a`
+	println("${'rune_test2':-20} -> ${rune_test2:-20} -> ${typeof(rune_test2).name}")
+	rune_test3 := `\x62`
+	println("${'rune_test3':-20} -> ${rune_test3:-20} -> ${typeof(rune_test3).name}")
 }
 
-fn int_conversion_test(n int) bool {
-	return n < 4
-}
+
