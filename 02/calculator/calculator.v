@@ -9,7 +9,7 @@ fn main() {
 	normal := ["add", "sub"]
 
 	mut	any_operation := normal.clone()
-	any_operation.insert(0, prioritized)
+	any_operation << prioritized
 
 	// Storing values and operations 
 	mut stack := []f32{}
