@@ -24,11 +24,11 @@ fn main() {
 	mut_string_example = "I am a mut string example!"
 	/*
 	>String values are immutable. You cannot mutate elements:
-	>  mut s := 'hello 🌎'
+	>  mut s := 'hello world'
 	>  s[0] = `H` // not allowed
 	>error: cannot assign to s[i] since V strings are immutable
 
-	However, I can do it with strings (not with runes)...
+	However, I can do it with unmutable strings (not with runes)...
 	*/
 	println("${'mut_string_example':-20} -> $mut_string_example")
 	mut_string_example += " [Text got appended to me!]"
@@ -47,6 +47,11 @@ fn main() {
 	println("${'rune_test2':-20} -> ${rune_test2:-20} -> ${typeof(rune_test2).name}")
 	rune_test3 := `\x62`
 	println("${'rune_test3':-20} -> ${rune_test3:-20} -> ${typeof(rune_test3).name}")
-}
 
+	println("\n------ Arrays ------")
+	mut test_array := [15, 20, 25, 30]
+	println("${'test_array':-20} -> ${test_array:-17} -> ${typeof(test_array).name} -> len:${test_array.len} cap:${test_array.cap}")
+	test_array = [15]
+	println("${'test_array (changed)':-20} -> ${test_array:-17} -> ${typeof(test_array).name} -> len:${test_array.len} cap:${test_array.cap}")
+}
 
