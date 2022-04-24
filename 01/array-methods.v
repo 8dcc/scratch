@@ -23,4 +23,6 @@ fn main() {
 	println("${a3.reverse():-15} -> $a3.len $a3.cap")
 	a3.reverse_in_place()		// Changes the array itself
 	println("${a3:-15} -> $a3.len $a3.cap")
+	// a3.repeat(1)
+	println("${a3.repeat(2):-15} -> $a3.len $a3.cap")
 }
