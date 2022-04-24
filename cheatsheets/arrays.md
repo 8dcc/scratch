@@ -29,8 +29,14 @@ See also: [vlib/arrays](https://modules.vlang.io/arrays.html)
 ### Methods for creating arrays
 ```v
 a_clone := a.clone()    // Returns the array for making another one
+a.repeat(n)             // Returns the array concatenated n times
 a.reverse()             // Creates an array with elements of a in reverse order
 a.reverse_in_place()    // Modifies the a array with the elements reversed
+```
+Example of repeat:
+```v
+a := [1,2,3]
+assert a.repeat(3) == [1,2,3,1,2,3,1,2,3]
 ```
 
 ### Methods for filtering and mapping arrays
@@ -48,11 +54,6 @@ upper := words.map(it.to_upper())   // ['HELLO', 'WORLD']
 upper_fn := words.map(fn (w string) string {
 	return w.to_upper()
 })
-```
-
-### Concatenate the array elements n times
-```v
-a.repeat(n)
 ```
 
 ### Insert values to an array
