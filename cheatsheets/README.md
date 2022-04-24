@@ -1,4 +1,4 @@
-# V cheatsheet
+# V cheatsheets
 **My personal cheatsheets for the V programming language**
 
 *Note: V is constantly updating, so keep in mind things might change, and new things will be added!  
