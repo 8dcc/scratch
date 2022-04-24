@@ -54,4 +54,3 @@ fn main() {
 	test_array = [15]
 	println("${'test_array (changed)':-20} -> ${test_array:-17} -> ${typeof(test_array).name} -> len:${test_array.len} cap:${test_array.cap}")
 }
-
