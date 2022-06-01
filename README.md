@@ -1,2 +1,2 @@
-# asm-stuff
-Stuff I made while learning assembly
+# ASM stuff
+**Stuff I made while learning assembly**
