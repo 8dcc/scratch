@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 }
 
 void fizzbuzz_loop(const int iterations) {
-    for (int n = 0; n < iterations; n++) {
+    for (int n = 1; n < iterations; n++) {
         if (n % 15 == 0)        printf("FizzBuzz");
         else if (n % 3 == 0)    printf("Fizz");
         else if (n % 5 == 0)    printf("Buzz");
