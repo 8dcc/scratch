@@ -1,0 +1,24 @@
+CC=gcc
+CFLAGS=-Wall
+
+all:
+	@echo "No arguments. Try running:"
+	@echo "  make encode.out"
+	@echo "  make fizzbuzz.out"
+	@echo "  make ncurses.out"
+	@echo "  make struct-pointers.out"
+
+encode.out: encode.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+fizzbuzz.out: fizzbuzz.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+ncurses.out: ncurses.c
+	$(CC) $(CFLAGS) -o $@ $< -lncurses
+
+struct-pointers.out: struct-pointers.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+clean:
+	rm *.out
