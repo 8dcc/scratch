@@ -9,7 +9,7 @@ int main() {
     FILE *original_file, *output_file;
 
     printf("Filename: ");
-	scanf("%100s", &filename);
+	scanf("%100s", &filename[0]);
 
 	// Open output file as read
     original_file = fopen(filename, "r");
