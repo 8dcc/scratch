@@ -24,13 +24,16 @@ int main() {
 
     draw_grid();
 
+    // Fill grid with random chars while we are not pressing 'q'
     do {
-        // Fill grid with random chars
-        srand(time(NULL));
+        static int iSeed = 0;
+        srand(time(NULL)+iSeed);
+        iSeed++;
+
         for (int n = 0; n < GRID_C; n++) {
             fill_cell(n, rand() % 26 + 'a');
         }
-    } while (tolower(getchar()) != 'q');        // Repeat until we press 'q'
+    } while (tolower(getchar()) != 'q');
     
     endwin();       // End ncurses window
     return 0;
