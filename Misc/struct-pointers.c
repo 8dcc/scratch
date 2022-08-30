@@ -1,11 +1,11 @@
 #include <stdio.h>
 
-int main() {
-    typedef struct Person {
-        const char* name;
-        int age;
-    } person;
+typedef struct Person {
+    const char* name;
+    int age;
+} person;
 
+int main() {
     person foo = { "Foo", 69 };
     person* foo_p = &foo;
 
