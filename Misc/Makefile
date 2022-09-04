@@ -3,11 +3,15 @@ CFLAGS=-Wall
 
 all:
 	@echo "No arguments. Try running:"
+	@echo "  make array_slider.out"
 	@echo "  make encode.out"
 	@echo "  make fizzbuzz.out"
 	@echo "  make getchar_test.out"
 	@echo "  make ncurses.out"
 	@echo "  make struct-pointers.out"
+
+array_slider.out: array_slider.c
+	$(CC) $(CFLAGS) -o $@ $<
 
 encode.out: encode.c
 	$(CC) $(CFLAGS) -o $@ $<
