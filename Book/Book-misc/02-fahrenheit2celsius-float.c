@@ -1,3 +1,5 @@
+/* Book misc - 02 */
+
 #include <stdio.h>
 
 main(){
