@@ -1,11 +1,15 @@
-# Shitty c stuff
-**Stuff I made while learning c.**
+<div align="center">
+<h1>Shitty c stuff</h1>
+<b>Stuff I made while learning c.</b>
+</div><br>
 
-### Description
-A lot of folders have a readme to explan files inside them.
+## Description
+Some C programs I made for learning and messing with different topics.  
+Each folder has a readme to explain the files inside it.
 
-#### Book
+## Folders
+### Book
 Exercises from 'The C Programming Language' book.
 
-#### Misc
+### Misc
 Other stuff.
