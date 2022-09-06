@@ -1,6 +1,7 @@
+/* 1-12 */
+
 #include <stdio.h>
 
-// 1-12
 main () {
 	int c = 0;
 	

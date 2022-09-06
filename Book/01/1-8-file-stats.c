@@ -1,6 +1,7 @@
+/* 1-8 */
+
 #include <stdio.h>
 
-// Exercise 1-8
 main () {
 	int c = 0, lines = 0, spaces = 0, tabs = 0, other = 0;
 	
