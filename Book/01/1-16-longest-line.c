@@ -1,6 +1,7 @@
-// 1-16
+/* 1-16 */
+
 // Instead of using the same variable for the line lenght and the line array position,
-// we use separate ones. See line 39 and 43.
+// we use separate ones.
 
 #include <stdio.h>
 
