@@ -1,6 +1,6 @@
-#include <stdio.h>
+/* 1-5 */
 
-// Exercise 1-5
+#include <stdio.h>
 
 main(){
 	int fahr;
