@@ -1,3 +1,5 @@
+/* Book misc - 12 */
+
 #include <stdio.h>
 
 // Function prototype (m and n are not necesary)
