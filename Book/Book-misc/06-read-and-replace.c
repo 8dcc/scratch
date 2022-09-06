@@ -1,6 +1,8 @@
+/* Book misc - 06 */
+// 1-9 and 1-10 exercises but in a confusing way
+
 #include <stdio.h>
 
-// 1-9 and 1-10
 main () {
 	int c = 0, space_count = 0;
 	
