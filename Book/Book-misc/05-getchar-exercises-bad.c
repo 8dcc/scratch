@@ -1,6 +1,8 @@
+/* Book misc - 05 */
+// Exercise 1-6 and 1-7 in a confusing way. Moved to book misc
+
 #include <stdio.h>
 
-// Exercise 1-6 and 1-7
 main() {
 	int c;
 
