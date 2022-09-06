@@ -1,4 +1,4 @@
-// 2-1
+/* 2-01 */
 
 #include <stdio.h>
 #include <limits.h>
