@@ -1,4 +1,4 @@
-// 1.14 - Only lowercase letters
+/* 1.14 - Only lowercase letters */
 
 #include <stdio.h>
 

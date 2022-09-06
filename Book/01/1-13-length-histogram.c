@@ -1,3 +1,5 @@
+/* 1-13 */
+
 #include <stdio.h>
 
 #define MAXLEN 20		// Max word length. If the word is longer than this, will count as MAXLEN
