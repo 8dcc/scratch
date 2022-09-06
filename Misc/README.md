@@ -1,3 +1,8 @@
+# Misc
+You can compile the files using the Makefile. Running `make` should show all available options.
+
+#
+
 ### `array_slider.c`
 Program made because of (what I hope) is my next project, brainfuck interpreter.
 Generates an array of 100 strings with len 3 that contain the first 100 numbers in hex format. Then shows the array in what is described in the code as a 'page' format:
