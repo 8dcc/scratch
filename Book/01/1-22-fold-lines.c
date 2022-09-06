@@ -1,4 +1,4 @@
-// 1-22 Better
+/* 1-22 */
 
 #include <stdio.h>
 
