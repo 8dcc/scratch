@@ -1,4 +1,4 @@
-// 2-3 (Not 2-2)
+/* 2-03 */
 
 #include <stdio.h>
 #include <ctype.h>      // For tolower
