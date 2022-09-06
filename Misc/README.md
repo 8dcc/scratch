@@ -6,13 +6,13 @@ You can compile the files using the Makefile. Running `make` should show all ava
 ### `array_slider.c`
 Program made because of (what I hope) is my next project, brainfuck interpreter.
 Generates an array of 100 strings with len 3 that contain the first 100 numbers in hex format. Then shows the array in what is described in the code as a 'page' format:
-    - `SLIDER_LEN` is the number of items per page (in this case 7). Imagine we are dividing the array into pages/slices with this len (In this case we are dividing the array with len 100 into pages with size 7).
-    - The variable `slider_count` (inside main) is the 'current page number', and it will be updated depending on user input.
-    - Depending on the count, the program shows the items in the described page.
+- `SLIDER_LEN` is the number of items per page (in this case 7). Imagine we are dividing the array into pages/slices with this len (In this case we are dividing the array with len 100 into pages with size 7).
+- The variable `slider_count` (inside main) is the 'current page number', and it will be updated depending on user input.
+- Depending on the count, the program shows the items in the described page.
 
 ### `encode.c`
 Will read a filename, read each character of it and wirte to `encoded.txt` each character with the defined `OFFSET`.
-    - [ ] Would be easier to just use pipes (`./encoded.out < input.txt > output.txt`) or use a better method to read the input (backspaces for example).
+- [ ] Would be easier to just use pipes (`./encoded.out < input.txt > output.txt`) or use a better method to read the input (backspaces for example).
 
 ### `fizzbuzz.c`
 Classic fizzbuzz exercise. For more information: [Click me](https://en.wikipedia.org/wiki/Fizz_buzz).
