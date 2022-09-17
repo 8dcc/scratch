@@ -8,6 +8,7 @@ all:
 	@echo "  make fizzbuzz.out"
 	@echo "  make getchar_test.out"
 	@echo "  make ncurses.out"
+	@echo "  make stack-test.out"
 	@echo "  make struct-pointers.out"
 
 array_slider.out: array_slider.c
@@ -24,6 +25,9 @@ getchar_test.out: getchar_test.c
 
 ncurses.out: ncurses.c
 	$(CC) $(CFLAGS) -o $@ $< -lncurses
+
+stack-test.out: stack-test.c
+	$(CC) $(CFLAGS) -o $@ $<
 
 struct-pointers.out: struct-pointers.c
 	$(CC) $(CFLAGS) -o $@ $<
