@@ -12,6 +12,9 @@ _start:
 loop_args:
     cmp     ecx, 0x0        ; First, check if there are args left
     jz      no_args_left    ; If there are no args left, break
+
+    ; TODO: Add ecx number + '\t' before arg (printnum fn)
+
     pop     eax             ; Save argv[ecx] into eax
     call    println         ; Print eax (Keep in mind argv is a char**)
     dec     ecx             ; Decrease arg number
