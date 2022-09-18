@@ -1,6 +1,10 @@
 ; Simple program that iterates and prints the provided arguments
+; Arg number only works if they are less than 10 args
 
 %include 'simple-lib.asm'
+
+section .data
+    tab_ptr: db 0x9         ; '\t'
 
 section .text
     global _start
@@ -13,7 +17,11 @@ loop_args:
     cmp     ecx, 0x0        ; First, check if there are args left
     jz      no_args_left    ; If there are no args left, break
 
-    ; TODO: Add ecx number + '\t' before arg (printnum fn)
+    ; Print ecx number + '\t' before arg itself
+    mov     eax, ecx        ; Move the current iteration to eax
+    call    printn          ; Call printn(int) to print the char
+    mov     eax, tab_ptr    ; Print tab char
+    call    sprint
 
     pop     eax             ; Save argv[ecx] into eax
     call    println         ; Print eax (Keep in mind argv is a char**)

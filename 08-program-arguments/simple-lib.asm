@@ -58,6 +58,26 @@ println:
     pop     eax                 ; Get original eax from stack
     ret
 
+; void printn(int)
+; Prints a 1 digit int as char
+; TODO: Print ints with multiple digits
+printn:
+    mov     ebp, esp            ; Save stack pointer
+
+    push    0x0                 ; Null terminator for the str
+    cmp     eax, 9              ; Check if it has 1 char
+    jle     printn_s            ; If it has 1, jump to the end
+    mov     eax, 15             ; If it has more, use 15: '?'(63) - '0'(48) = 15
+printn_s:
+    add     eax, 48             ; int -> char
+    push    eax                 ; Push to stack so esp points to this
+    mov     eax, esp            ; Move the address of the char to eax
+    call    sprint              ; Call print with the char address as argument
+
+    pop     eax                 ; Pop number char from stack
+    mov     esp, ebp            ; Restore stack pointer
+    ret
+
 ; void quit()
 ; Calls sys_exit (1)
 quit:
