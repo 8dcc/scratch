@@ -23,6 +23,9 @@ fizzbuzz.out: fizzbuzz.c
 getchar_test.out: getchar_test.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+length-macro.out: length-macro.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 ncurses.out: ncurses.c
 	$(CC) $(CFLAGS) -o $@ $< -lncurses
 
