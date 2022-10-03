@@ -7,6 +7,7 @@ all:
 	@echo "  make encode.out"
 	@echo "  make fizzbuzz.out"
 	@echo "  make getchar-test.out"
+	@echo "  make htonl-test.out"
 	@echo "  make length-macro.out"
 	@echo "  make ncurses.out"
 	@echo "  make stack-test.out"
@@ -23,6 +24,9 @@ fizzbuzz.out: fizzbuzz.c
 
 getchar-test.out: getchar-test.c
 	$(CC) $(CFLAGS) -o $@ $<
+
+htonl-test.out: htonl-test.c
+	$(CC) $(CFLAGS) -o $@ -g $<
 
 length-macro.out: length-macro.c
 	$(CC) $(CFLAGS) -o $@ $<
