@@ -5,8 +5,8 @@
 char* escape(char* dest, char* src);
 
 int main() {
-    char s[] = "Balls\tBalls\tBalls...\n"
-               "Balls?    \tBalls.\n";
+    char s[]    = "Balls\tBalls\tBalls...\n"
+                  "Balls?    \tBalls.\n";
     char e[255] = { 0 };
 
     escape(e, s);
@@ -15,7 +15,8 @@ int main() {
            "%s\n"
            "-----------------------\n"
            "Escape:\n"
-           "%s\n", s, e);
+           "%s\n",
+           s, e);
 
     return 0;
 }
@@ -25,7 +26,7 @@ int main() {
  * Returns a pointer to dest.
  */
 char* escape(char* dest, char* src) {
-    int dp = 0;     /* Current character pos in dest str */
+    int dp = 0; /* Current character pos in dest str */
 
     for (int n = 0; src[n] != '\0'; n++) {
         switch (src[n]) {
@@ -38,13 +39,13 @@ char* escape(char* dest, char* src) {
                 dest[dp++] = 't';
                 break;
             case ' ':
-                dest[dp++] = 250;   /* · */
+                dest[dp++] = 250; /* · */
                 break;
             default:
                 dest[dp++] = src[n];
                 break;
         }
     }
-    
+
     return dest;
 }
