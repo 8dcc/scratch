@@ -3,34 +3,29 @@
 #include <stdio.h>
 #include <string.h>
 
+#define FINAL_BUFF 255
+#define PRINT_NEWLINE
+
 static inline int isvalid(char c);
 static char* expand(char* dest, const char* fmt, int dest_len);
 
-int main() {
-    char d[255] = { 0 };
-    char f[255] = "a-z";
+int main(int argc, char** argv) {
+    char final[FINAL_BUFF] = { 0 };
 
-    expand(d, f, sizeof(d));
-    printf("Format: %s\n"
-           "-----------------------\n"
-           "Expanded: %s\n\n",
-           f, d);
+    if (argc <= 1) {
+        printf("Usage: %s <expression>\n"
+               "Examples:\n"
+               "    %s a-z\n"
+               "    %s 0-9A-Za-z\n",
+               argv[0], argv[0], argv[0]);
+        return 1;
+    }
 
-    memset(d, '\0', sizeof(d));
-    strcpy(f, "a-dA-G");
-    expand(d, f, sizeof(d));
-    printf("Format: %s\n"
-           "-----------------------\n"
-           "Expanded: %s\n\n",
-           f, d);
-
-    memset(d, '\0', sizeof(d));
-    strcpy(f, "a-d\\-A-E-B");
-    expand(d, f, sizeof(d));
-    printf("Format: %s\n"
-           "-----------------------\n"
-           "Expanded: %s\n",
-           f, d);
+    expand(final, argv[1], FINAL_BUFF);
+    printf("%s", final);
+#ifdef PRINT_NEWLINE
+    putchar('\n');
+#endif
 
     return 0;
 }
