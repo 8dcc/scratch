@@ -65,6 +65,8 @@ char* itoa(int n, char* s) {
 
     // After getting the reversed string with the digits, add the sign.
     if (sign) s[sp++] = '-';
+    
+    s[sp] = '\0';
 
     // More info and comments in 3-05
     reverse(s);

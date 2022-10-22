@@ -46,6 +46,8 @@ char* itoa(int n, char* s, int min_c) {
     // Add spaces to compensate min_c
     while (sp - 1 < min_c) s[sp++] = ' ';
 
+    s[sp++] = '\0';
+
     // Same as 3-05. Check comment there.
     reverse(s);
     return s;

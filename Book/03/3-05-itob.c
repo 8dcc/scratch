@@ -57,6 +57,8 @@ char* itob(int n, int b, char* dest) {
         div_q /= b;                       // Divide
     }
 
+    dest[dest_p] = '\0';
+
     /*
      * Because dest_p starts at 0, but when getting the reminders we are getting
      * numbers from the right, we need to reverse the dest string.
