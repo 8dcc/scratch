@@ -91,7 +91,7 @@ char* reverse(char* s) {
     return s;
 }
 
-/* Alternate version. Reverse string in place using a char buffer buffer */
+/* Alternate version. Reverse string in place using a char buffer */
 char* reverse2(char* s) {
     const int s_len = strlen(s);
     char buff       = 0;
