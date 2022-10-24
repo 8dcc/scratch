@@ -73,16 +73,23 @@ int main() {
                     fprintf(stderr, "error: zero divisor\n");
                 break;
             case CMDCODE:
-                if (strncmp(s, "qu", 2) == 0) {
+                if (strncmp(s, "qu", 2) == 0) {    // Quit
                     return 0;
-                } else if (strncmp(s, "pr", 2) == 0) {
+                } else if (strncmp(s, "pr", 2) == 0) {    // Print
                     print_stack();
-                } else if (strncmp(s, "du", 2) == 0) {
+                } else if (strncmp(s, "du", 2) == 0) {    // Duplicate
                     duplicate_stack();
-                } else if (strncmp(s, "sw", 2) == 0) {
+                } else if (strncmp(s, "sw", 2) == 0) {    // Swap
                     swap_stack();
-                } else if (strncmp(s, "cl", 2) == 0) {
+                } else if (strncmp(s, "cl", 2) == 0) {    // Clear
                     clear_stack();
+                } else if (strncmp(s, "sin", 3) == 0) {    // sin
+                    push(sin(pop()));
+                } else if (strncmp(s, "exp", 3) == 0) {    // exp
+                    push(exp(pop()));
+                } else if (strncmp(s, "pow", 3) == 0) {    // pow
+                    op2 = pop();
+                    push(pow(pop(), op2));
                 } else {
                     fprintf(stderr, "error: unknown command %s\n", s);
                 }
