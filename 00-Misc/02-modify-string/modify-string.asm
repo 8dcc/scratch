@@ -7,7 +7,7 @@ section .text
 
 print_msg:                          ; Create label that will be called as func to print msg1
     mov     eax, 4                  ; sys_write
-    mov     ebx, 1                  ; STDOUT
+    mov     ebx, 1                  ; stdout
     mov     ecx, msg1               ; msg1 pointer
     mov     edx, msg1_len           ; Lenght stored in variable
     int     0x80                    ; Kernel interrupt
