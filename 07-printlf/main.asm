@@ -1,7 +1,7 @@
 %include 'my-include.asm'
 
 section .data
-    str1    db      "I am a test string!", 0x0
+    str1    db      "I am a test string!", 0x0                  ; We don't need 0xA ('\n') anymore
     str2    db      "I am also a different test string!", 0x0
 
 section .text
