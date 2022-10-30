@@ -1,8 +1,11 @@
+; Note: This file was made after other ones because the folder order was wrong and 05 was missing,
+; so check the diff against 06
+
 %include 'my-include.asm'
 
 section .data
-    str1    db      "I am a test string!", 0xA, 0x0
-    str2    db      "I am also a different test string!", 0xA, 0x0
+    str1    db      "I am a test string!", 0xA
+    str2    db      "I am also a different test string!", 0xA
 
 section .text
     global _start
