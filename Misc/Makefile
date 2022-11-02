@@ -11,6 +11,7 @@ all:
 	@echo "  make length-macro.out"
 	@echo "  make ncurses.out"
 	@echo "  make stack-test.out"
+	@echo "  make static-recursion.c"
 	@echo "  make struct-pointers.out"
 
 array-slider.out: array-slider.c
@@ -35,6 +36,9 @@ ncurses.out: ncurses.c
 	$(CC) $(CFLAGS) -o $@ $< -lncurses
 
 stack-test.out: stack-test.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+static-recursion.out: static-recursion.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 struct-pointers.out: struct-pointers.c
