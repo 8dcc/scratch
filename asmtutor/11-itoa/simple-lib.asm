@@ -50,11 +50,13 @@ println:
     call    sprint
 
     push    eax                 ; Push current eax to stack to preserve it
+
     mov     eax, 0xA            ; Move '\n' to eax because we want to append it
     push    eax                 ; Push eax ('\n') to stack so we can get the address
     mov     eax, esp            ; esp points to the item on top of the stack ('\n'), so we move it to eax to use as function argument for sprint
     call    sprint              ; Print newline
     pop     eax                 ; Remove newline from stack
+
     pop     eax                 ; Get original eax from stack
     ret
 
@@ -109,6 +111,22 @@ iprint_nextdigit:
     pop     ecx                 ; Pop ecx register
     pop     ebx                 ; Pop ebx register
     pop     eax                 ; Pop registers after restoring esp
+    ret
+
+; void iprintln(int i)
+; Calls iprint and also prints a newline
+iprintln:
+    call    iprint
+
+    push    eax                 ; Same as println
+
+    mov     eax, 0xA
+    push    eax
+    mov     eax, esp
+    call    sprint
+    pop     eax
+
+    pop     eax
     ret
 
 ; void quit()
