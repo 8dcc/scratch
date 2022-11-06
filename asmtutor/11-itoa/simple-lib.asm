@@ -10,12 +10,12 @@
 slen:
     push    ebx                 ; We wil use ebx to store the pointer to the first character of out string
     mov     ebx,eax             ; eax contains the target string, move to ebx
-slen_nextchar:
+.loop:
     cmp     byte[eax],0         ; Check end of string
-    jz      slen_finished       ; Was end of string, go to finished
+    jz      .done               ; Was end of string, go to finished
     inc     eax                 ; Else, next char
-    jmp     slen_nextchar
-slen_finished:
+    jmp     .loop
+.done:
     sub     eax,ebx             ; eax points to the last position of the str, subtract the first pos to get len
     pop     ebx                 ; We don't need ebx anymore, pop from stack
     ret                         ; Return function
@@ -74,7 +74,7 @@ iprint:
     mov     [esp], byte 0       ; Add the terminating '\0'
     mov     esi, 10             ; Divisor. TODO: save esi on the stack?
 
-iprint_nextdigit:
+.loop:
     dec     esp                 ; Decrement the stack pointer by 1, allocating the next byte.
 
     mov     edx, 0              ; Clear reminder from last division.
@@ -89,9 +89,9 @@ iprint_nextdigit:
                                 ; lower half of dx, which is the lower half of edx, moving the lowest byte of edx into esp.
 
     cmp     eax, 0              ; We compare eax with 0 to check if we are done dividing (we printed all the digits)
-    jnz     iprint_nextdigit    ; Jump back if not zero
+    jnz     .loop               ; Jump back if not zero
 
-; End of iprint_nextdigit
+.done:
     mov     edx, ebp            ; Move ebp to edx to store the str len when calling sys_write
     sub     edx, esp            ; Sub old esp to current one, to get string length. We subtract the new pos from the old one because
                                 ; the top of the stack is on a lower position in memory.
