@@ -166,10 +166,21 @@ atoi:
 
 ; void cprint(char c)
 cprint:
+    push    edx                 ; We push in reverse order so we can grab eax from esp last
+    push    ecx
+    push    ebx
     push    eax                 ; char we want to print
-    mov     eax, esp            ; ptr to char we want to print
-    call    sprint
+
+    mov     edx, 1              ; Only 1 char
+    mov     ecx, esp            ; ptr to char we want to print
+    mov     ebx, 1              ; stdout
+    mov     eax, 4              ; sys_write
+    int     0x80
+
     pop     eax
+    pop     ebx
+    pop     ecx
+    pop     edx
     ret
 
 ; void cprintln(char c)
