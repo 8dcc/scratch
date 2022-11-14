@@ -3,6 +3,7 @@
 %include "simple-lib.asm"
 
 section .data
+    test_s  db  "Testing process forking...", 0x0
     paren   db  "()"    ; Used by ten_iter to surround each number, we don't need null terminator because it's just a:
     brack   db  "[]"    ; char arr[2]
 
@@ -10,6 +11,9 @@ section .text
     global _start
 
 _start:
+    mov     eax, test_s ; "Testing process forking..."
+    call    println
+
     mov     eax, 2      ; sys_fork (kernel opcode 2)
     int     0x80
     
