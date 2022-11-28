@@ -4,6 +4,7 @@ CFLAGS=-Wall
 
 all:
 	@echo "No arguments. Try running:"
+	@echo "  make array-index-math.out"
 	@echo "  make array-slider.out"
 	@echo "  make encode.out"
 	@echo "  make fizzbuzz.out"
@@ -15,6 +16,9 @@ all:
 	@echo "  make stack-test.out"
 	@echo "  make static-recursion.c"
 	@echo "  make struct-pointers.out"
+
+array-index-math.out: array-index-math.c
+	$(CC) $(CFLAGS) -o $@ $<
 
 array-slider.out: array-slider.c
 	$(CC) $(CFLAGS) -o $@ $<
