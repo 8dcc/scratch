@@ -25,7 +25,8 @@ int strcat_ptr(char* dest, char* src) {
     char* old = dest;
 
     // Could do *dest++, but we don't want to increment after we find '\0'
-    while (*dest != '\0') dest++;
+    while (*dest != '\0')
+        dest++;
 
     while ((*dest++ = *src++) != '\0')
         ;
