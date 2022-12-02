@@ -1,0 +1,2 @@
+# Don't detect simple-lib.asm multiple times for language detection
+/asmtutor/*-*/simple-lib.asm linguist-detectable=false
