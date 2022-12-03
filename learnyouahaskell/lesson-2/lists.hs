@@ -75,7 +75,7 @@ length' list = sum [1 | _ <- list]
 --   for (c in str)
 --     if (c not in ['A'..'Z'])
 --        ret += c;
-remove_lower str = [c | c <- str, c `elem` ['A' .. 'Z']]
+remove_non_upper str = [c | c <- str, c `elem` ['A' .. 'Z']]
 
 -- For each value in "chars", it will check if it is in "target". It returns a list
 -- of True's and False's for each check. We dont need to add a filter with ',' 
