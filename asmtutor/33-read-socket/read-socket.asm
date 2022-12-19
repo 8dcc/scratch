@@ -52,7 +52,7 @@ _start:
     int     0x80
 
 .accept:
-    push    byte 0              ; Same ass ../32-*
+    push    byte 0              ; Same as ../32-*
     push    byte 0
     push    edi
     mov     ecx, esp
