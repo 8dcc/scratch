@@ -2,6 +2,8 @@
 CC=gcc
 CFLAGS=-Wall
 
+.PHONY: clean all
+
 all:
 	@echo "No arguments. Try running:"
 	@echo "  make array-index-math.out"
