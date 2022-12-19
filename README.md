@@ -13,3 +13,7 @@ Exercises from 'The C Programming Language' book.
 
 ### Misc
 Other stuff.
+
+### Advent of code 2022
+Programs I made for the [advent of code 2022](https://adventofcode.com/2022), until
+I get tired of it.
