@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-Wall -Wextra
 
 .PHONY: clean all
 
@@ -9,6 +9,7 @@ all:
 	@echo "  make array-index-math.out"
 	@echo "  make array-slider.out"
 	@echo "  make encode.out"
+	@echo "  make enum-parameters.out"
 	@echo "  make fizzbuzz.out"
 	@echo "  make function-pointers.out"
 	@echo "  make getchar-test.out"
@@ -26,6 +27,9 @@ array-slider.out: array-slider.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 encode.out: encode.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+enum-parameters.out: enum-parameters.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 fizzbuzz.out: fizzbuzz.c
