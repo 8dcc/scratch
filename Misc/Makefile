@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-Wall -Wextra
+CFLAGS=-Wall -Wextra -g
 
 .PHONY: clean all
 
@@ -14,6 +14,7 @@ all:
 	@echo "  make function-pointers.out"
 	@echo "  make getchar-test.out"
 	@echo "  make htonl-test.out"
+	@echo "  make itoan.out"
 	@echo "  make length-macro.out"
 	@echo "  make ncurses.out"
 	@echo "  make stack-test.out"
@@ -44,6 +45,9 @@ getchar-test.out: getchar-test.c
 htonl-test.out: htonl-test.c
 	$(CC) $(CFLAGS) -o $@ -g $<
 
+itoan.out: itoan.c
+	$(CC) $(CFLAGS) -o $@ -g $<
+
 length-macro.out: length-macro.c
 	$(CC) $(CFLAGS) -o $@ $<
 
@@ -60,4 +64,4 @@ struct-pointers.out: struct-pointers.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
-	rm *.out
+	rm -f *.out
