@@ -17,6 +17,7 @@ all:
 	@echo "  make itoan.out"
 	@echo "  make length-macro.out"
 	@echo "  make ncurses.out"
+	@echo "  make printx.out"
 	@echo "  make stack-test.out"
 	@echo "  make static-recursion.c"
 	@echo "  make struct-pointers.out"
@@ -49,6 +50,9 @@ itoan.out: itoan.c
 	$(CC) $(CFLAGS) -o $@ -g $<
 
 length-macro.out: length-macro.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+printx.out: printx.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ncurses.out: ncurses.c
