@@ -1,5 +1,5 @@
 ; -------------------------------------------------------------------------------
-; https://github.com/r4v10l1/asm-stuff
+; https://github.com/8dcc/asm-stuff
 ; This file contains functions that will be used by another file when including
 ; -------------------------------------------------------------------------------
 

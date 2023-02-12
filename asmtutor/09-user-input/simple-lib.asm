@@ -1,5 +1,5 @@
 ; -------------------------------------------------------------------------
-; https://github.com/r4v10l1/asm-stuff
+; https://github.com/8dcc/asm-stuff
 ; This file contains some functions that will be used by another file when
 ; including. Keep in mind that the file might change depending on the
 ; current directory.
