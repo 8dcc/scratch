@@ -1,9 +1,9 @@
 # ASM stuff
 **Stuff I made while learning assembly**
 
-Compile in linux. You can use my small [`nasmo`](https://github.com/r4v10l1/linux-dotfiles/blob/main/scripts/usr/nasmo) script.
+Compile in linux. You can use my small [`nasmo`](https://github.com/8dcc/linux-dotfiles/blob/main/scripts/usr/nasmo) script.
 
-Just like in [`c-stuff`](https://github.com/r4v10l1/c-stuff) you will be able to see my progression. And that might include bad practises at first.
+Just like in [`c-stuff`](https://github.com/8dcc/c-stuff) you will be able to see my progression. And that might include bad practises at first.
 
 # 
 
