@@ -6,14 +6,14 @@
 ; ------------------------------------------------------------------------------
 ; Function list:
 ;   - slen: Calculates length of string
-;   - sprint: Prints a string using the write syscall (4)
-;   - println: Prints a string using the sprint function + '\n'
+;   - prints: Prints a string using the write syscall (4)
+;   - puts: Prints a string using the prints function + '\n'
 ;   - fwrite: Writes str to the file descriptor calculating the length of str
-;   - iprint: Prints i (eax) as string.
-;   - iprintln: Calls iprint and also prints a newline
+;   - printi: Prints i (eax) as string.
+;   - puti: Calls printi and also prints a newline
 ;   - atoi: Converts s to an integer, returns eax
-;   - cprint: Prints eax as char
-;   - cprintln: Calls cprint and also prints a newline
+;   - printc: Prints eax as char
+;   - putc: Calls printc and also prints a newline
 ;   - quit: Calls sys_exit (1)
 ; ------------------------------------------------------------------------------
 
@@ -34,9 +34,9 @@ slen:
     pop     ebx                 ; We don't need ebx anymore, pop from stack
     ret                         ; Return function
 
-; void sprint(char*)
+; void prints(char*)
 ; Prints a string using the write syscall (4)
-sprint:
+prints:
     push    edx
     push    ecx
     push    ebx
@@ -62,15 +62,15 @@ sprint:
     ret                         ; Return the function, eax was not pop'ed so it
                                 ; will be 4 (sys_write)
 
-; void println(char*)
-; Prints a string using the sprint function + '\n'
-println:
-    call    sprint
+; void puts(char*)
+; Prints a string using the prints function + '\n'
+puts:
+    call    prints
 
     push    eax                 ; Push current eax to stack to preserve it
 
     mov     eax, 0xA            ; Move '\n' to eax because we want to append it
-    call    cprint
+    call    printc
 
     pop     eax                 ; Get original eax from stack
     ret
@@ -98,10 +98,10 @@ fwrite:
     pop     eax
     ret
 
-; void iprint(int i)
+; void printi(int i)
 ; Prints i (eax) as string. I will use a different method than the one on
 ; asmtutor
-iprint:
+printi:
     push    eax                 ; Save eax register
     push    ebx                 ; Save ebx for calling sys_write
     push    ecx                 ; Save ecx for calling sys_write
@@ -111,7 +111,7 @@ iprint:
 
     dec     esp                 ; We will be subtracting 1 to esp each char (in
                                 ; this case '\0'). See comment on
-                                ; iprint_nextdigit
+                                ; printi_nextdigit
     mov     [esp], byte 0       ; Add the terminating '\0'
     mov     esi, 10             ; Divisor. TODO: save esi on the stack?
 
@@ -167,15 +167,15 @@ iprint:
     pop     eax                 ; Pop registers after restoring esp
     ret
 
-; void iprintln(int i)
-; Calls iprint and also prints a newline
-iprintln:
-    call    iprint
+; void puti(int i)
+; Calls printi and also prints a newline
+puti:
+    call    printi
 
-    push    eax                 ; Same as println
+    push    eax                 ; Same as puts
 
     mov     eax, 0xA
-    call    cprint
+    call    printc
 
     pop     eax
     ret
@@ -228,9 +228,9 @@ atoi:
     ret
 
 
-; void cprint(char c)
+; void printc(char c)
 ; Prints eax as char
-cprint:
+printc:
     push    edx                 ; We push in reverse order so we can grab eax
     push    ecx                 ; from esp last.
     push    ebx
@@ -248,15 +248,15 @@ cprint:
     pop     edx
     ret
 
-; void cprintln(char c)
-; Calls cprint and also prints a newline
-cprintln:
-    call    cprint
+; void putc(char c)
+; Calls printc and also prints a newline
+putc:
+    call    printc
 
-    push    eax                 ; Same as println
+    push    eax                 ; Same as puts
 
     mov     eax, 0xA
-    call    cprint
+    call    printc
 
     pop     eax
     ret
