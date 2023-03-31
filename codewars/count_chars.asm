@@ -1,4 +1,4 @@
-; https://www.codewars.com/kata/5865918c6b569962950002a1/train/nasm
+; Kata: https://www.codewars.com/kata/5865918c6b569962950002a1
 ; int32_t str_count(const char *str, char letter);
 
 section .text
