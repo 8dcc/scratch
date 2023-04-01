@@ -1,0 +1,3 @@
+[submodule "codewars"]
+	path = codewars
+	url = https://github.com/8dcc/codewars-asm
