@@ -1,3 +1,5 @@
+; TODO: Reverse str
+
 global itoa
 
 section .text
