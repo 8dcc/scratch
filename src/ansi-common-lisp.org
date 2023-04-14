@@ -13,13 +13,13 @@ Note: The first let is just used to show the multiple variable declarations. The
 return value of a function is always the last expression, in this case the
 second let.
 
-#+begin_src lisp :results mode
+#+begin_src lisp
 (defun test-let ()
   (let ((var1 5)
         (var2 13)
         (var3 10))
     (+ var1 var2 var3))
-  (let ((var1 7))           ; Note the list of declarations even with only 1
+  (let ((var1 7))       ; Note the list of declarations even with only 1
     (- var1 5)))
 
 (test-let)
@@ -34,7 +34,7 @@ the contents of the loop). The first argument is, like with /let/, a *list* of
 variable specifications. Each specification of this list has the following
 format:
 
-    (/variable initial update)/
+    (/variable initial update/)
 
 Which would be like:
 
@@ -80,3 +80,81 @@ i: 5
 i: 3
 i: 1
 #+end_example
+
+** Chapter 2.14: Functions as Objects
+We used the /defun/ macro for declaring functions with a name (associating the
+function to a symbol) but we don't need to do that. We can create a /lambda
+expression/, which is how we create function objects (that we can later use as
+parameters to functions, etc.).
+
+To create this /lambda expression/ we use the /lambda/ symbol, a list of parameters,
+and zero or more expressions (body).
+
+#+begin_src lisp
+(lambda (x y)       ; No name
+  (* x y))
+#+end_src
+
+#+RESULTS:
+: #<FUNCTION (LAMBDA (X Y)) {5368A96B}>
+
+When we define a function with /defun/, we are just associating this /function
+object/ to a symbol (the name of the function). When we use that symbol, we will
+be referring to the function object.
+
+What this means is that in reality we can use a lambda function just like we
+would use a function name, so we can declare it and use it to call in the same
+expression:
+
+#+begin_src lisp
+((lambda (x) (* x x)) 5)    ; 5 is a parameter
+#+end_src
+
+#+RESULTS:
+: 25
+
+We can assign the value of a lambda expression (function object) to a symbol
+using /let/.
+
+Here is an example using /let/:
+
+#+begin_src lisp :results output
+(let ((mylambda #'(lambda (x y)
+                  (format t "I am an expression inside the lambda!~%")
+                  (* x y))))
+  (format t "Begining of the let expression block!~%")
+  (format t "Lambda return: ~A~%" (funcall mylambda 5 3)))
+#+end_src
+
+#+RESULTS:
+: Begining of the let expression block!
+: I am an expression inside the lambda!
+: Lambda return: 15
+
+Keep in mind that we cannot call the function directly using:
+
+    (/mylambda 5 3/)
+
+Because /mylambda/ is a variable that contains function object. Instead we need to
+use /funcall/ or /apply/. Apply requires a list as its last argument. Usage:
+
+    (/funcall mylambda 5 3/)
+    (/apply mylambda '(5 3)/)
+
+Lambdas and let:
+
+#+begin_src lisp :results output
+;;  'symbol -> (quote symbol)
+;; #'symbol -> (function symbol)
+(funcall #'(lambda (x)
+             (format t "(funcall) Value of x: ~A~%" x)) ; Body of lambda
+         "Test 1")                                      ; Argument
+
+(apply #'(lambda (x)
+           (format t "  (apply) Value of x: ~A~%" x))   ; Body of lambda
+       '("Test 2"))                                     ; Argument. Needs list
+#+end_src
+
+#+RESULTS:
+: (funcall) Value of x: Test 1
+:   (apply) Value of x: Test 2
