@@ -1,0 +1,67 @@
+#+title: ANSI Common Lisp
+#+auto_tangle: t
+#+author: 8dcc
+
+* ANSI Common Lisp Book
+** Chapter 2.10: Variables
+The /let/ macro is used to create local variables. It takes 2 arguments, the first
+one is a *list* of variable declarations and the second one is the body of
+expressions. The body is where we want to use our new local variables.
+
+Note: The first let is just used to show the multiple variable declarations. The
+return value of a function is always the last expression, in this case the
+second let.
+
+#+begin_src lisp :exports let-test.lisp
+(defun let-test ()
+  (let ((var1 5)
+        (var2 13)
+        (var3 10))
+    (+ var1 var2 var3))
+  (let ((var1 7))           ; Note the list of declarations even with only 1
+    (- var1 5)))
+
+(let-test)
+#+end_src
+
+#+RESULTS:
+: 2
+
+** Chapter 2.13: Iteration
+The /do/ macro is used for iteration and takes 3 arguments (the third one being
+the contents of the loop). The first argument is, like with /let/, a *list* of
+variable specifications. Each specification of this list has the following
+format:
+    (/variable initial update)/
+
+Which would be like:
+    /for (variable = initial; ...; update)/
+
+The 2nd argument of the /do/ macro is a list containing the conditions of the loop
+and extra expressions. This is the format:
+    (/condition expression .../)
+
+The loop will keep going while the first expression is true. Once the expression
+is false, it will stop the loop and start evaluating the rest of the
+expressions. The /do/ macro will return the value of the last expression of the
+list.
+
+After this list, the remaining arguments are expressions to be executed in the
+while loop.
+
+#+begin_src lisp :exports do-test.lisp
+(defun do-test (n)
+  (do ((i 0 (+ i 1))
+       (j 0 (+ j 3)))
+      ((< i n) 'done)
+    (format t "i: ~A j:~A~%" i j))
+  (format t "Finished first loop.")
+  (do ((i n (- i 2)))       ; Note the list of declarations even with only 1
+      ((> i 0) 'done)
+    (format t "i: ~A~%" i)))
+
+(do-test 10)
+#+end_src
+
+#+RESULTS:
+: DONE
