@@ -2,7 +2,7 @@
 #+auto_tangle: t
 #+author: 8dcc
 
-* ANSI Common Lisp Book
+* Chapters
 ** Chapter 2.10: Variables
 The /let/ macro is used to create local variables. It takes 2 arguments, the first
 one is a *list* of variable declarations and the second one is the body of
@@ -32,13 +32,16 @@ The /do/ macro is used for iteration and takes 3 arguments (the third one being
 the contents of the loop). The first argument is, like with /let/, a *list* of
 variable specifications. Each specification of this list has the following
 format:
+
     (/variable initial update)/
 
 Which would be like:
+
     /for (variable = initial; ...; update)/
 
 The 2nd argument of the /do/ macro is a list containing the conditions of the loop
 and extra expressions. This is the format:
+
     (/condition expression .../)
 
 The loop will keep going while the first expression is true. Once the expression
