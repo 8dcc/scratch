@@ -1,4 +1,5 @@
-(defun let-test ()
+;; [[file:ansi-common-lisp.org::*Chapter 2.10: Variables][Chapter 2.10: Variables:1]]
+(defun test-let ()
   (let ((var1 5)
         (var2 13)
         (var3 10))
@@ -6,8 +7,10 @@
   (let ((var1 7))           ; Note the list of declarations even with only 1
     (- var1 5)))
 
-(let-test)
+(test-let)
+;; Chapter 2.10: Variables:1 ends here
 
+;; [[file:ansi-common-lisp.org::*Chapter 2.13: Iteration][Chapter 2.13: Iteration:1]]
 (defun test-do (n)
   (do ((i 0 (+ i 1))
        (j 0 (+ j 3)))
@@ -20,3 +23,4 @@
     (format t "i: ~A~%" i)))
 
 (test-do 5)
+;; Chapter 2.13: Iteration:1 ends here

@@ -1,5 +1,5 @@
 #+title: ANSI Common Lisp
-#+property: header-args:lisp :tangle common-lisp.lisp
+#+property: header-args:lisp :tangle ansi-common-lisp.lisp :comments link
 #+auto_tangle: t
 #+author: 8dcc
 
