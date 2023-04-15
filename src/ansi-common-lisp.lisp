@@ -54,53 +54,53 @@
        '("Test 2"))                                     ; Argument. Needs list
 ;; Chapter 2.14: Functions as Objects:4 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:1]]
+;; [[file:ansi-common-lisp.org::*First expression.][First expression.:1]]
 (+ (- 5 1) (+ 3 7))
-;; Exercises:1 ends here
+;; First expression.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:2]]
+;; [[file:ansi-common-lisp.org::*Second expression.][Second expression.:1]]
 (list 1 (+ 2 3))
-;; Exercises:2 ends here
+;; Second expression.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:3]]
+;; [[file:ansi-common-lisp.org::*Third expression.][Third expression.:1]]
 (if (listp 1)
     (+ 1 2)
     (+ 3 4))
-;; Exercises:3 ends here
+;; Third expression.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:4]]
+;; [[file:ansi-common-lisp.org::*Fourth expression.][Fourth expression.:1]]
 (list (and (listp 3) t) (+ 1 2))
-;; Exercises:4 ends here
+;; Fourth expression.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:5]]
+;; [[file:ansi-common-lisp.org::*Give three distinct =cons= expressions that return =(a b c)=.][Give three distinct =cons= expressions that return =(a b c)=.:1]]
 (cons 'a (cons 'b (cons 'c nil)))
-;; Exercises:5 ends here
+;; Give three distinct =cons= expressions that return =(a b c)=.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:6]]
+;; [[file:ansi-common-lisp.org::*Give three distinct =cons= expressions that return =(a b c)=.][Give three distinct =cons= expressions that return =(a b c)=.:2]]
 (cons 'a '(b c))
-;; Exercises:6 ends here
+;; Give three distinct =cons= expressions that return =(a b c)=.:2 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:7]]
+;; [[file:ansi-common-lisp.org::*Give three distinct =cons= expressions that return =(a b c)=.][Give three distinct =cons= expressions that return =(a b c)=.:3]]
 (cons 'a (cons 'b '(c)))
-;; Exercises:7 ends here
+;; Give three distinct =cons= expressions that return =(a b c)=.:3 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:8]]
+;; [[file:ansi-common-lisp.org::*Using =car= and =cdr=, define a function to return the fourth element of a list.][Using =car= and =cdr=, define a function to return the fourth element of a list.:1]]
 (defun fourth-elem (lst)
   (car (cdr (cdr (cdr lst)))))
 
 (fourth-elem '(10 20 30 40 50))
-;; Exercises:8 ends here
+;; Using =car= and =cdr=, define a function to return the fourth element of a list.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:9]]
+;; [[file:ansi-common-lisp.org::*Define a function that takes two arguments and returns the greater of the two.][Define a function that takes two arguments and returns the greater of the two.:1]]
 (defun greater (x y)
   (if (> x y)
       x
       y))
 
 (greater 5 12)
-;; Exercises:9 ends here
+;; Define a function that takes two arguments and returns the greater of the two.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercises][Exercises:10]]
+;; [[file:ansi-common-lisp.org::*Function one.][Function one.:1]]
 (defun enigma (x)
   (and (not (null x))
        (or (null (car x))
@@ -108,4 +108,4 @@
 
 (enigma '(1 2 3))
 (enigma '(1 2 nil 4))
-;; Exercises:10 ends here
+;; Function one.:1 ends here
