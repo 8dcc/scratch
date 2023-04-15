@@ -161,7 +161,7 @@ Lambdas and let:
 
 ** Exercises
 *** Exercise 1
-_Describe what happens when the following expressions are evaluated._
+*Describe what happens when the following expressions are evaluated.*
 
 **** First expression.
 
@@ -231,7 +231,7 @@ this case ~(+ 1 2)~, which returns =3=.  The =list= function returns a list of t
 arguments, in this case =(nil, 3)=
 
 *** Exercise 2
-_Give three distinct =cons= expressions that return =(a b c)=._
+*Give three distinct =cons= expressions that return =(a b c)=.*
 
 Note that =cons= takes only 2 arguments, and adds the first one to the start of
 the second argument.
@@ -258,7 +258,7 @@ the second argument.
 | A | B | C |
 
 *** Exercise 3
-_Using =car= and =cdr=, define a function to return the fourth element of a list._
+*Using =car= and =cdr=, define a function to return the fourth element of a list.*
 
 #+begin_src lisp
 (defun fourth-elem (lst)
@@ -271,7 +271,7 @@ _Using =car= and =cdr=, define a function to return the fourth element of a list
 : 40
 
 *** Exercise 4
-_Define a function that takes two arguments and returns the greater of the two._
+*Define a function that takes two arguments and returns the greater of the two.*
 
 #+begin_src lisp
 (defun greater (x y)
@@ -286,7 +286,7 @@ _Define a function that takes two arguments and returns the greater of the two._
 : 12
 
 *** Exercise 5
-_What do these functions do?_
+*What do these functions do?*
 
 **** Function one.
 
