@@ -294,7 +294,7 @@ Lambdas and let:
 
       (enigma '(1 2 3))
       (enigma '(1 2 nil 4))
-          #+end_src
+      #+end_src
 
       The =enigma= function returns the =and= of the following:
       - Is the argument a list with items?
@@ -307,7 +307,31 @@ Lambdas and let:
       =nul=, or if that condition applies to the rest of the list. So basically
       this function could be called =has-nil=.
 
-      In the 2nd call example, the process would be the following:
+      In the first call example, the process would be the following:
+      1. Make sure the list ='(1 2 3)= has elements.
+      2. It does, check if the first element is =nil=.
+      3. It isn't, call the function with ='(2 3)=:
+         1. Make sure the list ='(2 3)= has elements.
+         2. It does, check if the first element is =nil=.
+         3. It isn't, call the function with ='(3)=:
+            1. Make sure the list ='(3)= has elements.
+            2. It does, check if the first element is =nil=.
+            3. It isn't, call the function with ='( )=:
+               1. Make sure the list ='( )= has elements.
+               2. It doesn't, return false.
+            4. None of the =or= conditions were true, return false.
+         4. None of the =or= conditions were true, return false.
+      4. None of the =or= conditions were true, return false.
+
+      In the first call example, the process would be the following:
       1. Make sure the list ='(1 2 nil 4)= has elements.
       2. It does, check if the first element is =nil=.
       3. It isn't, call the function with ='(2 nil 4)=:
+         1. Make sure the list ='(2 nil 4)= has elements.
+         2. It does, check if the first element is =nil=.
+         3. It isn't, call the function with ='(nil 4)=:
+            1. Make sure the list ='(nil 4)= has elements.
+            2. It does, check if the first element is =nil=.
+            3. It is, return =t=.
+         4. It returned =t=, one of the conditions of the =or= is true, return true.
+      4. It returned =t=, one of the conditions of the =or= is true, return true.
