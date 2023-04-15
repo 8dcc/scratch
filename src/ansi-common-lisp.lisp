@@ -72,33 +72,33 @@
 (list (and (listp 3) t) (+ 1 2))
 ;; Fourth expression.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Give three distinct =cons= expressions that return =(a b c)=.][Give three distinct =cons= expressions that return =(a b c)=.:1]]
+;; [[file:ansi-common-lisp.org::*Exercise 2][Exercise 2:1]]
 (cons 'a (cons 'b (cons 'c nil)))
-;; Give three distinct =cons= expressions that return =(a b c)=.:1 ends here
+;; Exercise 2:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Give three distinct =cons= expressions that return =(a b c)=.][Give three distinct =cons= expressions that return =(a b c)=.:2]]
+;; [[file:ansi-common-lisp.org::*Exercise 2][Exercise 2:2]]
 (cons 'a '(b c))
-;; Give three distinct =cons= expressions that return =(a b c)=.:2 ends here
+;; Exercise 2:2 ends here
 
-;; [[file:ansi-common-lisp.org::*Give three distinct =cons= expressions that return =(a b c)=.][Give three distinct =cons= expressions that return =(a b c)=.:3]]
+;; [[file:ansi-common-lisp.org::*Exercise 2][Exercise 2:3]]
 (cons 'a (cons 'b '(c)))
-;; Give three distinct =cons= expressions that return =(a b c)=.:3 ends here
+;; Exercise 2:3 ends here
 
-;; [[file:ansi-common-lisp.org::*Using =car= and =cdr=, define a function to return the fourth element of a list.][Using =car= and =cdr=, define a function to return the fourth element of a list.:1]]
+;; [[file:ansi-common-lisp.org::*Exercise 3][Exercise 3:1]]
 (defun fourth-elem (lst)
   (car (cdr (cdr (cdr lst)))))
 
 (fourth-elem '(10 20 30 40 50))
-;; Using =car= and =cdr=, define a function to return the fourth element of a list.:1 ends here
+;; Exercise 3:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Define a function that takes two arguments and returns the greater of the two.][Define a function that takes two arguments and returns the greater of the two.:1]]
+;; [[file:ansi-common-lisp.org::*Exercise 4][Exercise 4:1]]
 (defun greater (x y)
   (if (> x y)
       x
       y))
 
 (greater 5 12)
-;; Define a function that takes two arguments and returns the greater of the two.:1 ends here
+;; Exercise 4:1 ends here
 
 ;; [[file:ansi-common-lisp.org::*Function one.][Function one.:1]]
 (defun enigma (x)
