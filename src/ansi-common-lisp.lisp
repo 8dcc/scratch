@@ -36,8 +36,8 @@
 
 ;; [[file:ansi-common-lisp.org::*Chapter 2.14: Functions as Objects][Chapter 2.14: Functions as Objects:3]]
 (let ((mylambda #'(lambda (x y)
-                  (format t "I am an expression inside the lambda!~%")
-                  (* x y))))
+                    (format t "I am an expression inside the lambda!~%")
+                    (* x y))))
   (format t "Begining of the let expression block!~%")
   (format t "Lambda return: ~A~%" (funcall mylambda 5 3)))
 ;; Chapter 2.14: Functions as Objects:3 ends here

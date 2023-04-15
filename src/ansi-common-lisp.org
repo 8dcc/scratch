@@ -34,16 +34,16 @@ the contents of the loop). The first argument is, like with /let/, a *list* of
 variable specifications. Each specification of this list has the following
 format:
 
-    ~(variable initial update)~
+~(variable initial update)~
 
 Which would be like:
 
-    ~for (variable = initial; ...; update)~
+~for (variable = initial; ...; update)~
 
 The 2nd argument of the /do/ macro is a list containing the conditions of the loop
 and extra expressions. This is the format:
 
-    ~(stop-condition expression ...)~
+~(stop-condition expression ...)~
 
 The loop will keep going *until* the first expression is true. Once the expression
 is true, it will stop the loop and start evaluating the rest of the expressions.
@@ -120,8 +120,8 @@ Here is an example using /let/:
 
 #+begin_src lisp :results output
 (let ((mylambda #'(lambda (x y)
-                  (format t "I am an expression inside the lambda!~%")
-                  (* x y))))
+                    (format t "I am an expression inside the lambda!~%")
+                    (* x y))))
   (format t "Begining of the let expression block!~%")
   (format t "Lambda return: ~A~%" (funcall mylambda 5 3)))
 #+end_src
@@ -133,13 +133,13 @@ Here is an example using /let/:
 
 Keep in mind that we cannot call the function directly using:
 
-    ~(mylambda 5 3)~
+~(mylambda 5 3)~
 
 Because /mylambda/ is a variable that contains function object. Instead we need to
 use /funcall/ or /apply/. Apply requires a list as its last argument. Usage:
 
-    ~(funcall mylambda 5 3)~
-    ~(apply mylambda '(5 3))~
+~(funcall mylambda 5 3)~
+~(apply mylambda '(5 3))~
 
 Lambdas and let:
 
