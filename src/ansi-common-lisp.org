@@ -5,7 +5,7 @@
 
 * Chapter 2
 ** Chapter 2.10: Variables
-The /let/ macro is used to create local variables. It takes 2 arguments, the first
+The =let= macro is used to create local variables. It takes 2 arguments, the first
 one is a *list* of variable declarations and the second one is the body of
 expressions. The body is where we want to use our new local variables.
 
@@ -29,8 +29,8 @@ second let.
 : 2
 
 ** Chapter 2.13: Iteration
-The /do/ macro is used for iteration and takes 3 arguments (the third one being
-the contents of the loop). The first argument is, like with /let/, a *list* of
+The =do= macro is used for iteration and takes 3 arguments (the third one being
+the contents of the loop). The first argument is, like with =let=, a *list* of
 variable specifications. Each specification of this list has the following
 format:
 
@@ -40,14 +40,14 @@ Which would be like:
 
 ~for (variable = initial; ...; update)~
 
-The 2nd argument of the /do/ macro is a list containing the conditions of the loop
+The 2nd argument of the =do= macro is a list containing the conditions of the loop
 and extra expressions. This is the format:
 
 ~(stop-condition expression ...)~
 
 The loop will keep going *until* the first expression is true. Once the expression
 is true, it will stop the loop and start evaluating the rest of the expressions.
-The /do/ macro will return the value of the last expression of the list.
+The =do= macro will return the value of the last expression of the list.
 
 After this list, the remaining arguments are expressions to be executed in the
 while loop.
@@ -82,12 +82,12 @@ i: 1
 #+end_example
 
 ** Chapter 2.14: Functions as Objects
-We used the /defun/ macro for declaring functions with a name (associating the
+We used the =defun= macro for declaring functions with a name (associating the
 function to a symbol) but we don't need to do that. We can create a /lambda
 expression/, which is how we create function objects (that we can later use as
 parameters to functions, etc.).
 
-To create this /lambda expression/ we use the /lambda/ symbol, a list of parameters,
+To create this /lambda expression/ we use the =lambda= symbol, a list of parameters,
 and zero or more expressions (body).
 
 #+begin_src lisp
@@ -98,7 +98,7 @@ and zero or more expressions (body).
 #+RESULTS:
 : #<FUNCTION (LAMBDA (X Y)) {5368A96B}>
 
-When we define a function with /defun/, we are just associating this /function
+When we define a function with =defun=, we are just associating this /function
 object/ to a symbol (the name of the function). When we use that symbol, we will
 be referring to the function object.
 
@@ -114,9 +114,9 @@ expression:
 : 25
 
 We can assign the value of a lambda expression (function object) to a symbol
-using /let/.
+using =let=.
 
-Here is an example using /let/:
+Here is an example using =let=:
 
 #+begin_src lisp :results output
 (let ((mylambda #'(lambda (x y)
@@ -135,8 +135,8 @@ Keep in mind that we cannot call the function directly using:
 
 ~(mylambda 5 3)~
 
-Because /mylambda/ is a variable that contains function object. Instead we need to
-use /funcall/ or /apply/. Apply requires a list as its last argument. Usage:
+Because =mylambda= is a variable that contains function object. Instead we need to
+use =funcall= or =apply=. Apply requires a list as its last argument. Usage:
 
 ~(funcall mylambda 5 3)~
 ~(apply mylambda '(5 3))~
@@ -161,7 +161,7 @@ Lambdas and let:
 
 ** Exercises
 *** Exercise 1
-*Describe what happens when the following expressions are evaluated.*
+Describe what happens when the following expressions are evaluated.
 
 **** First expression.
 
@@ -231,7 +231,7 @@ this case ~(+ 1 2)~, which returns =3=.  The =list= function returns a list of t
 arguments, in this case =(nil, 3)=
 
 *** Exercise 2
-*Give three distinct =cons= expressions that return =(a b c)=.*
+Give three distinct =cons= expressions that return =(a b c)=.
 
 Note that =cons= takes only 2 arguments, and adds the first one to the start of
 the second argument.
@@ -258,7 +258,7 @@ the second argument.
 | A | B | C |
 
 *** Exercise 3
-*Using =car= and =cdr=, define a function to return the fourth element of a list.*
+Using =car= and =cdr=, define a function to return the fourth element of a list.
 
 #+begin_src lisp
 (defun fourth-elem (lst)
@@ -271,7 +271,7 @@ the second argument.
 : 40
 
 *** Exercise 4
-*Define a function that takes two arguments and returns the greater of the two.*
+Define a function that takes two arguments and returns the greater of the two.
 
 #+begin_src lisp
 (defun greater (x y)
@@ -286,7 +286,7 @@ the second argument.
 : 12
 
 *** Exercise 5
-*What do these functions do?*
+What do these functions do?
 
 **** Function one.
 
