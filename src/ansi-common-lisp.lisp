@@ -147,3 +147,46 @@
 (has-list '(1 nil 3))           ; t (nil is an empty list)
 (has-list '(1 (25 26 27) 3))    ; t
 ;; Exercise 7:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Function 1][Function 1:1]]
+(defun dots-iter (x)
+  (do ((i 0 (+ i 1)))
+      ((>= i x) 'done)
+    (format t ".")))
+
+(dots-iter 5)
+;; Function 1:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Function 1][Function 1:2]]
+(defun dots-recur (x)
+  (format t ".")
+  (if (<= x 1)
+      'done
+      (dots-recur (- x 1))))
+
+(dots-recur 5)
+;; Function 1:2 ends here
+
+;; [[file:ansi-common-lisp.org::*Function 2][Function 2:1]]
+(defun app-iter (x y)
+  (let ((ret 0))
+    (dolist (i y)
+      (if (= x i)
+          (setf ret (+ ret 1))))
+    ret))
+
+(app-iter 5 '(1 2 3 4))     ; 0
+(app-iter 1 '(1 8 1 9 1))   ; 3
+;; Function 2:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Function 2][Function 2:2]]
+(defun app-recur (x y)
+  (if (null y)
+      0
+      (if (= x (car y))
+          (+ 1 (app-recur x (cdr y)))   ; Match
+          (app-recur x (cdr y)))))      ; No mach
+
+(app-recur 5 '(1 2 3 4))    ; 0
+(app-recur 1 '(1 8 1 9 1))  ; 3
+;; Function 2:2 ends here

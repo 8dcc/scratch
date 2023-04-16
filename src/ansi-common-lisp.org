@@ -476,3 +476,69 @@ list as an argument and returns true if one of its elements is a list.
 
 #+RESULTS:
 : T
+
+*** Exercise 8
+Give iterative and recursive definitions of a function that:
+
+**** Function 1
+Takes a positive integer and prints that many dots.
+
+#+begin_src lisp :results output
+(defun dots-iter (x)
+  (do ((i 0 (+ i 1)))
+      ((>= i x) 'done)
+    (format t ".")))
+
+(dots-iter 5)
+#+end_src
+
+#+RESULTS:
+: .....
+
+#+begin_src lisp :results output
+(defun dots-recur (x)
+  (format t ".")
+  (if (<= x 1)
+      'done
+      (dots-recur (- x 1))))
+
+(dots-recur 5)
+#+end_src
+
+#+RESULTS:
+: .....
+
+**** Function 2
+Takes a list and returns the number of times the symbol occurs in it.
+
+#+begin_src lisp
+(defun app-iter (x y)
+  (let ((ret 0))
+    (dolist (i y)
+      (if (= x i)
+          (setf ret (+ ret 1))))
+    ret))
+
+(app-iter 5 '(1 2 3 4))     ; 0
+(app-iter 1 '(1 8 1 9 1))   ; 3
+#+end_src
+
+#+RESULTS:
+: 3
+
+If we find a match, add one to the number appearances in the rest of the list.
+
+#+begin_src lisp
+(defun app-recur (x y)
+  (if (null y)
+      0
+      (if (= x (car y))
+          (+ 1 (app-recur x (cdr y)))   ; Match
+          (app-recur x (cdr y)))))      ; No mach
+
+(app-recur 5 '(1 2 3 4))    ; 0
+(app-recur 1 '(1 8 1 9 1))  ; 3
+#+end_src
+
+#+RESULTS:
+: 3
