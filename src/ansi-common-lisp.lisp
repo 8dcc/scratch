@@ -122,3 +122,15 @@
 (mystery 4 '(1 2 3))
 (mystery 5 '(1 3 5 7))
 ;; Function two.:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Exercise 6][Exercise 6:1]]
+(car (car (cdr '(a (b c) d))))
+;; Exercise 6:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Exercise 6][Exercise 6:2]]
+(or 13 (/ 1 0))
+;; Exercise 6:2 ends here
+
+;; [[file:ansi-common-lisp.org::*Exercise 6][Exercise 6:3]]
+(apply #'list 1 nil)
+;; Exercise 6:3 ends here

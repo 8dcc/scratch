@@ -411,3 +411,43 @@ In the first call example, the process would be the following:
    5. It is not, return =(+ 0 1)= -> =1=.
 4. Check if the returned value is =nil= using =and=.
 5. It is not, return =(+ 1 1)= -> =2=.
+
+*** Exercise 6
+What could occur in place of the =x= in each of the following exchanges?
+
+
+a) ~(car (=x= (cdr '(a (b c) d))))~
+
+#+begin_src lisp
+(car (car (cdr '(a (b c) d))))
+#+end_src
+
+#+RESULTS:
+: B
+
+b) ~(=x= 13 (/ 1 0))~
+
+Keep in mind that =and= will stop evaluating expressions once it finds a =nil= one,
+and =or= will stop evaluating once it finds a =non-nil= one.
+
+#+begin_src lisp
+(or 13 (/ 1 0))
+#+end_src
+
+#+RESULTS:
+: 13
+
+c) ~(=x= #'list 1 nil)~
+
+If we used =funcall=, each extra argument (in this case both =1= and =nil=) would be
+passed to =#'list=, returning a list with the elements: =(1, nil)=. On the other
+hand, =apply= /needs/ a list as it's last argument, and the rest of the arguments
+(in this case =1=) will get appended in front of the list. The finall call to
+=#'list= would be ~(list 1)~.
+
+#+begin_src lisp
+(apply #'list 1 nil)
+#+end_src
+
+#+RESULTS:
+| 1 |
