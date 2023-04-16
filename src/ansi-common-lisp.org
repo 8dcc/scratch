@@ -456,3 +456,23 @@ hand, =apply= /needs/ a list as it's last argument, and the rest of the argument
 
 #+RESULTS:
 | 1 |
+
+*** Exercise 7
+Using only operators introduced in this chapter, define a function that takes a
+list as an argument and returns true if one of its elements is a list.
+
+#+begin_src lisp
+(defun has-list (x)
+  (if (null x)
+      nil
+      (if (listp (car x))
+          t
+          (has-list (cdr x)))))
+
+(has-list '(1 2 3))             ; nil
+(has-list '(1 nil 3))           ; t (nil is an empty list)
+(has-list '(1 (25 26 27) 3))    ; t
+#+end_src
+
+#+RESULTS:
+: T

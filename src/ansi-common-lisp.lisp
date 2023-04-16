@@ -134,3 +134,16 @@
 ;; [[file:ansi-common-lisp.org::*Expression 3][Expression 3:1]]
 (apply #'list 1 nil)
 ;; Expression 3:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Exercise 7][Exercise 7:1]]
+(defun has-list (x)
+  (if (null x)
+      nil
+      (if (listp (car x))
+          t
+          (has-list (cdr x)))))
+
+(has-list '(1 2 3))             ; nil
+(has-list '(1 nil 3))           ; t (nil is an empty list)
+(has-list '(1 (25 26 27) 3))    ; t
+;; Exercise 7:1 ends here
