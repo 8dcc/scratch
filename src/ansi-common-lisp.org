@@ -300,6 +300,9 @@ What do these functions do?
 (enigma '(1 2 nil 4))
 #+end_src
 
+#+RESULTS:
+: T
+
 The =enigma= function returns the =and= of the following:
 - Is the argument a list with items?
 - The or of the following:
