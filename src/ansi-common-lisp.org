@@ -341,3 +341,73 @@ In the first call example, the process would be the following:
       3. It is, return =t=.
    4. It returned =t=, one of the conditions of the =or= is true, return true.
 4. It returned =t=, one of the conditions of the =or= is true, return true.
+
+**** Function two.
+
+#+begin_src lisp
+(defun mystery (x y)
+  (if (null y)
+      nil
+      (if (eql (car y) x)
+          0
+          (let ((z (mystery x (cdr y))))
+            (and z (+ z 1))))))
+
+(mystery 4 '(1 2 3))
+(mystery 5 '(1 3 5 7))
+#+end_src
+
+#+RESULTS:
+: 2
+
+The =mistery= function returns =nil= if the second argument is an empty list, and =0=
+if =x= is the first argument of =y=. If none of those conditions are true, it
+creates a local variable called =z= that consists of the return value of calling
+this function of the rest of the list. When we get the return function from the
+rest of the list, the =mistery= function returns the =and= of =z= and =(+ z 1)=. Because
+=and= checks for the first expression before evaluating the second one, it will
+not add 1 to =z= unless it knows that =z= is not =nil=.
+
+So what it does is loop each element of the list by calling itself and checking
+if the first element matches =x=, once it does, we return =0=. If it doesn't match,
+we keep calling it with the rest of the list. Once we find a valid =0= from one of
+this recursive calls (we check that we didn't get =nil= with =and=), we return =(+ z
+1)=, the =1= counts the number of recursive calls we made until =x= matched the first
+item of =y=.
+
+This way we can count how many times the function was called recursively until
+we found =x=, so this function could be called =get-idx=.
+
+In the first call example, the process would be the following:
+1. Check if =y= is full: ='(1 2 3)=
+2. It is, check if the first item is =4=.
+3. It's not, call the function with ='(2 3)=
+   1. Check if =y= is full: ='(2 3)=
+   2. It is, check if the first item is =4=.
+   3. It's not, call the function with ='(3)=
+      1. Check if =y= is full: ='(3)=
+      2. It is, check if the first item is =4=.
+      3. It's not, call the function with ='( )=
+         1. Check if =y= is full: ='( )=
+         2. It's not, return =nil=
+      4. Check if the returned value is =nil= using =and=.
+      5. It is, =and= failed so return =nil=.
+   4. Check if the returned value is =nil= using =and=.
+   5. It is, =and= failed so return =nil=.
+4. Check if the returned value is =nil= using =and=.
+5. It is, =and= failed so return =nil=.
+
+In the first call example, the process would be the following:
+1. Check if =y= is full: ='(1 3 5 7)=
+2. It is, check if the first item is =5=.
+3. It's not, call the function with ='(3 5 7)=
+   1. Check if =y= is full: ='(3 5 7)=
+   2. It is, check if the first item is =5=.
+   3. It's not, call the function with ='(5 7)=
+      1. Check if =y= is full: ='(5 7)=
+      2. It is, check if the first item is =5=.
+      3. It is return =0=.
+   4. Check if the returned value is =nil= using =and=.
+   5. It is not, return =(+ 0 1)= -> =1=.
+4. Check if the returned value is =nil= using =and=.
+5. It is not, return =(+ 1 1)= -> =2=.

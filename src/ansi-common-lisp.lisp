@@ -109,3 +109,16 @@
 (enigma '(1 2 3))
 (enigma '(1 2 nil 4))
 ;; Function one.:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Function two.][Function two.:1]]
+(defun mystery (x y)
+  (if (null y)
+      nil
+      (if (eql (car y) x)
+          0
+          (let ((z (mystery x (cdr y))))
+            (and z (+ z 1))))))
+
+(mystery 4 '(1 2 3))
+(mystery 5 '(1 3 5 7))
+;; Function two.:1 ends here
