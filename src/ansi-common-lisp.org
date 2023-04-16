@@ -415,8 +415,9 @@ In the first call example, the process would be the following:
 *** Exercise 6
 What could occur in place of the =x= in each of the following exchanges?
 
+**** Expression 1
 
-a) ~(car (=x= (cdr '(a (b c) d))))~
+~(car (x (cdr '(a (b c) d))))~
 
 #+begin_src lisp
 (car (car (cdr '(a (b c) d))))
@@ -425,7 +426,9 @@ a) ~(car (=x= (cdr '(a (b c) d))))~
 #+RESULTS:
 : B
 
-b) ~(=x= 13 (/ 1 0))~
+**** Expression 2
+
+~(x 13 (/ 1 0))~
 
 Keep in mind that =and= will stop evaluating expressions once it finds a =nil= one,
 and =or= will stop evaluating once it finds a =non-nil= one.
@@ -437,12 +440,14 @@ and =or= will stop evaluating once it finds a =non-nil= one.
 #+RESULTS:
 : 13
 
-c) ~(=x= #'list 1 nil)~
+**** Expression 3
+
+~(x #'list 1 nil)~
 
 If we used =funcall=, each extra argument (in this case both =1= and =nil=) would be
-passed to =#'list=, returning a list with the elements: =(1, nil)=. On the other
+passed to =#'list=, returning a list with the elements: =(1, nil)=.  On the other
 hand, =apply= /needs/ a list as it's last argument, and the rest of the arguments
-(in this case =1=) will get appended in front of the list. The final call to
+(in this case =1=) will get appended in front of the list.  The final call to
 =#'list= would be ~(list 1)~.
 
 #+begin_src lisp

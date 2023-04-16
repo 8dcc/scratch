@@ -123,14 +123,14 @@
 (mystery 5 '(1 3 5 7))
 ;; Function two.:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercise 6][Exercise 6:1]]
+;; [[file:ansi-common-lisp.org::*Expression 1][Expression 1:1]]
 (car (car (cdr '(a (b c) d))))
-;; Exercise 6:1 ends here
+;; Expression 1:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercise 6][Exercise 6:2]]
+;; [[file:ansi-common-lisp.org::*Expression 2][Expression 2:1]]
 (or 13 (/ 1 0))
-;; Exercise 6:2 ends here
+;; Expression 2:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Exercise 6][Exercise 6:3]]
+;; [[file:ansi-common-lisp.org::*Expression 3][Expression 3:1]]
 (apply #'list 1 nil)
-;; Exercise 6:3 ends here
+;; Expression 3:1 ends here
