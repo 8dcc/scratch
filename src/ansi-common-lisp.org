@@ -371,8 +371,8 @@ not add 1 to =z= unless it knows that =z= is not =nil=.
 So what it does is loop each element of the list by calling itself and checking
 if the first element matches =x=, once it does, we return =0=. If it doesn't match,
 we keep calling it with the rest of the list. Once we find a valid =0= from one of
-this recursive calls (we check that we didn't get =nil= with =and=), we return =(+ z
-1)=, the =1= counts the number of recursive calls we made until =x= matched the first
+this recursive calls (we check that we didn't get =nil= with =and=), we return
+=(+ z 1)=, the =1= counts the number of recursive calls we made until =x= matched the first
 item of =y=.
 
 This way we can count how many times the function was called recursively until
@@ -442,7 +442,7 @@ c) ~(=x= #'list 1 nil)~
 If we used =funcall=, each extra argument (in this case both =1= and =nil=) would be
 passed to =#'list=, returning a list with the elements: =(1, nil)=. On the other
 hand, =apply= /needs/ a list as it's last argument, and the rest of the arguments
-(in this case =1=) will get appended in front of the list. The finall call to
+(in this case =1=) will get appended in front of the list. The final call to
 =#'list= would be ~(list 1)~.
 
 #+begin_src lisp
