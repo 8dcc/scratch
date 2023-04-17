@@ -54,23 +54,23 @@
        '("Test 2"))                                     ; Argument. Needs list
 ;; Chapter 2.14: Functions as Objects:4 ends here
 
-;; [[file:ansi-common-lisp.org::*First expression.][First expression.:1]]
+;; [[file:ansi-common-lisp.org::*Expression 1][Expression 1:1]]
 (+ (- 5 1) (+ 3 7))
-;; First expression.:1 ends here
+;; Expression 1:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Second expression.][Second expression.:1]]
+;; [[file:ansi-common-lisp.org::*Expression 2][Expression 2:1]]
 (list 1 (+ 2 3))
-;; Second expression.:1 ends here
+;; Expression 2:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Third expression.][Third expression.:1]]
+;; [[file:ansi-common-lisp.org::*Expression 3][Expression 3:1]]
 (if (listp 1)
     (+ 1 2)
     (+ 3 4))
-;; Third expression.:1 ends here
+;; Expression 3:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Fourth expression.][Fourth expression.:1]]
+;; [[file:ansi-common-lisp.org::*Expression 4][Expression 4:1]]
 (list (and (listp 3) t) (+ 1 2))
-;; Fourth expression.:1 ends here
+;; Expression 4:1 ends here
 
 ;; [[file:ansi-common-lisp.org::*Exercise 2][Exercise 2:1]]
 (cons 'a (cons 'b (cons 'c nil)))
@@ -100,7 +100,7 @@
 (greater 5 12)
 ;; Exercise 4:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Function one.][Function one.:1]]
+;; [[file:ansi-common-lisp.org::*Function 1][Function 1:1]]
 (defun enigma (x)
   (and (not (null x))
        (or (null (car x))
@@ -108,9 +108,9 @@
 
 (enigma '(1 2 3))
 (enigma '(1 2 nil 4))
-;; Function one.:1 ends here
+;; Function 1:1 ends here
 
-;; [[file:ansi-common-lisp.org::*Function two.][Function two.:1]]
+;; [[file:ansi-common-lisp.org::*Function 2][Function 2:1]]
 (defun mystery (x y)
   (if (null y)
       nil
@@ -121,7 +121,7 @@
 
 (mystery 4 '(1 2 3))
 (mystery 5 '(1 3 5 7))
-;; Function two.:1 ends here
+;; Function 2:1 ends here
 
 ;; [[file:ansi-common-lisp.org::*Expression 1][Expression 1:1]]
 (car (car (cdr '(a (b c) d))))
