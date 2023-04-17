@@ -223,3 +223,12 @@
 
 (summit '(1 nil 2 nil 3))
 ;; Function 2:2 ends here
+
+;; [[file:ansi-common-lisp.org::*Chapter 3.3: Why lisp has no pointers][Chapter 3.3: Why lisp has no pointers:1]]
+(setf x '(1 2 3 4))
+(setf y x)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+
+(setf x '(10 20 30))    ; y will point to the list from the first setf
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+;; Chapter 3.3: Why lisp has no pointers:1 ends here

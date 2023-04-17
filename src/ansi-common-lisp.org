@@ -599,3 +599,36 @@ will never stop, since we will always be calling the same function with
 
 #+RESULTS:
 : 6
+
+* Chapter 3
+** Chapter 3.3: Why lisp has no pointers
+In lisp, variables point to an address in memory, meaning that if you assign a
+variable =x= to =y=, it will not have a copy of the data inside =y=, but instead will
+point to the same memory address as =y= was pointing to.
+
+If we assign =x= to =y=, and then modify the value of =x=, the value of =y= will *not*
+change, because we would be changing the address that =x= is pointing to, and =y=
+will still point to the same place.
+
+#+begin_src lisp :results output
+(setf x '(1 2 3 4))
+(setf y x)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+
+(setf x '(10 20 30))    ; y will point to the list from the first setf
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+#+end_src
+
+#+RESULTS:
+: x: (1 2 3 4), y: (1 2 3 4), eql: T
+: x: (10 20 30), y: (1 2 3 4), eql: NIL
+
+Example in C:
+
+#+begin_src c
+void* x = &list_0;
+void* y = x;        /* Address of list 0 in y, not contents */
+printf("x: %p, y: %p\n", x, y);
+x = &list_1;        /* y is still &list_0 */
+printf("x: %p, y: %p\n", x, y);
+#+end_src
