@@ -190,3 +190,36 @@
 (app-recur 5 '(1 2 3 4))    ; 0
 (app-recur 1 '(1 8 1 9 1))  ; 3
 ;; Function 2:2 ends here
+
+;; [[file:ansi-common-lisp.org::*Function 1][Function 1:1]]
+(defun summit (lst)
+  (remove nil lst)
+  (apply #'+ lst))
+;; Function 1:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Function 1][Function 1:2]]
+(defun summit (lst)
+  (apply #'+ (remove nil lst)))
+
+(summit '(1 nil 2 nil 3))
+;; Function 1:2 ends here
+
+;; [[file:ansi-common-lisp.org::*Function 2][Function 2:1]]
+(defun summit (lst)
+  (let ((x (car lst)))
+    (if (null x)
+        (summit (cdr lst))
+        (+ x (summit (cdr lst))))))
+;; Function 2:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Function 2][Function 2:2]]
+(defun summit (lst)
+  (if (null lst)
+      0
+      (let ((x (car lst)))
+        (if (null x)
+            (summit (cdr lst))
+            (+ x (summit (cdr lst)))))))
+
+(summit '(1 nil 2 nil 3))
+;; Function 2:2 ends here

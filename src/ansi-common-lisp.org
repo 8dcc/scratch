@@ -542,3 +542,60 @@ If we find a match, add one to the number appearances in the rest of the list.
 
 #+RESULTS:
 : 3
+
+*** Exercise 9
+A friend is trying to write a function that returns the sum of all the non-nil
+elements in a list. He has written two versions of this function, and neither of
+them work. Explain what's wrong with each, and give a correct version:
+
+**** Function 1
+
+#+begin_src lisp
+(defun summit (lst)
+  (remove nil lst)
+  (apply #'+ lst))
+#+end_src
+
+The =remove= function does *not* remove items from a list directly. It returns the
+second argument after removing all appearances of the first one. Instead, we
+should pass the return value of =remove= to =apply=.
+
+#+begin_src lisp
+(defun summit (lst)
+  (apply #'+ (remove nil lst)))
+
+(summit '(1 nil 2 nil 3))
+#+end_src
+
+#+RESULTS:
+: 6
+
+**** Function 2
+
+#+begin_src lisp
+(defun summit (lst)
+  (let ((x (car lst)))
+    (if (null x)
+        (summit (cdr lst))
+        (+ x (summit (cdr lst))))))
+#+end_src
+
+That function is only missing a way of checking the last recursive call
+(checking if we are done with the list). Without this check, the recursive calls
+will never stop, since we will always be calling the same function with
+=(summit (cdr lst))=.
+
+#+begin_src lisp
+(defun summit (lst)
+  (if (null lst)
+      0
+      (let ((x (car lst)))
+        (if (null x)
+            (summit (cdr lst))
+            (+ x (summit (cdr lst)))))))
+
+(summit '(1 nil 2 nil 3))
+#+end_src
+
+#+RESULTS:
+: 6
