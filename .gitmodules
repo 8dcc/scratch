@@ -1,0 +1,3 @@
+[submodule "Codewars"]
+	path = Codewars
+	url = https://github.com/8dcc/codewars-c
