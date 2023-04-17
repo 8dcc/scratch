@@ -227,8 +227,18 @@
 ;; [[file:ansi-common-lisp.org::*Chapter 3.3: Why lisp has no pointers][Chapter 3.3: Why lisp has no pointers:1]]
 (setf x '(1 2 3 4))
 (setf y x)
-(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+(format t "x:  ~A, y: ~A, eql: ~A~%" x y (eql x y))
 
 (setf x '(10 20 30))    ; y will point to the list from the first setf
 (format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
 ;; Chapter 3.3: Why lisp has no pointers:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Chapter 3.3: Why lisp has no pointers][Chapter 3.3: Why lisp has no pointers:3]]
+(setf x '(1 2 3 4))
+(setf y x)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+
+(setf (car x) 0         ; y gets updated as well
+      (third x) 0)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+;; Chapter 3.3: Why lisp has no pointers:3 ends here

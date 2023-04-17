@@ -613,14 +613,14 @@ will still point to the same place.
 #+begin_src lisp :results output
 (setf x '(1 2 3 4))
 (setf y x)
-(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+(format t "x:  ~A, y: ~A, eql: ~A~%" x y (eql x y))
 
 (setf x '(10 20 30))    ; y will point to the list from the first setf
 (format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
 #+end_src
 
 #+RESULTS:
-: x: (1 2 3 4), y: (1 2 3 4), eql: T
+: x:  (1 2 3 4), y: (1 2 3 4), eql: T
 : x: (10 20 30), y: (1 2 3 4), eql: NIL
 
 Example in C:
@@ -632,3 +632,20 @@ printf("x: %p, y: %p\n", x, y);
 x = &list_1;        /* y is still &list_0 */
 printf("x: %p, y: %p\n", x, y);
 #+end_src
+
+However, changing an *element* of =x= edits its value in memory (obviously), and
+because =x= and =y= point to the same location, both will display the new values.
+
+#+begin_src lisp :results output
+(setf x '(1 2 3 4))
+(setf y x)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+
+(setf (car x) 0         ; y gets updated as well
+      (third x) 0)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+#+end_src
+
+#+RESULTS:
+: x: (1 2 3 4), y: (1 2 3 4), eql: T
+: x: (0 2 0 4), y: (0 2 0 4), eql: T
