@@ -1,12 +1,14 @@
 #+title: ANSI Common Lisp - Chapter 2
-#+options: toc:2
+#+options: toc:nil
 #+property: header-args:lisp :tangle acl-chapter2.lisp :comments link
 #+auto_tangle: t
 #+author: 8dcc
 
+[[file:acl-chapter3.org][Next Chapter]]
+
 -----
 
-[[file:acl-chapter3.org][Next Chapter]]
+#+TOC: headlines 2
 
 * Chapter 2.10: Variables
 The =let= macro is used to create local variables. It takes 2 arguments, the first

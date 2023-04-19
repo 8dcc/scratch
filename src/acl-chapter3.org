@@ -1,12 +1,14 @@
 #+title: ANSI Common Lisp - Chapter 3
-#+options: toc:2
+#+options: toc:nil
 #+property: header-args:lisp :tangle acl-chapter3.lisp :comments link
 #+auto_tangle: t
 #+author: 8dcc
 
+[[file:acl-chapter2.org][Previous Chapter]]
+
 -----
 
-[[file:acl-chapter2.org][Previous Chapter]]
+#+TOC: headlines 2
 
 * Chapter 3.3: Why lisp has no pointers
 In lisp, variables point to an address in memory, meaning that if you assign a
