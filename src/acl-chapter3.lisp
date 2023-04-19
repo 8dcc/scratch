@@ -103,6 +103,6 @@
 (defun new-union (x y)
   (append x (remove-repeated x y)))
 
-;; (6 5 4 0 4 5 6)
-(new-union '(a b c) '(b a d ))
+;; (a b c d)
+(new-union '(a b c) '(b a d))
 ;; Exercise 2:1 ends here

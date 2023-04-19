@@ -197,7 +197,6 @@ Explanation:
    that to the front of the rest of the decompressed list.
 
 ** Both combined
-
 After loading the =compress= and =decompress= functions, you can try:
 
 #+begin_src lisp
@@ -208,6 +207,7 @@ After loading the =compress= and =decompress= functions, you can try:
 
 #+RESULTS:
 : T
+
 * Exercises
 ** Exercise 1
 Show the following lists in box notation:
@@ -317,8 +317,8 @@ original lists:
 (defun new-union (x y)
   (append x (remove-repeated x y)))
 
-;; (6 5 4 0 4 5 6)
-(new-union '(a b c) '(b a d ))
+;; (a b c d)
+(new-union '(a b c) '(b a d))
 #+end_src
 
 #+RESULTS:
