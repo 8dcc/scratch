@@ -1,0 +1,291 @@
+#+title: ANSI Common Lisp - Chapter 3
+#+property: header-args:lisp :tangle chapter3.lisp :comments link
+#+auto_tangle: t
+#+author: 8dcc
+
+* Chapter 3.3: Why lisp has no pointers
+In lisp, variables point to an address in memory, meaning that if you assign a
+variable =x= to =y=, it will not have a copy of the data inside =y=, but instead will
+point to the same memory address as =y= was pointing to.
+
+If we assign =x= to =y=, and then modify the value of =x=, the value of =y= will *not*
+change, because we would be changing the address that =x= is pointing to, and =y=
+will still point to the same place.
+
+#+begin_src lisp :results output
+(setf x '(1 2 3 4))
+(setf y x)
+(format t "x:  ~A, y: ~A, eql: ~A~%" x y (eql x y))
+
+(setf x '(10 20 30))    ; y will point to the list from the first setf
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+#+end_src
+
+#+RESULTS:
+: x:  (1 2 3 4), y: (1 2 3 4), eql: T
+: x: (10 20 30), y: (1 2 3 4), eql: NIL
+
+Example in C:
+
+#+begin_src c
+void* x = &list_0;
+void* y = x;        /* Address of list 0 in y, not contents */
+printf("x: %p, y: %p\n", x, y);
+x = &list_1;        /* y is still &list_0 */
+printf("x: %p, y: %p\n", x, y);
+#+end_src
+
+However, changing an *element* of =x= edits its value in memory (obviously), and
+because =x= and =y= point to the same location, both will display the new values.
+
+#+begin_src lisp :results output
+(setf x '(1 2 3 4))
+(setf y x)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+
+(setf (car x) 0         ; y gets updated as well
+      (third x) 0)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+#+end_src
+
+#+RESULTS:
+: x: (1 2 3 4), y: (1 2 3 4), eql: T
+: x: (0 2 0 4), y: (0 2 0 4), eql: T
+
+* Chapter 3.5: Compression
+** Compress
+An example of a simple list compression algorithm. The compress function first
+checks if the argument is a list, and it only compresses it if it is one.
+
+#+begin_src lisp
+(defun compress (x)                                             ; (7)
+  (if (consp x)
+      (compress-list (car x) 1 (cdr x))
+      x))
+
+(defun compress-list (last-item last-n rest)                    ; (2)
+  (if (null rest)
+      (list (n-items last-item last-n))                         ; (3)
+      (let ((next-item (car rest)))
+        (if (= last-item next-item)                             ; (4)
+            (compress-list last-item (+ last-n 1) (cdr rest))   ; (5)
+            (cons (n-items last-item last-n)                    ; (6)
+                  (compress-list next-item 1 (cdr rest)))))))
+
+
+(defun n-items (item n)                                         ; (1)
+  (if (> n 1)
+      (list n item)
+      item))
+
+(compress '(1 0 0 1 1 0 1 1 1 1 0 0 1 0 1 1 0))
+#+end_src
+
+#+RESULTS:
+: (1 (2 0) (2 1) 0 (4 1) (2 0) 1 0 (2 1) 0)
+
+Explanation:
+1. The =n-items= function is used to group numbers in a list. If there is one
+   item, it returns the item. If there is more than 1 item, returns a list with
+   the amount of items (=n=) and the item value (=item=).
+
+2. The =compress-list= function will compress a list consisting of =(last-item +
+   rest)=. The function also takes another parameter, =last-n=, used to count the
+   amount of consecutive =last-item='s that appeared on the list until this call.
+
+3. The first thing the function does is checking if we are done with the list.
+   If we are, its the last recursive call, and we just return a list with the
+   last  amount of consecutive numbers we found.
+
+   For example in the last recursive call for the list =(1 0 1 0 0 0)=, would be
+   =(0 3 nil)= because the last item was =0= and it appeared =3= times in a row. This
+   last recursive call would return =(3 0)=: A compressed list of 3 zeros.
+
+4. Check if the =next-item= in the list is the same as the =last-item=, meaning we
+   got one more in a row.
+
+5. If this the same, we just want to keep compressing the rest of the list, but
+   keeping track of 1 more repetition.
+
+6. If it's not the same, meaning we got a different number than the last, we
+   want to call =n-items= to get the compressed list for the last items (or just
+   the item if it was not repeated, see 1).
+
+7. The =compress= function will return either the =compressed-list=, if the item is
+   a list, or just the item otherwise (=x=).
+
+   Keep in mind that the format for =compressed-list= will need the first item
+   (=car=), times it appeared in a row (because its the first one, =1=) and the rest
+   of the list (=cdr=)
+
+** Decompress
+The function for decompressing would be the following:
+
+#+begin_src lisp
+(defun decompress (lst)
+  (if (null lst)                                    ; (2)
+      nil
+      (let ((cur-item (car lst))                    ; (3)
+            (rest (decompress (cdr lst))))
+        (if (consp cur-item)                        ; (4)
+            (append (apply #'expand-items cur-item) ; (5)
+                    rest)
+            (cons cur-item rest)))))                ; (6)
+
+(defun expand-items (n item)                        ; (1)
+  (if (zerop n)
+      nil
+      (cons item (expand-items (- n 1) item))))
+
+(decompress '(10 20 (4 7) 40 (3 5) 60))
+(decompress '(1 (2 0) (2 1) 0 (4 1) (2 0) 1 0 (2 1) 0))
+#+end_src
+
+#+RESULTS:
+| 1 | 0 | 0 | 1 | 1 | 0 | 1 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | 0 |
+
+Explanation:
+1. The =expand-items= function is used to return a list of length =n= filled with
+   =item=. It is used to expand the compressed pairs generated by the previous
+   =n-items= function.
+
+   For example: =(3 1)= as parameters means generate a list of =3= items filled with
+   the atom =1=: =(1 1 1)=.
+
+   This function already exists in lisp and its called ~make-list~, but it uses
+   /keyword/ arguments.
+
+2. The first thing the =decompress= function does is check if the list is empty.
+   If this is true, we are in the last recursive call and we are done, so we
+   return =nil=.
+
+3. Next it saves the first item in the list in a local variable called =cur-item=
+   and the result of decompressing the rest of the list in another local
+   variable called =rest=.
+
+4. If the current item in the list is a cons, it means that we found a
+   compressed pair. For example:
+
+   #+begin_src
+   (10 20 (4 7) 40)
+          ^^^^^
+   (10 20 7 7 7 7 40)
+   #+end_src
+
+5. If it is a cons, append the expanded pair to the front of the =rest= of the
+   decompressed list. We use apply with =cur-item= because apply will directly
+   convert the argument *list* to individual arguments, which is what we want now
+   for =expand-items=. We don't want to call =(expand-items (4 7))=, instead we want
+   =(expand-items 4 7)=.
+
+   This could also be written as:
+
+   #+begin_src lisp
+(append (expand-items (car rest)
+                      (second rest))
+        rest)
+   #+end_src
+
+6. If the item in the list is not cons, for example =10= or =20=, we just append
+   that to the front of the rest of the decompressed list.
+
+** Both combined
+
+After loading the =compress= and =decompress= functions, you can try:
+
+#+begin_src lisp
+(let ((test '(1 0 0 1 1 0 1 1 1 1 0 0 1 0 1 1 0)))
+  (equal test
+         (decompress (compress test))))
+#+end_src
+
+#+RESULTS:
+: T
+* Exercises
+** Exercise 1
+*** Expression 1
+#+begin_src lisp
+(a b (e d))
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+   +---+---+
+| a | ----->| b | ----->| | |nil|
++---+---+   +---+---+   +-|-+---+
+                          |
+                          v
+                         +---+---+   +---+---+
+                         | e | ----->| d |nil|
+                         +---+---+   +---+---+
+#+end_src
+
+*** Expression 2
+#+begin_src lisp
+(a (b (c (d))))
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| a | ----->| | |nil|
++---+---+   +-|-+---+
+              |
+              v
+             +---+---+   +---+---+
+             | b | ----->| | |nil|
+             +---+---+   +-|-+---+
+                           |
+                           v
+                         +---+---+   +---+---+
+                         | c | ----->| | |nil|
+                         +---+---+   +-|-+---+
+                                       |
+                                       v
+                                     +---+---+
+                                     | d |nil|
+                                     +---+---+
+#+end_src
+
+*** Expression 3
+#+begin_src lisp
+(((a b) c) d)
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| | | ----->| d |nil|
++-|-+---+   +---+---+
+  |
+  v
++---+---+   +---+---+
+| | | ----->| c |nil|
++-|-+---+   +---+---+
+  |
+  v
++---+---+   +---+---+
+| a | ----->| b |nil|
++---+---+   +---+---+
+#+end_src
+
+*** Expression 4
+#+begin_src lisp
+(a (b . c) . d)
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| a | ----->| | | d |
++---+---+   +-|-+---+
+              |
+              v
+            +---+---+
+            | b | c |
+            +---+---+
+#+end_src
