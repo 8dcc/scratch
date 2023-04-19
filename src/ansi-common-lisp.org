@@ -799,3 +799,91 @@ After loading the =compress= and =decompress= functions, you can try:
 
 #+RESULTS:
 : T
+** Exercises
+*** Exercise 1
+**** Expression 1
+#+begin_src lisp
+(a b (e d))
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+   +---+---+
+| a | ----->| b | ----->| | |nil|
++---+---+   +---+---+   +-|-+---+
+                          |
+                          v
+                         +---+---+   +---+---+
+                         | e | ----->| d |nil|
+                         +---+---+   +---+---+
+#+end_src
+
+**** Expression 2
+#+begin_src lisp
+(a (b (c (d))))
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| a | ----->| | |nil|
++---+---+   +-|-+---+
+              |
+              v
+             +---+---+   +---+---+
+             | b | ----->| | |nil|
+             +---+---+   +-|-+---+
+                           |
+                           v
+                         +---+---+   +---+---+
+                         | c | ----->| | |nil|
+                         +---+---+   +-|-+---+
+                                       |
+                                       v
+                                     +---+---+
+                                     | d |nil|
+                                     +---+---+
+#+end_src
+
+**** Expression 3
+#+begin_src lisp
+(((a b) c) d)
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| | | ----->| d |nil|
++-|-+---+   +---+---+
+  |
+  v
++---+---+   +---+---+
+| | | ----->| c |nil|
++-|-+---+   +---+---+
+  |
+  v
++---+---+   +---+---+
+| a | ----->| b |nil|
++---+---+   +---+---+
+#+end_src
+
+**** Expression 4
+#+begin_src lisp
+(a (b . c) . d)
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| a | ----->| | | d |
++---+---+   +-|-+---+
+              |
+              v
+            +---+---+
+            | b | c |
+            +---+---+
+#+end_src

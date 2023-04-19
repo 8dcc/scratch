@@ -298,3 +298,19 @@
   (equal test
          (decompress (compress test))))
 ;; Both combined:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Expression 1][Expression 1:1]]
+(a b (e d))
+;; Expression 1:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Expression 2][Expression 2:1]]
+(a (b (c (d))))
+;; Expression 2:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Expression 3][Expression 3:1]]
+(((a b) c) d)
+;; Expression 3:1 ends here
+
+;; [[file:ansi-common-lisp.org::*Expression 4][Expression 4:1]]
+(a (b . c) . d)
+;; Expression 4:1 ends here
