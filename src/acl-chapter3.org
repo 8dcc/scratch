@@ -96,9 +96,10 @@ Explanation:
    item, it returns the item. If there is more than 1 item, returns a list with
    the amount of items (=n=) and the item value (=item=).
 
-2. The =compress-list= function will compress a list consisting of =(last-item +
-   rest)=. The function also takes another parameter, =last-n=, used to count the
-   amount of consecutive =last-item='s that appeared on the list until this call.
+2. The =compress-list= function will compress a list consisting of
+   =(last-item + rest)=. The function also takes another parameter, =last-n=, used
+   to count the amount of consecutive =last-item='s that appeared on the list
+   until this call.
 
 3. The first thing the function does is checking if we are done with the list.
    If we are, its the last recursive call, and we just return a list with the
