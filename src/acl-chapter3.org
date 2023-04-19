@@ -324,3 +324,63 @@ original lists:
 
 #+RESULTS:
 | A | B | C | D |
+
+** Exercise 3
+Define a function that takes a list and returns a list indicating the number of
+times each (=eql=) element appears, sorted from most common element to least
+common:
+
+#+begin_src lisp
+(defun occurrences-unsorted (lst)       ; (1)
+  (if (null lst)
+      nil
+      (let ((first (car lst)))
+        (cons (list first (count first lst))
+              (occurrences-unordered (remove first lst))))))
+
+;; ((A 2) (B 1) (C 3) (D 1))
+(occurrences-unordered '(a b c c d c a))
+
+(defun occurrences (lst)                ; (2)
+  (sort (occurrences-unordered lst)
+        (lambda (a b)
+          (> (second a)
+             (second b)))))
+
+;; ((C 3) (A 2) (B 1) (D 1))
+(occurrences '(a b c c d c a))
+#+end_src
+
+#+RESULTS:
+| C | 3 |
+| A | 2 |
+| B | 1 |
+| D | 1 |
+
+Explanation:
+1. The =occurrences-unsorted= function is used to count the items of a list, and
+   return a list of item-amount pairs. For example the list =(a b c b)= would
+   return =((a 1) (b 2) (c 1))=. (Remember this is not sorted by frequency yet,
+   so they will be counted and returned by order of appearance on the original
+   list).
+
+   This function stores the =first= element of the list (the one we want to check
+   in the current call) and creates a /pair/ consisting of the item itself and its
+   number of appearances in the list.
+
+   #+begin_comment
+   TODO: Does this create a pair like exercise 1.4?
+   #+end_comment
+
+   This new pair will be joined (using =cons=) to the rest of the item-amount
+   pairs from the list *after removing* the items we just counted.
+
+2. The =occurrences= function will return the list from =occurrences-unsorted=
+   after sorting it. To sort this list we will use the =sort= function, which
+   takes 2 parameters, the list to sort (return valued from unsorted function)
+   and the function for sorting. This function needs to accept 2 parameters,
+   like for example =<=.
+
+   In our case, however, because it is not a /plain/ list, we need to use our own
+   /lambda/ function for comparing the *second* element of the inner lists (which is
+   the amount of each item).

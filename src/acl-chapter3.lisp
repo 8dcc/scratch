@@ -106,3 +106,24 @@
 ;; (a b c d)
 (new-union '(a b c) '(b a d))
 ;; Exercise 2:1 ends here
+
+;; [[file:acl-chapter3.org::*Exercise 3][Exercise 3:1]]
+(defun occurrences-unsorted (lst)       ; (1)
+  (if (null lst)
+      nil
+      (let ((first (car lst)))
+        (cons (list first (count first lst))
+              (occurrences-unordered (remove first lst))))))
+
+;; ((A 2) (B 1) (C 3) (D 1))
+(occurrences-unordered '(a b c c d c a))
+
+(defun occurrences (lst)                ; (2)
+  (sort (occurrences-unordered lst)
+        (lambda (a b)
+          (> (second a)
+             (second b)))))
+
+;; ((C 3) (A 2) (B 1) (D 1))
+(occurrences '(a b c c d c a))
+;; Exercise 3:1 ends here
