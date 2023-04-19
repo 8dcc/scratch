@@ -1,4 +1,5 @@
 #+title: ANSI Common Lisp - Chapter 2
+#+options: toc:2
 #+property: header-args:lisp :tangle acl-chapter2.lisp :comments link
 #+auto_tangle: t
 #+author: 8dcc
