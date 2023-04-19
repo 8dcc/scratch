@@ -210,6 +210,8 @@ After loading the =compress= and =decompress= functions, you can try:
 : T
 * Exercises
 ** Exercise 1
+Show the following lists in box notation:
+
 *** Expression 1
 #+begin_src lisp
 (a b (e d))
@@ -296,3 +298,28 @@ Box notation:
             | b | c |
             +---+---+
 #+end_src
+
+** Exercise 2
+Write a version of union that preserves the order of the elements in the
+original lists:
+
+#+begin_src lisp
+(defun remove-repeated (items lst)
+  (if (null items)
+      lst
+      (let ((cleaned (remove (car items) lst)))
+        (remove-repeated (cdr items) cleaned))))
+
+;; (6 5 4 0 4 5 6)
+(remove-repeated '(1 2 3)
+                 '(6 5 4 3 2 1 0 1 2 3 4 5 6))
+
+(defun new-union (x y)
+  (append x (remove-repeated x y)))
+
+;; (6 5 4 0 4 5 6)
+(new-union '(a b c) '(b a d ))
+#+end_src
+
+#+RESULTS:
+| A | B | C | D |

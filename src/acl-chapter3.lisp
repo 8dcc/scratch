@@ -88,3 +88,21 @@
 ;; [[file:acl-chapter3.org::*Expression 4][Expression 4:1]]
 (a (b . c) . d)
 ;; Expression 4:1 ends here
+
+;; [[file:acl-chapter3.org::*Exercise 2][Exercise 2:1]]
+(defun remove-repeated (items lst)
+  (if (null items)
+      lst
+      (let ((cleaned (remove (car items) lst)))
+        (remove-repeated (cdr items) cleaned))))
+
+;; (6 5 4 0 4 5 6)
+(remove-repeated '(1 2 3)
+                 '(6 5 4 3 2 1 0 1 2 3 4 5 6))
+
+(defun new-union (x y)
+  (append x (remove-repeated x y)))
+
+;; (6 5 4 0 4 5 6)
+(new-union '(a b c) '(b a d ))
+;; Exercise 2:1 ends here
