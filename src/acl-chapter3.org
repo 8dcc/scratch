@@ -5,7 +5,7 @@
 
 -----
 
-[[file:acl-chapter2.org][Next Chapter]]
+[[file:acl-chapter2.org][Previous Chapter]]
 
 * Chapter 3.3: Why lisp has no pointers
 In lisp, variables point to an address in memory, meaning that if you assign a
