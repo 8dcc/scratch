@@ -73,6 +73,40 @@
          (decompress (compress test))))
 ;; Both combined:1 ends here
 
+;; [[file:acl-chapter3.org::*Chapter 3.15: Shortest Path][Chapter 3.15: Shortest Path:1]]
+(defun shortest-path (start end net)                    ; (8)
+  (get-path end (list (list start)) net))
+
+(defun get-path (end queue net)                         ; (2)
+  (if (null queue)
+      nil
+      (let ((path (car queue)))                         ; (3)
+        (let ((node (car path)))                        ; (4)
+          (if (eql node end)                            ; (5)
+              (reverse path)                            ; (6)
+              (get-path end
+                   (append (cdr queue)                  ; (7)
+                           (new-paths path node net))
+                   net))))))
+
+(defun new-paths (path node net)                        ; (1)
+  (mapcar #'(lambda (x) (cons x path))
+          (cdr (assoc node net))))
+
+;; Example network. Each list consists on an element and its adjacent nodes.
+;; See figure 3.13
+(setf network '((a b c) (b c) (c d)))
+
+;; ((b a) (c a))
+(new-paths '(a) 'a network)
+
+;; (a c)
+(shortest-path 'a 'c network)
+
+;; (a c d)
+(shortest-path 'a 'd network)
+;; Chapter 3.15: Shortest Path:1 ends here
+
 ;; [[file:acl-chapter3.org::*Expression 1][Expression 1:1]]
 (a b (e d))
 ;; Expression 1:1 ends here

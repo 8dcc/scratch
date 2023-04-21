@@ -209,6 +209,107 @@ After loading the =compress= and =decompress= functions, you can try:
 #+RESULTS:
 : T
 
+* Chapter 3.15: Shortest Path
+
+[[https://user-images.githubusercontent.com/29655971/233706749-21da9696-fa9a-4f28-bbb4-61f93bc3dac7.png]]
+
+#+begin_src lisp
+(defun shortest-path (start end net)                    ; (8)
+  (get-path end (list (list start)) net))
+
+(defun get-path (end queue net)                         ; (2)
+  (if (null queue)
+      nil
+      (let ((path (car queue)))                         ; (3)
+        (let ((node (car path)))                        ; (4)
+          (if (eql node end)                            ; (5)
+              (reverse path)                            ; (6)
+              (get-path end
+                   (append (cdr queue)                  ; (7)
+                           (new-paths path node net))
+                   net))))))
+
+(defun new-paths (path node net)                        ; (1)
+  (mapcar #'(lambda (x) (cons x path))
+          (cdr (assoc node net))))
+
+;; Example network. Each list consists on an element and its adjacent nodes.
+;; See figure 3.13
+(setf network '((a b c) (b c) (c d)))
+
+;; ((b a) (c a))
+(new-paths '(a) 'a network)
+
+;; (a c)
+(shortest-path 'a 'c network)
+
+;; (a c d)
+(shortest-path 'a 'd network)
+#+end_src
+
+#+RESULTS:
+| A | C | D |
+
+Explanation:
+1. The =new-paths= function will map each adjacent element in the network relative
+   to a specific node and pass it to a lambda that expands the current path.
+
+   What this means is that we will pass a path like =(a)= and it will append to
+   the front the possible paths in the network starting from that node. In this
+   case: =((b a) (c a)).=
+
+2. The =get-path= function will search for all the paths in a /network/ from a
+   specific /queue/ until it finds the /end/ node. First thing it does is checking
+   if the queue is empty, so we are done.
+
+3. Next it declares a local variable called =path=, that contains the current path
+   in the queue. Each element in the queue will be a list of paths we have
+   traveled. For example: =((b a) (c a))=
+
+   So path would be the first element on this list, the one we want to check in
+   the current call (In this case =(b a)=). See *7*.
+
+4. We also create another local variable called =node=, that contains the first
+   element of =path=. In the previous example: =b=.
+
+   We need to use a nested =let= because common lisp doesn't support
+   initialization of an item with a previous one in the variable list.
+
+5. We check if =node= (meaning the last node of the last path we traversed from
+   the /queue/) is the =end= node, meaning we found what we were looking for and we
+   are done.
+
+6. If we found the end node, we want to return the *reversed* path for visibility.
+   Keep in mind we add the new nodes to the front of each list of the queue (See
+   *1*).
+
+7. If we didn't find it, call the function after updating the queue. To update
+   the queue list we will calculate the new paths using the =new-paths= function
+   (*1*) and we will move those new paths to the *back* of the queue by appending
+   the rest of the list to the front.
+
+   For example with the queue =((b a) (c a))=, it will check if =b= is the end node
+   (*5*), and because its not it will get the =new-paths= from =b=, in this case =c=,
+   returning the list =(c b a)=. This list returned by =new-paths= will be moved to
+   the *back* of the =get-path= queue (*7*), and the function will get called again
+   with the updated queue =(c a) (c b a)=.
+
+8. The =shortest-path= function will create an initial queue for =get-path=
+   based on the first item, and return it.
+
+
+Example of recursive calls to =get-path=:
+#+begin_src conf
+((A))
+((B A) (C A))           # new-paths from A
+((C A) (C B A))         # new-paths from (b a), move to back
+((C B A) (D C A))       # new-paths from (c a), move to back
+((D C A) (D C B A))     # new-paths from (c b a), move to back
+
+# Compare (car (car queue)) with end, it matches so return reversed:
+(A C D)
+#+end_src
+
 * Exercises
 ** Exercise 1
 Show the following lists in box notation:
