@@ -161,3 +161,7 @@
 ;; ((C 3) (A 2) (B 1) (D 1))
 (occurrences '(a b c c d c a))
 ;; Exercise 3:1 ends here
+
+;; [[file:acl-chapter3.org::*Exercise 4][Exercise 4:1]]
+(member '(a) '((a) (b)) :test #'equal)
+;; Exercise 4:1 ends here

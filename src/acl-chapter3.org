@@ -485,3 +485,25 @@ Explanation:
    In our case, however, because it is not a /plain/ list, we need to use our own
    /lambda/ function for comparing the *second* element of the inner lists (which is
    the amount of each item).
+
+** Exercise 4
+Why does =(member '(a) '((a) (b)))= return =nil=?
+
+The =member= function, by default, uses the =equ= function to compare the elements.
+The =equ= function compares if 2 values are *exactly* the same, meaning they have
+the same address in memory. In this case the first parameter we are passing,
+='(a)= is not in the same address as the =(a)= in the second list. Instead of =equ=,
+we can tell the =member= function to use another function that compares against
+contents, like =equal=. To do this we use the /keyword/ test, and pass the function
+object of =equal=:
+
+#+begin_src lisp
+(member '(a) '((a) (b)) :test #'equal)
+#+end_src
+
+#+RESULTS:
+| A |
+| B |
+
+Note: Keep in mind that member returns the part of the list starting with the
+element it was looking for.
