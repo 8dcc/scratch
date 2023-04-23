@@ -507,3 +507,61 @@ object of =equal=:
 
 Note: Keep in mind that member returns the part of the list starting with the
 element it was looking for.
+
+** Exercise 5
+Suppose the function =pos+= takes a list and returns a list of each element plus
+its position.
+
+*** Recursion
+
+#+begin_src lisp
+(defun add-1 (lst)                          ; (1)
+  (if (null lst)
+      nil
+      (cons (+ (car lst) 1)
+            (add-1 (cdr lst)))))
+
+(defun pos+ (lst)
+  (if (null lst)
+      nil
+      (let ((rest (pos+ (cdr lst))))        ; (2)
+        (cons (car lst) (add-1 rest)))))    ; (3)
+
+(pos+ '(7 5 1 4))
+#+end_src
+
+#+RESULTS:
+| 7 | 6 | 3 | 7 |
+
+Explanation:
+1. The =add-1= function adds 1 to all the elements of a list.
+
+   +We use a slight amount of =mapcar=.+ We append the first element of the list
+   plus 1 to the returned value of calling =add-1= with the rest of the list.
+
+2. We store the output of a call to this =pos+= function with the =cdr= of the
+   original list in a local variable called =rest=.
+
+3. We append the first element of the list to the returned value of calling
+   =add-1= with the =rest= local variable.
+
+Example:
+| Call # | Arguments | Return    |
+|--------+-----------+-----------|
+|      0 | =(7 5 1 4)= | =(7 6 3 7)= |
+|      1 | =(  5 1 4)= | =(  5 2 6)= |
+|      2 | =(    1 4)= | =(    1 5)= |
+|      3 | =(      4)= | =(      4)= |
+|      4 | =nil=       | =nil=       |
+
+*** Iteration
+
+#+begin_src lisp
+
+#+end_src
+
+*** Mapcar
+
+#+begin_src lisp
+
+#+end_src

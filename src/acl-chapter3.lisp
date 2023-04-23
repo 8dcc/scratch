@@ -165,3 +165,27 @@
 ;; [[file:acl-chapter3.org::*Exercise 4][Exercise 4:1]]
 (member '(a) '((a) (b)) :test #'equal)
 ;; Exercise 4:1 ends here
+
+;; [[file:acl-chapter3.org::*Recursion][Recursion:1]]
+(defun add-1 (lst)                          ; (1)
+  (if (null lst)
+      nil
+      (cons (+ (car lst) 1)
+            (add-1 (cdr lst)))))
+
+(defun pos+ (lst)
+  (if (null lst)
+      nil
+      (let ((rest (pos+ (cdr lst))))        ; (2)
+        (cons (car lst) (add-1 rest)))))    ; (3)
+
+(pos+ '(7 5 1 4))
+;; Recursion:1 ends here
+
+;; [[file:acl-chapter3.org::*Iteration][Iteration:1]]
+
+;; Iteration:1 ends here
+
+;; [[file:acl-chapter3.org::*Mapcar][Mapcar:1]]
+
+;; Mapcar:1 ends here
