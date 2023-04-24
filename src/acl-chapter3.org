@@ -558,10 +558,11 @@ Example:
 
 #+begin_src lisp
 (defun pos+ (lst)
-  (do ((i 0 (+ i 1)))               ; (1)
-      ((>= i (length lst)) lst)     ; (3)
-    (setf (nth i lst)               ; (2)
-          (+ (nth i lst) i))))
+  (let ((lstlen (length lst)))      ; (1)
+    (do ((i 0 (+ i 1)))             ; (2)
+        ((>= i lstlen) lst)         ; (4)
+      (setf (nth i lst)             ; (3)
+            (+ (nth i lst) i)))))
 
 (pos+ '(7 5 1 4))
 #+end_src
@@ -570,11 +571,11 @@ Example:
 | 7 | 6 | 3 | 7 |
 
 Explanation:
-1. We iterate from 0 to the length of the list increasing =i= every iteration.
-2. Each iteration we add =i= to the value on the list at index =i=.
-3. Once we are done, we return the list. Might be a good idea to save the length
-   of the list in a local variable instead of using it directly as an exit
-   condition (I am not sure if =length=) gets called every iteration.
+1. We store the length of the list in a local variable called =lstlen=.
+2. We iterate from 0 to the length of the list increasing =i= every iteration.
+3. Each iteration we add =i= to the value on the list at index =i=.
+4. Once we are done, we return the list. +I am not sure if+ =length= would get
+   called every iteration if we used it here as exit condition.
 
 Example:
 | Iteration | List      | Operation  |

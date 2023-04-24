@@ -184,10 +184,11 @@
 
 ;; [[file:acl-chapter3.org::*Iteration][Iteration:1]]
 (defun pos+ (lst)
-  (do ((i 0 (+ i 1)))               ; (1)
-      ((>= i (length lst)) lst)     ; (3)
-    (setf (nth i lst)               ; (2)
-          (+ (nth i lst) i))))
+  (let ((lstlen (length lst)))      ; (1)
+    (do ((i 0 (+ i 1)))             ; (2)
+        ((>= i lstlen) lst)         ; (4)
+      (setf (nth i lst)             ; (3)
+            (+ (nth i lst) i)))))
 
 (pos+ '(7 5 1 4))
 ;; Iteration:1 ends here
