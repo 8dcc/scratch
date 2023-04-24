@@ -557,8 +557,32 @@ Example:
 *** Iteration
 
 #+begin_src lisp
+(defun pos+ (lst)
+  (do ((i 0 (+ i 1)))               ; (1)
+      ((>= i (length lst)) lst)     ; (3)
+    (setf (nth i lst)               ; (2)
+          (+ (nth i lst) i))))
 
+(pos+ '(7 5 1 4))
 #+end_src
+
+#+RESULTS:
+| 7 | 6 | 3 | 7 |
+
+Explanation:
+1. We iterate from 0 to the length of the list increasing =i= every iteration.
+2. Each iteration we add =i= to the value on the list at index =i=.
+3. Once we are done, we return the list. Might be a good idea to save the length
+   of the list in a local variable instead of using it directly as an exit
+   condition (I am not sure if =length=) gets called every iteration.
+
+Example:
+| Iteration | List      | Operation  |
+|-----------+-----------+------------|
+|         0 | =(7 5 1 4)= | Add 0 to 7 |
+|         1 | =(7 6 1 4)= | Add 1 to 5 |
+|         2 | =(7 6 3 4)= | Add 2 to 1 |
+|         3 | =(7 6 3 7)= | Add 3 to 5 |
 
 *** Mapcar
 
