@@ -194,5 +194,12 @@
 ;; Iteration:1 ends here
 
 ;; [[file:acl-chapter3.org::*Mapcar][Mapcar:1]]
+(defun pos+ (lst)
+  (let ((i -1))                     ; (1)
+    (mapcar #'(lambda (x)
+                (setf i (+ i 1))    ; (2)
+                (+ x i))            ; (3)
+            lst)))
 
+(pos+ '(7 5 1 4))
 ;; Mapcar:1 ends here

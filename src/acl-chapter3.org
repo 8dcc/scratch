@@ -588,5 +588,31 @@ Example:
 *** Mapcar
 
 #+begin_src lisp
+(defun pos+ (lst)
+  (let ((i -1))                     ; (1)
+    (mapcar #'(lambda (x)
+                (setf i (+ i 1))    ; (2)
+                (+ x i))            ; (3)
+            lst)))
 
+(pos+ '(7 5 1 4))
 #+end_src
+
+#+RESULTS:
+| 7 | 6 | 3 | 7 |
+
+Explanation:
+1. We create a local variable =i= initialized as =-1=, because we will increment one
+   each call to the =mapcar= lambda (See *2*), and we want to add 0 to the first
+   element, not 1.
+
+2. Inside the lambda for =mapcar=, we first add 1 to the =i= local variable and then
+   add that value to =x= (the lambda parameter). We need to add one first because
+   if we did it after setting =x=, the value of the =setf= would be returned by the
+   lambda.
+
+   Note: Since =setf= returns the new value we are setting, we could inline this
+   inside the next call to =+=. E.g. =(+ x (setf i (+ i 1)))=.
+
+3. We add the =i= variable to the lambda parameter. In this case, because of
+   =mapcar=, =x= will be each element of =lst=.
