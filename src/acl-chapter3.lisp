@@ -203,3 +203,28 @@
 
 (pos+ '(7 5 1 4))
 ;; Mapcar:1 ends here
+
+;; [[file:acl-chapter3.org::*Section A][Section A:1]]
+(defun my-cons (x y)
+  (let ((pair '(nil . nil)))
+    (setf (car pair) y
+          (cdr pair) x)
+    pair))
+
+;; (b . a)
+(my-cons 'a 'b)
+
+;; Not working
+;;(my-cons (my-cons nil 'b) 'a)
+;; Section A:1 ends here
+
+;; [[file:acl-chapter3.org::*Section B][Section B:1]]
+(defun my-list (x y z)                  ; (1)
+  (cons z (cons y (cons x nil))))       ; (2)
+
+(my-list 'a 'b 'c)
+;; Section B:1 ends here
+
+;; [[file:acl-chapter3.org::*Section C][Section C:1]]
+
+;; Section C:1 ends here

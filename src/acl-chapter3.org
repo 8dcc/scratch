@@ -616,3 +616,52 @@ Explanation:
 
 3. We add the =i= variable to the lambda parameter. In this case, because of
    =mapcar=, =x= will be each element of =lst=.
+
+** Exercise 6
+After years of deliberation, a government commission has decided that lists
+should be represented by using the =cdr= to point to the first element and the =car=
+to point to the rest of the list. Define the government versions of the
+following functions:
+
+*** Section A
+
+#+begin_src lisp
+(defun my-cons (x y)
+  (let ((pair '(nil . nil)))
+    (setf (car pair) y
+          (cdr pair) x)
+    pair))
+
+;; (b . a)
+(my-cons 'a 'b)
+
+;; Not working
+;;(my-cons (my-cons nil 'b) 'a)
+#+end_src
+
+#+RESULTS:
+: (B . A)
+
+*** Section B
+
+#+begin_src lisp
+(defun my-list (x y z)                  ; (1)
+  (cons z (cons y (cons x nil))))       ; (2)
+
+(my-list 'a 'b 'c)
+#+end_src
+
+#+RESULTS:
+| C | B | A |
+
+Notes:
+1. The book didn't talk about =&rest= yet, so I will use 3 parameters in this
+   example.
+2. According to the "government commission", =cons= should be called with reverse
+   parameters, but I don't care.
+
+*** Section C
+
+#+begin_src lisp
+
+#+end_src
