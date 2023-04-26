@@ -226,5 +226,27 @@
 ;; Section B:1 ends here
 
 ;; [[file:acl-chapter3.org::*Section C][Section C:1]]
-
+(defun my-length (lst)
+  (if (null lst)
+      0
+      (+ 1 (my-length (car lst)))))        ; (1)
 ;; Section C:1 ends here
+
+;; [[file:acl-chapter3.org::*Section D][Section D:1]]
+(defun my-member-norm (elem lst)
+  (if (null lst)
+      nil
+      (if (equal elem (car lst))                ; (1)
+          lst
+          (my-member-norm elem (cdr lst)))))
+
+;; (b c d)
+(my-member-norm 'b '(a b c d))
+
+(defun my-member (elem lst)
+  (if (null lst)
+      nil
+      (if (equal elem (cdr lst))
+          lst
+          (my-member-norm elem (car lst)))))
+;; Section D:1 ends here

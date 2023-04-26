@@ -663,5 +663,43 @@ Notes:
 *** Section C
 
 #+begin_src lisp
-
+(defun my-length (lst)
+  (if (null lst)
+      0
+      (+ 1 (my-length (car lst)))))        ; (1)
 #+end_src
+
+#+RESULTS:
+: MY-LENGTH
+
+Noes:
+1. Kinda hard to understand the implications of the =car=-=cdr= switch.
+
+*** Section D
+
+#+begin_src lisp
+(defun my-member-norm (elem lst)
+  (if (null lst)
+      nil
+      (if (equal elem (car lst))                ; (1)
+          lst
+          (my-member-norm elem (cdr lst)))))
+
+;; (b c d)
+(my-member-norm 'b '(a b c d))
+
+(defun my-member (elem lst)
+  (if (null lst)
+      nil
+      (if (equal elem (cdr lst))
+          lst
+          (my-member-norm elem (car lst)))))
+#+end_src
+
+#+RESULTS:
+| B | C | D |
+
+Notes:
+1. The original =member= function compares using =eql=, although it *can* be
+   overwritten using a keyword. In this case I use =equal=, which is more
+   permissive.
