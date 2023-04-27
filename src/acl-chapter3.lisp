@@ -273,3 +273,21 @@
 
 (compress '(1 0 0 1 1 0 1 1 1 1 0 0 1 0 1 1 0))
 ;; Exercise 7:1 ends here
+
+;; [[file:acl-chapter3.org::*Exercise 8][Exercise 8:1]]
+(defun show-dots (cns)
+  (if (not (consp cns))
+      (format nil "~A" cns)
+      (concatenate 'string
+                   "("
+                   (show-dots (car cns))
+                   " . "
+                   (show-dots (cdr cns))
+                   ")")))
+
+;; (A . (B . (C . NIL)))
+(show-dots '(a b c))
+
+;; (A . (B . ((E . (D . NIL)) . NIL))).
+(show-dots '(a b (e d)))                    ; (1)
+;; Exercise 8:1 ends here

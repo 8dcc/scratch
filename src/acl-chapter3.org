@@ -732,7 +732,7 @@ dotted lists.)
 : (1 (2 . 0) (2 . 1) 0 (4 . 1) (2 . 0) 1 0 (2 . 1) 0)
 
 
-For more information see [[Chapter 3.5: Compression]].
+For more information see [[*Chapter 3.5: Compression][Chapter 3.5: Compression]].
 
 Notes:
 1. Instead of using =list=, we directly use =cons= with the appearances and the
@@ -749,3 +749,32 @@ New:
   | n |itm|
   +---+---+
    #+end_src
+
+** Exercise 8
+Define a function that takes a list and prints it in dot notation.
+
+#+begin_src lisp
+(defun show-dots (cns)
+  (if (not (consp cns))
+      (format nil "~A" cns)
+      (concatenate 'string
+                   "("
+                   (show-dots (car cns))
+                   " . "
+                   (show-dots (cdr cns))
+                   ")")))
+
+;; (A . (B . (C . NIL)))
+(show-dots '(a b c))
+
+;; (A . (B . ((E . (D . NIL)) . NIL))).
+(show-dots '(a b (e d)))                    ; (1)
+#+end_src
+
+#+RESULTS:
+: (A . (B . ((E . (D . NIL)) . NIL)))
+
+Notes:
+1. This is the same expression as [[*Expression 1][Expression 1]]. Output looks messy but it is
+   correct. Run:
+   =(format t "~A" '(A . (B . ((E . (D . NIL)) . NIL)))))=
