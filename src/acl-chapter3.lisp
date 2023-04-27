@@ -85,9 +85,9 @@
           (if (eql node end)                            ; (5)
               (reverse path)                            ; (6)
               (get-path end
-                   (append (cdr queue)                  ; (7)
-                           (new-paths path node net))
-                   net))))))
+                        (append (cdr queue)             ; (7)
+                                (new-paths path node net))
+                        net))))))
 
 (defun new-paths (path node net)                        ; (1)
   (mapcar #'(lambda (x) (cons x path))
@@ -250,3 +250,26 @@
           lst
           (my-member-norm elem (car lst)))))
 ;; Section D:1 ends here
+
+;; [[file:acl-chapter3.org::*Exercise 7][Exercise 7:1]]
+(defun compress (x)
+  (if (consp x)
+      (compress-list (car x) 1 (cdr x))
+      x))
+
+(defun compress-list (last-item last-n rest)
+  (if (null rest)
+      (list (n-items last-item last-n))
+      (let ((next-item (car rest)))
+        (if (= last-item next-item)
+            (compress-list last-item (+ last-n 1) (cdr rest))
+            (cons (n-items last-item last-n)
+                  (compress-list next-item 1 (cdr rest)))))))
+
+(defun n-items (item n)
+  (if (> n 1)
+      (cons n item)                                 ; (1)
+      item))
+
+(compress '(1 0 0 1 1 0 1 1 1 1 0 0 1 0 1 1 0))
+;; Exercise 7:1 ends here
