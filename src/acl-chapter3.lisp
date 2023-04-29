@@ -291,3 +291,35 @@
 ;; (A . (B . ((E . (D . NIL)) . NIL))).
 (show-dots '(a b (e d)))                    ; (1)
 ;; Exercise 8:1 ends here
+
+;; [[file:acl-chapter3.org::*Exercise 9][Exercise 9:1]]
+(defun longest-path (start end net)
+  (get-path end (list (list start)) net))
+
+(defun get-paths (start end net)
+  (if (null queue)
+      nil
+      (let ((path (car queue)))                         ; (3)
+        (let ((node (car path)))                        ; (4)
+          (if (eql node end)                            ; (5)
+              (reverse path)                            ; (6)
+              (get-path end
+                        (append (cdr queue)             ; (7)
+                                (new-paths path node net))
+                        net))))))
+
+(defun new-paths (path node net)
+  (mapcar #'(lambda (x) (cons x path))
+          (cdr (assoc node net))))
+
+;; TODO
+(defun new-paths2 (path node net)
+  (mapcar #'(lambda (x)
+              (cons x path))
+          (cdr (assoc node net))))
+
+;; Example network. Each list consists on an element and its adjacent nodes.
+(setf network '((a b c e) (b c) (c d) (d e)))
+
+(get-paths 'a 'e network)
+;; Exercise 9:1 ends here
