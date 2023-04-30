@@ -1,0 +1,27 @@
+#+title: ANSI Common Lisp - Chapter 4
+#+options: toc:nil
+#+property: header-args:lisp :tangle acl-chapter4.lisp :comments link
+#+auto_tangle: t
+#+author: 8dcc
+
+[[file:acl-chapter3.org][Previous Chapter]]
+
+-----
+
+#+TOC: headlines 2
+
+* Chapter 4.2: Binary Search
+
+From [[https://en.wikipedia.org/wiki/Binary_search_algorithm][wikipedia]]: In computer science, binary search, is a search algorithm that
+finds the position of a target value within a sorted array. Binary search
+compares the target value to the middle element of the array. If they are not
+equal, the half in which the target cannot lie is eliminated and the search
+continues on the remaining half, again taking the middle element to compare to
+the target value, and repeating this until the target value is found. If the
+search ends with the remaining half being empty, the target is not in the array.
+
+[[https://upload.wikimedia.org/wikipedia/commons/8/83/Binary_Search_Depiction.svg]]
+
+#+begin_src lisp
+
+#+end_src

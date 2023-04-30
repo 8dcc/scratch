@@ -4,7 +4,7 @@
 #+auto_tangle: t
 #+author: 8dcc
 
-[[file:acl-chapter2.org][Previous Chapter]]
+[[file:acl-chapter2.org][Previous Chapter]] | [[file:acl-chapter4.org][Next Chapter]]
 
 -----
 
