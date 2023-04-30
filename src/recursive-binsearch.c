@@ -1,4 +1,4 @@
-/* [[file:acl-chapter4.org::*Chapter 4.2: Binary Search][Chapter 4.2: Binary Search:2]] */
+/* [[file:acl-chapter4.org::*Recursive binary search in C][Recursive binary search in C:1]] */
 #include <stdio.h>
 
 #define ROUND(f) (f + 0.5)  /* Redpilled sigma male round */
@@ -43,4 +43,4 @@ int main() {
     printf("40 %d\n", bin_search(40, test_vec));
     printf("7  %d\n", bin_search(7, test_vec));
 }
-/* Chapter 4.2: Binary Search:2 ends here */
+/* Recursive binary search in C:1 ends here */

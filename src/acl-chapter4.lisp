@@ -1,4 +1,4 @@
-;; [[file:acl-chapter4.org::*Chapter 4.2: Binary Search][Chapter 4.2: Binary Search:1]]
+;; [[file:acl-chapter4.org::*Lisp binary search][Lisp binary search:1]]
 (defun bin-search (obj vec)
   (let ((len (length vec)))
     (if (zerop len)
@@ -24,4 +24,4 @@
 
 ;; 4
 (bin-search 7 #(1 3 4 6 7 8 10 13 14 18 19 21 24 27 40 45 71))
-;; Chapter 4.2: Binary Search:1 ends here
+;; Lisp binary search:1 ends here

@@ -22,6 +22,8 @@ search ends with the remaining half being empty, the target is not in the array.
 
 [[https://upload.wikimedia.org/wikipedia/commons/8/83/Binary_Search_Depiction.svg]]
 
+** Lisp binary search
+
 #+begin_src lisp
 (defun bin-search (obj vec)
   (let ((len (length vec)))
@@ -106,7 +108,28 @@ Explanation:
    it calls finder with the entire list as initial range. It subtracts one from
    the length to get the *last index*, which is what =finder= expects.
 
-Simple C version of the above code, with numbers associated to the other comments:
+** Recursive call list
+
+Searching 13:
+
+| Call # | Start | End | Mid idx | Mid obj |
+|--------+-------+-----+---------+---------|
+|      0 |     0 |  16 |       8 |      14 |
+|      1 |     0 |   7 |       4 |       7 |
+|      2 |     5 |   7 |       6 |      10 |
+|      3 |     7 |   7 |       - |      -  |
+
+Searching 7:
+
+| Call # | Start | End | Mid idx | Mid obj |
+|--------+-------+-----+---------+---------|
+|      0 |     0 |  16 |       8 |      14 |
+|      1 |     0 |   7 |       4 |       7 |
+
+** Recursive binary search in C
+
+Simple C version of the above lisp code, with numbers associated to the other
+comments:
 
 #+begin_src C :tangle recursive-binsearch.c :comments link
 #include <stdio.h>
@@ -161,5 +184,3 @@ int main() {
 |    41 |    -1 |
 |    40 |    14 |
 |     7 |     4 |
-
-**** TODO Recursive call table.
