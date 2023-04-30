@@ -7,7 +7,7 @@ CFLAGS=-Wall -Wextra -g
 all: $(patsubst %.c, %.out, $(wildcard ./*.c))
 
 clean:
-	rm *.out
+	rm -f *.out
 
 ncurses-%.out: ncurses-%.c
 	$(CC) $(CFLAGS) -o $@ $< -lncurses
