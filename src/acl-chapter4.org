@@ -23,5 +23,143 @@ search ends with the remaining half being empty, the target is not in the array.
 [[https://upload.wikimedia.org/wikipedia/commons/8/83/Binary_Search_Depiction.svg]]
 
 #+begin_src lisp
+(defun bin-search (obj vec)
+  (let ((len (length vec)))
+    (if (zerop len)
+        nil
+        (finder obj vec 0 (- len 1)))))             ; (9)
 
+(defun finder (obj vec start end)                   ; (1)
+  (let ((range (- end start)))                      ; (2)
+    (if (zerop range)                               ; (3)
+        (if (eql obj (aref vec start))              ; (4)
+            start
+            nil)
+        (let ((mid (+ start (round (/ range 2)))))  ; (5)
+          (let ((cur-obj (aref vec mid)))           ; (6)
+            (if (< obj cur-obj)                     ; (7)
+                (finder obj vec start (- mid 1))
+                (if (> obj cur-obj)                 ; (8)
+                    (finder obj vec (+ mid 1) end)
+                    mid)))))))
+
+;; NIL
+(bin-search 41 #(1 3 4 6 7 8 10 13 14 18 19 21 24 27 40 45 71))
+
+;; 4
+(bin-search 7 #(1 3 4 6 7 8 10 13 14 18 19 21 24 27 40 45 71))
 #+end_src
+
+#+RESULTS:
+: 4
+
+Explanation:
+
+1. Finds the object =obj= in the single dimension vector =vec=, from the
+   zero-starting index =start= to the =end= index.
+
+2. Store the range to check in a local variable called =range=. If we call the
+   finder from 7 to 10, the range will be 3.
+
+3. If the =range= is zero, it means =start= and =end= are the same, so we only need
+   to check the current position.
+
+4. If the object we are looking for is the same as the object in the =start=
+   position, we return the index in the vector, if it isn't, it means the item
+   is not on the vector, return =nil=.
+
+   In C pseudo-code: ~if (obj == vec[start]) ...;~
+
+   Note: For some reason in /ANSI Common Lisp/, the function is only used to
+   check if the item *is in the vector or not*. In my opinion is much better my
+   version because it gets the index of the item.
+
+5. If the =range= is not zero (remember that this is the else of the first =if=), we
+   save the middle position of the range in the =mid= local variable.
+
+   We need to use =round= instead of =floor= because it causes a stack overflow.
+   Imagine we want to search for 41: When it tries to search in =(27 40 45 71)=,
+   because 41 is bigger than 40, it searches in =(45 71)=. The /start/ would be 45,
+   but *it would also be the middle*, and minus one, it would search in =(40 45)=,
+   etc.
+
+6. We also create another local variable called =cur-obj= containing the object at
+   the middle of the current range. Remember that we need another =let= statement
+   because we need to use a local variable from the previous one.
+
+   In the example from the image, in the first call to =finder=, =start= would be 0,
+   =end= would be 16 (last index), =obj= would be 7, =mid= would be 8 (0 + 16 / 2) and
+   =cur-obj= would be 14 (the element in the middle of the vector).
+
+7. If the object we are tying to find is less than the current object, we know
+   it's in the lower half of the range. We will search again in the lower half,
+   from the start of the current range to the middle of the range. We subtract
+   one to =mid= because we don't want to check again the index in the next call.
+
+8. Same as *7*, but we know it's in the higher half. Instead of subtracting one,
+   we add it to =mid= and use that as the starting position.
+
+   If the =cur-obj= is not greater nor lower than =obj=, it's the same, so we return
+   the index (=mid=). See note of *4* on why we return the index.
+
+9. The =bin-search= function is a wrapper for =finder=. If the vector is not empty,
+   it calls finder with the entire list as initial range. It subtracts one from
+   the length to get the *last index*, which is what =finder= expects.
+
+Simple C version of the above code, with numbers associated to the other comments:
+
+#+begin_src C :tangle recursive-binsearch.c :comments link
+#include <stdio.h>
+
+#define ROUND(f) (f + 0.5)  /* Redpilled sigma male round */
+#define NIL (-1)
+
+int finder(int obj, int vec[], unsigned start, unsigned end) {    /* (1) */
+    const int range = end - start;                                /* (2) */
+
+    if (range == 0) {                                             /* (3) */
+        if (obj == vec[start])                                    /* (4) */
+            return start;
+        else
+            return NIL;
+    } else {
+        const int mid     = start + ROUND(range / 2.0);           /* (5) */
+        const int cur_obj = vec[mid];                             /* (6) */
+
+        if (obj < cur_obj)                                        /* (7) */
+            return finder(obj, vec, start, mid - 1);
+        else if (obj > cur_obj)                                   /* (8) */
+            return finder(obj, vec, mid + 1, end);
+        else
+            return mid;
+    }
+}
+
+int bin_search(int obj, int vec[]) {
+    const int len = 17;
+
+    if (len == 0)
+        return NIL;
+    else
+        return finder(obj, vec, 0, len - 1);
+}
+
+int main() {
+    int test_vec[] = { 1, 3, 4, 6, 7, 8, 10, 13, 14, 18, 19, 21, 24, 27, 40, 45, 71 };
+
+    printf("Value Index\n");
+    printf("-----|-----\n");
+    printf("41 %d\n", bin_search(41, test_vec));
+    printf("40 %d\n", bin_search(40, test_vec));
+    printf("7  %d\n", bin_search(7, test_vec));
+}
+#+end_src
+
+#+RESULTS:
+| Value | Index |
+| ----- | ----- |
+|    41 |    -1 |
+|    40 |    14 |
+|     7 |     4 |
+
+**** TODO Recursive call table.
