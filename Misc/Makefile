@@ -13,6 +13,9 @@ clean:
 ncurses-%.out: ncurses-%.c
 	$(CC) $(CFLAGS) -o $@ $< -lncurses
 
+bresenham-line.out: bresenham-line.c
+	$(CC) $(CFLAGS) -o $@ $< -lm
+
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $<
 
