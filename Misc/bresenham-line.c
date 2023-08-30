@@ -155,7 +155,7 @@ static inline void set_true(bool* arr, int arr_h, int arr_w, int y, int x) {
     /* We subtract "y" for calculating "real_y" because (x0, y1) is 1 above the
      * center, and going up one row in a 2d array means subtracting one from
      * the Y coord. This does not happen with the X axis. */
-    const int real_y = (arr_h / 2) - y;
+    const int real_y = (arr_h / 2) - GRAPH_MARGIN - y;
     const int real_x = (arr_w / 2) + x;
 
     arr[real_y * arr_w + real_x] = true;
