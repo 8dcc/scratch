@@ -16,6 +16,9 @@ ncurses-%.out: ncurses-%.c
 bresenham-line.out: bresenham-line.c
 	$(CC) $(CFLAGS) -o $@ $< -lm
 
+sdl-bresenham-line.out: sdl-bresenham-line.c
+	$(CC) $(CFLAGS) -o $@ $< -lm `sdl2-config --cflags --libs`
+
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $<
 
