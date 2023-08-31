@@ -15,6 +15,10 @@ int get_age(person_t person) {
     return person.age;
 }
 
+int get_age_ptr(person_t* person) {
+    return person->age;
+}
+
 int main() {
     person_t foo    = { "Foo", 69 };
     person_t* foo_p = &foo;
@@ -33,6 +37,9 @@ int main() {
 
     int age_test = get_age((person_t){ "Peter", 123 });
     printf("Age test: %d\n", age_test);
+
+    int age_test2 = get_age_ptr(foo_p);
+    printf("Age test 2: %d\n", age_test2);
 
     printf("\nTesting dereferences:\n");
     person_t bar2 = { "Bar", 55 };
