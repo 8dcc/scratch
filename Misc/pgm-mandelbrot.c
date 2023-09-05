@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     /* Each iteration will be the gray color. Higher means more precision */
     const int max_iter = atoi(argv[3]);
 
-    if (w < 1 || h < 1 || max_iter < 1) {
+    if (w < 1 || h < 1 || max_iter < 1 || max_iter > 255) {
         fprintf(stderr,
                 "Wrong width, height or max_iter values.\n"
                 "Usage: %s width height max_iter > file.pgm\n",
