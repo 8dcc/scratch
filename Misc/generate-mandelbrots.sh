@@ -19,5 +19,6 @@ for i in $(seq $base $step $end); do
         filename=$i
     fi
 
-    ./pgm-mandelbrot.out $w $h $i > mandelbrots/$filename.pgm
+    ./ppm-mandelbrot.out $w $h $i > mandelbrots/a$filename.ppm
+    ./pgm-mandelbrot.out $w $h $i > mandelbrots/b$filename.pgm
 done
