@@ -13,6 +13,9 @@ clean:
 ncurses-%.out: ncurses-%.c
 	$(CC) $(CFLAGS) -o $@ $< -lncurses
 
+ppm-mandelbrot.out: ppm-mandelbrot.c
+	$(CC) $(CFLAGS) -o $@ $< -lm
+
 bresenham-line.out: bresenham-line.c
 	$(CC) $(CFLAGS) -o $@ $< -lm
 
