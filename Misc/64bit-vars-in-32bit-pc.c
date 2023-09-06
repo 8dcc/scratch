@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 uint64_t g = 0x5555666677778888;
+double gd = 3.00001;
 
 uint64_t sum(uint64_t a, uint64_t b) {
     (void)b;
@@ -17,7 +18,15 @@ uint64_t sum(uint64_t a, uint64_t b) {
 }
 
 void sump(uint64_t* p) {
-    p += 0xFF00FF00DEADBEEF;
+    *p += 0xFF00FF00DEADBEEF;
+}
+
+double dsum(double num) {
+    return num + 10.0005;
+}
+
+void dsump(double* p) {
+    *p += 20.0;
 }
 
 int main() {
@@ -53,6 +62,12 @@ int main() {
     g = 0x5;
     sump(&g);
 
-    printf("%lld, %lld\n", a, g);
+    double d = 1.00002;
+    d = dsum(d);
+
+    gd = 1234.5678;
+    dsump(&gd);
+
+    printf("%lld, %lld, %f, %f\n", a, g, d, gd);
     return 0;
 }
