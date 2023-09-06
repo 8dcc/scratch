@@ -22,6 +22,9 @@ bresenham-line.out: bresenham-line.c
 sdl-bresenham-line.out: sdl-bresenham-line.c
 	$(CC) $(CFLAGS) -o $@ $< -lm `sdl2-config --cflags --libs`
 
+64bit-vars-in-32bit-pc.out: 64bit-vars-in-32bit-pc.c
+	$(CC) $(CFLAGS) -m32 -o $@ $<
+
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $<
 
