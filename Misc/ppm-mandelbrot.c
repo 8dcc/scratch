@@ -52,10 +52,10 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    int w = atoi(argv[1]);
-    int h = atoi(argv[2]);
+    const int w = atoi(argv[1]);
+    const int h = atoi(argv[2]);
 
-    /* Each iteration will be the gray color. Higher means more precision */
+    /* Higher means more precision */
     const int max_iter = atoi(argv[3]);
 
     if (w < 1 || h < 1 || max_iter < 1 || max_iter > 255) {
