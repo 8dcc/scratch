@@ -31,6 +31,13 @@
 #define COL_S 1.0
 #define COL_V 1.0
 
+/* Smaller -> More zoom (1.0 is defaul) */
+#define ZOOM 1.0
+
+/* Offsets for moving in the set. */
+#define X_OFFSET 0.0 /* -2.0..+2.0 (Left..Right) */
+#define Y_OFFSET 0.0 /* -1.0..+1.0 (Up..Down) */
+
 /* Color used for drawing the interior of the mandelbrot set */
 #define INSIDE_COL "0 0 0 "
 
@@ -71,10 +78,16 @@ int main(int argc, char** argv) {
 
     /* Mandelbrot */
     for (int y_px = 0; y_px < h; y_px++) {
-        double real_y = (y_px / scaled_h) - 1.0;
+        /* Real Y is the mandelbrot center vertically. We subtract 1.0 (half the
+         * height) to center it vertically. */
+        double real_y = (y_px / scaled_h) * ZOOM - 1.0;
+        real_y += Y_OFFSET;
 
         for (int x_px = 0; x_px < w; x_px++) {
-            double real_x = (x_px / scaled_w) - 2.0;
+            /* Real X is the mandelbrot center horizontally. We subtract 2.0
+             * (half the width) to center it horizontally. */
+            double real_x = (x_px / scaled_w) * ZOOM - 2.0;
+            real_x += X_OFFSET;
 
             /* These 2 values will be increased each iteration bellow */
             double x = real_x;
