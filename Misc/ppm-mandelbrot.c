@@ -9,6 +9,11 @@
  *
  * On .ppm formats, see:
  * https://en.wikipedia.org/wiki/Netpbm#File_formats
+ *
+ * On mandelbrot, see:
+ * - https://en.wikipedia.org/wiki/Mandelbrot_set
+ * - http://warp.povusers.org/Mandelbrot/
+ *   https://web.archive.org/web/20230324155752/http://warp.povusers.org/Mandelbrot/
  */
 
 #include <stdbool.h>
@@ -22,6 +27,9 @@
 /* Max saturation and value for HSV */
 #define COL_S 1.0f
 #define COL_V 1.0f
+
+/* Color used for drawing the interior of the mandelbrot set */
+#define INSIDE_COL "0 0 0 "
 
 static void hsv2rgb(float* r, float* g, float* b, float h, float s, float v);
 
@@ -64,13 +72,24 @@ int main(int argc, char** argv) {
             double x = real_x;
             double y = real_y;
 
-            int iter = 0;
-            while (iter < max_iter && (x * x + y * y) <= 2 * 2) {
+            bool inside_set = true;
+
+            int iter;
+            for (iter = 0; iter < max_iter; iter++) {
+                if ((x * x + y * y) > 2 * 2) {
+                    inside_set = false;
+                    break;
+                }
+
                 double tmp_x = (x * x - y * y) + real_x;
                 y            = (2.0 * x * y) + real_y;
                 x            = tmp_x;
+            }
 
-                iter++;
+            /* If it's inside the set, draw fixed color */
+            if (inside_set) {
+                printf("%s", INSIDE_COL);
+                continue;
             }
 
             /* Get 0..360 hue for color based on iter..max_iter */
@@ -79,12 +98,11 @@ int main(int argc, char** argv) {
             float r, g, b;
             hsv2rgb(&r, &g, &b, hue_scale, COL_S, COL_V);
 
+            /* NOTE: Try to replace some of these parameters with zeros or mess
+             * with the scaling and see what happens :) */
             int fr = r * 255.f;
             int fg = g * 255.f;
             int fb = b * 255.f;
-
-            /* NOTE: Try to replace some of these fr's with zeros and see what
-             * happens :)*/
             printf("%d %d %d ", fr, fg, fb);
         }
 
