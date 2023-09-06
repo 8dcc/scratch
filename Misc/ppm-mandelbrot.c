@@ -21,12 +21,15 @@
 #include <stdlib.h>
 #include <math.h> /* hsv2rgb */
 
-/* Max hue. From 0 to 360 */
-#define MAX_H 340
+/* Max HSV values (Used for scaling) */
+#define MAX_H 360
+#define MAX_S 1.0
+#define MAX_V 1.0
 
-/* Max saturation and value for HSV */
-#define COL_S 1.0f
-#define COL_V 1.0f
+/* Default HSV values */
+#define COL_H 360
+#define COL_S 1.0
+#define COL_V 1.0
 
 /* Color used for drawing the interior of the mandelbrot set */
 #define INSIDE_COL "0 0 0 "
@@ -92,11 +95,15 @@ int main(int argc, char** argv) {
                 continue;
             }
 
-            /* Get 0..360 hue for color based on iter..max_iter */
-            int hue_scale = iter * MAX_H / max_iter;
+            /* Get 0..360 hue for color based on iter..max_iter
+             *
+             * NOTE: Make sure you change the variable type to double if you
+             * want to scale the Saturation or Value instead (to not truncate to
+             * zero) */
+            int scaled_hue = iter * COL_H / max_iter;
 
             float r, g, b;
-            hsv2rgb(&r, &g, &b, hue_scale, COL_S, COL_V);
+            hsv2rgb(&r, &g, &b, scaled_hue, COL_S, COL_V);
 
             /* NOTE: Try to replace some of these parameters with zeros or mess
              * with the scaling and see what happens :) */
