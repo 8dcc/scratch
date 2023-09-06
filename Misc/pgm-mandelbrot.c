@@ -1,4 +1,6 @@
 /*
+ * NOTE: ppm-mandelbrot.c will be more updated.
+ *
  * Compile with:
  * gcc -Ofast -o pgm-mandelbrot.out pgm-mandelbrot.c
  *
@@ -52,13 +54,12 @@ int main(int argc, char** argv) {
             double x = real_x;
             double y = real_y;
 
-            int iter = 0;
-            while (iter < max_iter && (x * x + y * y) <= 2 * 2) {
+            int iter;
+            for (iter = 0; iter < max_iter && (x * x + y * y) <= 2 * 2;
+                 iter++) {
                 double tmp_x = (x * x - y * y) + real_x;
                 y            = (2.0 * x * y) + real_y;
                 x            = tmp_x;
-
-                iter++;
             }
 
             /* Iterations will be used for grayscale color */
