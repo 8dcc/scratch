@@ -65,28 +65,43 @@ int main(int argc, char** argv) {
            "%d\n",
            w, h, max_iter);
 
+    /* Calculate some values here for performance */
+    double scaled_h = h / 2.0;
+    double scaled_w = w / 3.0;
+
     /* Mandelbrot */
     for (int y_px = 0; y_px < h; y_px++) {
-        double real_y = (y_px / (h / 2.0)) - 1.0;
+        double real_y = (y_px / scaled_h) - 1.0;
 
         for (int x_px = 0; x_px < w; x_px++) {
-            double real_x = (x_px / (w / 3.0)) - 2.0;
+            double real_x = (x_px / scaled_w) - 2.0;
 
+            /* These 2 values will be increased each iteration bellow */
             double x = real_x;
             double y = real_y;
 
             bool inside_set = true;
 
+            /* In each iteration, we will check if we are inside the mandebrot
+             * set. An interesting property of the mandelbrot set is that the
+             * more iterations an outside value takes, the closer to the set is.
+             * We can use this to change colors. Ouside of the loop. */
             int iter;
             for (iter = 0; iter < max_iter; iter++) {
-                if ((x * x + y * y) > 2 * 2) {
+                /* Calulate squares once */
+                double sqr_x = x * x;
+                double sqr_y = y * y;
+
+                /* Absolute value of a complex number is the distance from
+                 * origin: sqrt(x^2 + y^2) > 2 */
+                if ((sqr_x + sqr_y) > 2 * 2) {
                     inside_set = false;
                     break;
                 }
 
-                double tmp_x = (x * x - y * y) + real_x;
-                y            = (2.0 * x * y) + real_y;
-                x            = tmp_x;
+                /* This part is explained in the povusers.org link on credits */
+                y = (2.0 * x * y) + real_y;
+                x = (sqr_x - sqr_y) + real_x;
             }
 
             /* If it's inside the set, draw fixed color */
