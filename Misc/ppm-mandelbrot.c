@@ -14,6 +14,10 @@
  * - https://en.wikipedia.org/wiki/Mandelbrot_set
  * - http://warp.povusers.org/Mandelbrot/
  *   https://web.archive.org/web/20230324155752/http://warp.povusers.org/Mandelbrot/
+ *
+ * Interesting parameters:
+ *   zoom:0.1       x: -0.7         y: -0.11
+ *   zoom:0.005     x: -0.74        y: -0.11
  */
 
 #include <stdbool.h>
@@ -31,14 +35,14 @@
 #define COL_S 1.0
 #define COL_V 1.0
 
-/* Smaller -> More zoom (1.0 is defaul) */
+/* Smaller -> More zoom (1.0 is default) */
 #define ZOOM 1.0
 
 /* Offsets for moving in the set. */
 #define X_OFFSET 0.0 /* -2.0..+2.0 (Left..Right) */
 #define Y_OFFSET 0.0 /* -1.0..+1.0 (Up..Down) */
 
-/* Color used for drawing the interior of the mandelbrot set */
+/* RGB color used for drawing the interior of the mandelbrot set */
 #define INSIDE_COL "0 0 0 "
 
 static void hsv2rgb(float* r, float* g, float* b, float h, float s, float v);
@@ -73,20 +77,22 @@ int main(int argc, char** argv) {
            w, h, max_iter);
 
     /* Calculate some values here for performance */
-    double scaled_h = h / 2.0;
-    double scaled_w = w / 3.0;
+    const double scaled_h = h / 2.0;
+    const double scaled_w = w / 3.0;
 
     /* Mandelbrot */
     for (int y_px = 0; y_px < h; y_px++) {
         /* Real Y is the mandelbrot center vertically. We subtract 1.0 (half the
          * height) to center it vertically. */
-        double real_y = (y_px / scaled_h) * ZOOM - 1.0;
+        double real_y = (y_px / scaled_h) - 1.0 ;
+        real_y *= ZOOM;
         real_y += Y_OFFSET;
 
         for (int x_px = 0; x_px < w; x_px++) {
             /* Real X is the mandelbrot center horizontally. We subtract 2.0
              * (half the width) to center it horizontally. */
-            double real_x = (x_px / scaled_w) * ZOOM - 2.0;
+            double real_x = (x_px / scaled_w) - 2.0;
+            real_x *= ZOOM;
             real_x += X_OFFSET;
 
             /* These 2 values will be increased each iteration bellow */
