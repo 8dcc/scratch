@@ -18,36 +18,33 @@ static char* my_strcpy(char* dest, const char* src) {
 static char* html2txt(char* str) {
     char* ret = str;
 
-    bool in_br = false;
-    bool in_label      = false;
-    char* label_start  = str;
+    char* label_start = str;
+    bool in_br        = false;
 
     while (*str != '\0') {
         switch (*str) {
             case '<':
-                in_label    = true;
                 label_start = str;
                 str++;
+
+                /* If label is <br>, store */
+                if (*str++ == 'b' && *str++ == 'r')
+                    in_br = true;
                 break;
             case '>':
+                /* We are closing a <br> string, place '\n' before shifting */
                 if (in_br) {
                     *label_start = '\n';
                     label_start++;
                     in_br = false;
                 }
 
-                in_label = false;
+                /* Shift rest of string */
                 my_strcpy(label_start, str + 1);
                 str = label_start;
                 break;
             default:
-                if (in_label) {
-                    if (*str++ == 'b' && *str++ == 'r')
-                        in_br = true;
-                } else {
-                    str++;
-                }
-
+                str++;
                 break;
         }
     }
