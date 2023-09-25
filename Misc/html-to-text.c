@@ -18,7 +18,7 @@ static char* my_strcpy(char* dest, const char* src) {
 static char* html2txt(char* str) {
     char* ret = str;
 
-    bool print_newline = false;
+    bool in_br = false;
     bool in_label      = false;
     char* label_start  = str;
 
@@ -30,9 +30,10 @@ static char* html2txt(char* str) {
                 str++;
                 break;
             case '>':
-                if (print_newline) {
+                if (in_br) {
                     *label_start = '\n';
                     label_start++;
+                    in_br = false;
                 }
 
                 in_label = false;
@@ -42,7 +43,7 @@ static char* html2txt(char* str) {
             default:
                 if (in_label) {
                     if (*str++ == 'b' && *str++ == 'r')
-                        print_newline = true;
+                        in_br = true;
                 } else {
                     str++;
                 }
@@ -58,7 +59,8 @@ int main() {
     char str[] = "<a href=\"#p96207730\" "
                  "class=\"quotelink\">96207730</a><br>Let me rephrase: would "
                  "it be possible for an individual, or small group of "
-                 "individuals, to do this.";
+                 "individuals, to do this.<br><a href=\"asd\">Other "
+                 "line.</a><br>Another line.";
 
     printf("Original:\n%s\n\n", str);
     printf("Final:\n%s\n", html2txt(str));
