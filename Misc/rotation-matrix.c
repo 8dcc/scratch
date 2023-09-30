@@ -17,8 +17,7 @@ static void rotate(float rad_ang, vec2_t in, vec2_t* out) {
     out->y = in.x * sinf(rad_ang) + in.y * cosf(rad_ang);
 }
 
-static void rotate_rel(float rad_ang, vec2_t orig, vec2_t in,
-                       vec2_t* out) {
+static void rotate_rel(float rad_ang, vec2_t orig, vec2_t in, vec2_t* out) {
     /* Subtract in.y from orig.y because more Y means less index in array */
     const vec2_t rel = {
         .x = in.x - orig.x,
@@ -39,39 +38,19 @@ int main() {
         for (int x = 0; x < ARR_W; x++)
             arr[y][x] = '.';
 
-    /*------------------------------------------------------------------------*/
-    /* MANUAL */
-
     /* Center */
     vec2_t orig         = { 10, 10 };
     arr[orig.y][orig.x] = 'O';
 
-    /* Example point */
-    vec2_t a      = { 15, 10 };
+    vec2_t a      = { 5, 5 };
     arr[a.y][a.x] = 'A';
 
-    /* Relative from orig */
-    vec2_t rel = {
-        .x = a.x - orig.x,
-        .y = orig.y - a.y,
-    };
-
-    /* Rotate the relative position of A from Orig, and save it in B */
     vec2_t b;
-    rotate(DEG2RAD(45.f), rel, &b);
-
-    /* B is still relative, get real positions */
-    vec2_t real = {
-        .x = orig.x + b.x,
-        .y = orig.y - b.y,
-    };
-    arr[real.y][real.x] = 'B';
-
-    /*------------------------------------------------------------------------*/
-    /* RELATIVE FUNC */
+    rotate_rel(DEG2RAD(45.f), orig, a, &b);
+    arr[b.y][b.x] = 'B';
 
     vec2_t c;
-    rotate_rel(DEG2RAD(225.f), orig, a, &c);
+    rotate_rel(DEG2RAD(-135.f), orig, a, &c);
     arr[c.y][c.x] = 'C';
 
     /* Show array */
