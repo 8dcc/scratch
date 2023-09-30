@@ -17,19 +17,19 @@ static void rotate(float rad_ang, vec2_t in, vec2_t* out) {
     out->y = in.x * sinf(rad_ang) + in.y * cosf(rad_ang);
 }
 
-static void rotate_rel(float rad_ang, vec2_t orig, vec2_t in, vec2_t* out) {
-    /* Subtract in.y from orig.y because more Y means less index in array */
+static void rotate_rel(float rad_ang, vec2_t vertex, vec2_t in, vec2_t* out) {
+    /* Subtract in.y from vertex.y because more Y means less index in array */
     const vec2_t rel = {
-        .x = in.x - orig.x,
-        .y = orig.y - in.y,
+        .x = in.x - vertex.x,
+        .y = vertex.y - in.y,
     };
 
     /* Rotate ralative */
     rotate(rad_ang, rel, out);
 
     /* Convert back to real array index */
-    out->x = orig.x + out->x;
-    out->y = orig.y - out->y;
+    out->x = vertex.x + out->x;
+    out->y = vertex.y - out->y;
 }
 
 int main() {
@@ -38,19 +38,18 @@ int main() {
         for (int x = 0; x < ARR_W; x++)
             arr[y][x] = '.';
 
-    /* Center */
-    vec2_t orig         = { 10, 10 };
-    arr[orig.y][orig.x] = 'O';
+    vec2_t center           = { 10, 10 };
+    arr[center.y][center.x] = 'O';
 
     vec2_t a      = { 5, 5 };
     arr[a.y][a.x] = 'A';
 
     vec2_t b;
-    rotate_rel(DEG2RAD(45.f), orig, a, &b);
+    rotate_rel(DEG2RAD(45.f), center, a, &b);
     arr[b.y][b.x] = 'B';
 
     vec2_t c;
-    rotate_rel(DEG2RAD(-135.f), orig, a, &c);
+    rotate_rel(DEG2RAD(-135.f), center, a, &c);
     arr[c.y][c.x] = 'C';
 
     /* Show array */
