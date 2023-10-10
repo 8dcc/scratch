@@ -87,6 +87,8 @@ static void flood_fill(vec2_t p) {
             GRID_SET(right, REVEALED);
         }
     }
+
+    free(queue);
 }
 
 /*----------------------------------------------------------------------------*/
