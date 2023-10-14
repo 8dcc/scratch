@@ -2,13 +2,13 @@
 ;   $ time ./better-for-loop.out
 ; Comment the following line and check the difference. For me:
 ;   BETTER_LOOP defined:
-;     real    1m1.716s
-;     user    1m1.523s
-;     sys     0m0.083s
+;     real    1m3.449s
+;     user    1m3.259s
+;     sys     0m0.076s
 ;   BETTER_LOOP commented:
-;     real    1m5.389s
-;     user    1m5.243s
-;     sys     0m0.037s
+;     real    1m10.191s
+;     user    1m9.955s
+;     sys     0m0.113s
 ;
 ; This program was inspired by Page 57 of "Reversing: Secrets of Reverse
 ; Engineering".
@@ -46,9 +46,9 @@ main:
 ;
 ;     do {
 ;         if (isprime(ecx))
-;             printf("Prime: %d\n", edx)
+;             printf("Prime: %d\n", edx);
 ;         ecx++;
-;     } while (ecx < ITERS)
+;     } while (ecx < ITERS);
 for_test:
     push    ebx
     push    ebp
@@ -85,7 +85,7 @@ for_test:
     ret
 %else
 ; void for_test(int num)
-;     ecx = 0
+;     ecx = 0;
 ;     while (ecx < ITERS)
 ;         if (isprime(ecx))
 ;             printf("Prime: %d\n", edx)
@@ -127,13 +127,60 @@ for_test:
 
 ;-------------------------------------------------------------------------------
 
-; NOTE: Not best the method because it's used to check performance of the
-; for_test function above.
-;
+; NOTE: These are not best the methods because it's used to check performance of
+; the for_test function above.
+%ifdef BETTER_LOOP
 ; int isprime(int eax)
-;     for (ecx = 2; ecx <= eax - 1; ecx++)
+;     ecx = 2;
+;     if (ecx >= eax)
+;         return 1;
+;
+;     do {
 ;         if (ecx % eax == 0)
 ;             return 0;
+;         ecx++;
+;     } while (ecx < eax);
+;     return 1;
+isprime:
+    push    ecx             ; Save used registers
+    push    edx
+
+    mov     ecx, 2
+
+    cmp     ecx, eax        ; if (ecx >= eax)
+    jge     .prime          ;     return true;
+
+.loop:
+    push    eax             ; Number we want to check
+    xor     edx, edx        ; Clear edx for division remainder
+    div     ecx             ; edx = eax % ecx; eax /= ecx;
+    pop     eax             ; Restore original number for next iteration
+
+    test    edx, edx        ; if (eax % ecx == 0)
+    jz      .not_prime      ;     return false;
+
+    inc     ecx             ; ecx++;
+    cmp     ecx, eax        ; if (ecx < eax)
+    jl      .loop           ;     continue;
+
+.prime:
+    mov     eax, 1          ; else
+    jmp     .done           ;     return true;
+
+.not_prime:
+    mov     eax, 0
+
+.done:
+    pop     edx             ; Restore used registers
+    pop     ecx
+    ret
+%else
+; int isprime(int eax)
+;     ecx = 2
+;     while (ecx <= eax)
+;         if (ecx % eax == 0)
+;             return 0;
+;         ecx++
 ;     return 1;
 isprime:
     push    ecx             ; Save used registers
@@ -167,3 +214,4 @@ isprime:
     pop     edx             ; Restore used registers
     pop     ecx
     ret
+%endif
