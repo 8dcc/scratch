@@ -1,23 +1,28 @@
 
 CC=gcc
-CFLAGS=-Wall -Wextra -g
+CFLAGS=-Wall -Wextra
+ASM=nasm
+ASM_FLAGS=-f elf64
 
-OBJS=itoa64.o itoa_test.o
 BIN=itoa_test.out
 
-.PHONY: all
+.PHONY: all clean
 
 all: $(BIN)
 
 clean:
-	rm -f $(BIN) $(OBJS)
+	rm -rf ./obj/
+	rm -f $(BIN)
 
-$(BIN): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@
+#-------------------------------------------------------------------------------
 
-%.o : %.c
+$(BIN): obj/itoa_test.c.o obj/itoa64.asm.o
+	$(CC) $(CFLAGS) obj/itoa_test.c.o obj/itoa64.asm.o -o $@
+
+obj/%.c.o: %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o : %.asm
-	nasm -f elf64 $< -o $@
-
+obj/%.asm.o: %.asm
+	@mkdir -p $(dir $@)
+	$(ASM) $(ASM_FLAGS) $< -o $@
