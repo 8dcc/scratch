@@ -1,13 +1,21 @@
 ; Used to test performance of loops. After compiling, run with:
 ;   $ time ./better-for-loop.out
-; Comment the following line and check the difference.
+; Comment the following line and check the difference. For me:
+;   BETTER_LOOP defined:
+;     real    1m1.716s
+;     user    1m1.523s
+;     sys     0m0.083s
+;   BETTER_LOOP commented:
+;     real    1m5.389s
+;     user    1m5.243s
+;     sys     0m0.037s
 ;
 ; This program was inspired by Page 57 of "Reversing: Secrets of Reverse
 ; Engineering".
 
-;%define BETTER_LOOP
+%define BETTER_LOOP
 
-%define ITERS    99999
+%define ITERS    999999
 %define SYS_EXIT 1
 
 section .data
@@ -31,7 +39,50 @@ main:
 ;-------------------------------------------------------------------------------
 
 %ifdef BETTER_LOOP
-; TODO
+; void for_test(int num)
+;     ecx = 0
+;     if (ecx >= ITERS)
+;         return;
+;
+;     do {
+;         if (isprime(ecx))
+;             printf("Prime: %d\n", edx)
+;         ecx++;
+;     } while (ecx < ITERS)
+for_test:
+    push    ebx
+    push    ebp
+    mov     ebp, esp
+
+    mov     ebx, [ebp + 12]     ; ebx = arg0;
+    mov     ecx, 1
+
+    cmp     ecx, ebx            ; if (ecx >= arg0)
+    jge     .done               ;     return;
+
+.loop:
+    mov     eax, ecx
+    call    isprime
+
+    test    eax, eax            ; if (isprime(ecx))
+    jz     .continue            ;     continue;
+
+    push    ecx
+    push    fmt
+    call    printf              ; printf("Prime: %d\n", edx);
+    add     esp, 4
+    pop     ecx
+
+.continue:
+    inc     ecx
+    cmp     ecx, ebx            ; if (ecx < arg0)
+    jl      .loop               ;     continue;
+
+.done:
+    mov     esp, ebp
+    pop     ebp
+    pop     ebx
+    ret
 %else
 ; void for_test(int num)
 ;     ecx = 0
