@@ -14,7 +14,7 @@ section .text
     global _start
 
 _start:
-    mov     ecx, 0777o      ; Same as 22-*
+    mov     ecx, 0777      ; Same as 22-*
     mov     ebx, filename
     mov     eax, 8          ; sys_creat
     int     0x80
@@ -41,12 +41,12 @@ _start:
     lea     eax, p_msg      ; "Parent process got FD: ". I'm using "lea" here just to show that it would work the same way as
                             ; "mov". I read somewhere that when you load a label into a register using "mov", nasm is actually
                             ; using "lea",  but I am not sure so I just wanted to leave the example here.
-    call    sprint
+    call    prints
     jmp     .done
 
 .child:
     lea     eax, c_msg      ; "Child process got FD: "
-    call    sprint
+    call    prints
     jmp     .done
 
 .done:
@@ -55,7 +55,7 @@ _start:
     mov     eax, 5          ; sys_open
     int     0x80
 
-    call    iprintln        ; Print file descriptor
+    call    puti            ; Print file descriptor + newline
 
     mov     ebx, eax        ; Move the file descriptor we just got from sys_open to ebx
     mov     eax, 6          ; sys_close

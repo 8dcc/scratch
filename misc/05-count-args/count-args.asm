@@ -1,7 +1,7 @@
 ; Simple program that iterates and prints the provided arguments
 ; Arg number only works if they are less than 10 args
 
-%include 'simple-lib.asm'
+%include "simple-lib.asm"
 
 section .data
     tab_ptr db 0x9         ; '\t'
@@ -21,12 +21,12 @@ _start:
 
     ; Print ecx number + '\t' before arg itself
     mov     eax, ecx        ; Move the current iteration to eax
-    call    iprint          ; Call printn(int) to print the char
+    call    printi          ; Call printn(int) to print the char
     mov     eax, tab_ptr    ; Print tab char
-    call    sprint
+    call    prints
 
     pop     eax             ; Save argv[ecx] into eax
-    call    println         ; Print eax (Keep in mind argv is a char**)
+    call    puts            ; Print eax (Keep in mind argv is a char**)
     inc     ecx             ; Increase current arg count
     jmp     .loop
 

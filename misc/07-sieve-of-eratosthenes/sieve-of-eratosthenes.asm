@@ -34,9 +34,9 @@ _start:
     jne     .inner_done             ; i++; continue;
 
     mov     eax, ecx
-    call    iprint                  ; iprint(i);
+    call    printi                  ; printi(i);
     mov     eax, prime_str
-    call    println                 ; println(" is prime.");
+    call    puts                    ; puts(" is prime.");
 
     mov     ebx, ecx                ; j = i;
 

@@ -42,7 +42,7 @@ prints:
     push    ebx
     push    eax                 ; Will be on top of the stack. eax is the char*
                                 ; we are going to use
-    
+
     call    slen                ; We call slen to get the length of the str
                                 ; (needed for edx). Returned value will be
                                 ; stored in eax but we have the original char*
@@ -148,7 +148,7 @@ printi:
                                 ; length. We subtract the new pos from the old
                                 ; one because the top of the stack is on a
                                 ; lower position in memory.
-    
+
     mov     ecx, esp            ; Save stack pointer to ecx. Stack would be:
                                 ;   [ '4', '2, '0', '\0', ebp, edx, eax, ... ]
     mov     ebx, 1              ; stdout
@@ -187,7 +187,7 @@ atoi:
     push    ecx
     push    edx
     push    esi
-    
+
     mov     esi, eax            ; We will use esi for the char* argument
     mov     ecx, 0              ; We will use ecx to store the current char of
                                 ; esi
@@ -196,7 +196,7 @@ atoi:
 .loop:
     xor     ebx, ebx            ; Set all bits to ebx to 0. We will use the
                                 ; lower byte of ebx to store each char of esi
-    
+
     mov     bl, [esi+ecx]       ; Remember that bl is the lower byte of ebx. We
                                 ; are derreferencing (with []) esi[ecx]
     cmp     bl, 48              ; '0'

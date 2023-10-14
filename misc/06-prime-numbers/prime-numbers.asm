@@ -32,9 +32,9 @@ _start:
     cmp     eax, 0          ; If it's not prime, don't print anything
     jz      .not_prime
     mov     eax, ecx
-    call    iprint          ; Print the prime number
+    call    printi          ; Print the prime number
     mov     eax, s_prime    ; " is prime"
-    call    println
+    call    puts
 
 .not_prime:
     inc     ecx             ; (i++) Increase current number
@@ -95,7 +95,7 @@ isprime:
 
 arg_die:
     mov     eax, s_args     ; "Not enough arguments, I need a number."
-    call    println
+    call    puts
 
     mov     eax, 1          ; sys_exit
     mov     ebx, 1          ; exit code
