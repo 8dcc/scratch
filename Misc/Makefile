@@ -13,14 +13,17 @@ all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildca
 clean:
 	rm -f *.out
 
-ncurses-%.out: ncurses-%.c
-	$(CC) $(CFLAGS) -o $@ $< -lncurses
-
 sdl-bresenham-line.out: sdl-bresenham-line.c
 	$(CC) $(CFLAGS) -o $@ $< -lm `sdl2-config --cflags --libs`
 
 64bit-vars-in-32bit-pc.out: 64bit-vars-in-32bit-pc.c
 	$(CC) $(CFLAGS) -m32 -o $@ $<
+
+readline.out: readline.c
+	$(CC) $(CFLAGS) -o $@ $< -lreadline
+
+ncurses-%.out: ncurses-%.c
+	$(CC) $(CFLAGS) -o $@ $< -lncurses
 
 $(MATH_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< -lm
