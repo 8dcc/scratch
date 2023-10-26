@@ -71,6 +71,8 @@ int main(int argc, char** argv) {
         printf("\\x%02X", key[i]);
     printf("%s", ARR_END);
 
+    free(str);
+    free(key);
     return 0;
 }
 
