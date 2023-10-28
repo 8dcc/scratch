@@ -31,7 +31,7 @@ int token_count(char* in) {
     for (int i = 0; in[i] != ')'; i++) {
         if (in[i] == '\0') {
         unexpected_eof:
-            ERR("Reached end of input. Expected ')'");
+            ERR("Reached end of input. Expected ')'.");
             break;
         }
 
@@ -58,18 +58,21 @@ int token_count(char* in) {
     return ret;
 }
 
+/* Used by token_store. Does not check '(' */
+static inline bool is_token_separator(char c) {
+    return isspace(c) || c == '\0' || c == ')';
+}
+
 /* Reads input until whitespace, and fills `out` token. For lists, use
  * parse_list() */
 static char* token_store(Token* out, char* in) {
     bool only_digits = true;
 
+    /* Store in `i` where the token ends. Also check if it's a number */
     int i;
-    for (i = 0; in[i] != '\0' && !isspace(in); i++) {
-        if (!isdigit(in[i])) {
+    for (i = 0; !is_token_separator(in[i]); i++)
+        if (!isdigit(in[i]))
             only_digits = false;
-            break;
-        }
-    }
 
     if (only_digits) {
         out->type = TOKEN_NUM;
@@ -85,7 +88,7 @@ static char* token_store(Token* out, char* in) {
         strncpy(out->val.str, in, i);
     }
 
-    return in;
+    return &in[i];
 }
 
 /* Parse the input, store Tokens. The input should point to '(' and will
@@ -95,16 +98,16 @@ static char* parse_list(Token* parent, char* in) {
     if (*in == '(')
         in++;
     else
-        ERR("Expected '(', ignoring");
+        ERR("Expected '(', ignoring.");
 
     /* Current token position inside parent->val.children[] */
     int child_i = 0;
 
     bool in_list = true;
     while (in_list) {
-        switch (*in++) {
+        switch (*in) {
             case '\0':
-                ERR("Reached end of input. Expected ')'");
+                ERR("Reached end of input. Expected ')'.");
                 /* fallthrough */
             case ')':
                 in_list = false;
@@ -138,6 +141,7 @@ static char* parse_list(Token* parent, char* in) {
             case '\r':
             case '\t':
             case '\v':
+                in++;
                 break;
             default: {
                 /* Current child of `parent`. Extra variable for readability */
@@ -160,8 +164,14 @@ static char* parse_list(Token* parent, char* in) {
 Token* parse(char* in) {
     Token* root = token_new();
 
-    /* TODO: Count root tokens and allocate root->val.children[]  */
+    /* Count child tokens in first level */
+    int child_count = token_count(in);
 
+    /* Allocate tokens for first level + End Of List terminator */
+    root->val.children = malloc((child_count + 1) * sizeof(Token));
+    root->val.children[child_count].type = TOKEN_EOL;
+
+    /* Parse first level and children */
     parse_list(root, in);
 
     return root;

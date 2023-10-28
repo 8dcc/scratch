@@ -48,6 +48,7 @@ static bool regex(const char* str, const char* pat) {
 int main(void) {
     puts("--- Polish notation ---");
 
+#if 0
     /*--------------------------------------------------------------------*/
     /* FIXME: Delete */
 
@@ -84,6 +85,7 @@ int main(void) {
 
     puts("Print test:");
     tree_print(root, 0);
+#endif
 
     /*--------------------------------------------------------------------*/
 
@@ -97,9 +99,10 @@ int main(void) {
 
         add_history(input);
 
-        /* TODO */
-        int tokens = token_count(input);
-        printf("Count: %d\n", tokens);
+        Token* tokens = parse(input);
+        tree_print(tokens, 0);
+
+        /* TODO: Free tokens using tree_free() */
 
         /* Free allocated memory from readline() */
         free(input);
