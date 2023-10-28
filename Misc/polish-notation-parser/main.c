@@ -16,35 +16,6 @@
 #include "parser.h"
 #include "util.h"
 
-/* Returns true if string `str` mathes regex pattern `pat`. Pattern uses BRE
- * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html */
-static bool regex(const char* str, const char* pat) {
-    static regex_t r;
-
-    /* Compile regex pattern ignoring case */
-    if (regcomp(&r, pat, REG_EXTENDED | REG_ICASE)) {
-        fprintf(stderr,
-                "plumber: regex: regcomp returned an error code for pattern "
-                "\"%s\"\n",
-                pat);
-        return false;
-    }
-
-    int code = regexec(&r, str, 0, NULL, 0);
-    if (code > REG_NOMATCH) {
-        char err[100];
-        regerror(code, &r, err, sizeof(err));
-        fprintf(stderr, "plumber: regex: regexec returned an error: %s\n", err);
-        return false;
-    }
-
-    /* REG_NOERROR: Success
-     * REG_NOMATCH: Pattern did not match */
-    return code == REG_NOERROR;
-}
-
-/*----------------------------------------------------------------------------*/
-
 int main(void) {
     puts("--- Polish notation ---");
 
