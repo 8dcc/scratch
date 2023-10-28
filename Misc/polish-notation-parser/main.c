@@ -48,6 +48,45 @@ static bool regex(const char* str, const char* pat) {
 int main(void) {
     puts("--- Polish notation ---");
 
+    /*--------------------------------------------------------------------*/
+    /* FIXME: Delete */
+
+    /* (+ 1 2 (* 3 4 5) 6 7) */
+    Token* root        = token_new();
+    root->type         = TOKEN_PARENT;
+    root->val.children = malloc(7 * sizeof(Token));
+
+    root->val.children[0].type    = TOKEN_OPERATOR;
+    root->val.children[0].val.str = "+";
+    root->val.children[1].type    = TOKEN_NUM;
+    root->val.children[1].val.num = 1;
+    root->val.children[2].type    = TOKEN_NUM;
+    root->val.children[2].val.num = 2;
+
+    root->val.children[3].type         = TOKEN_PARENT;
+    root->val.children[3].val.children = malloc(5 * sizeof(Token));
+
+    root->val.children[3].val.children[0].type    = TOKEN_OPERATOR;
+    root->val.children[3].val.children[0].val.str = "*";
+    root->val.children[3].val.children[1].type    = TOKEN_NUM;
+    root->val.children[3].val.children[1].val.num = 3;
+    root->val.children[3].val.children[2].type    = TOKEN_NUM;
+    root->val.children[3].val.children[2].val.num = 4;
+    root->val.children[3].val.children[3].type    = TOKEN_NUM;
+    root->val.children[3].val.children[3].val.num = 5;
+    root->val.children[3].val.children[4].type    = TOKEN_EOL;
+
+    root->val.children[4].type    = TOKEN_NUM;
+    root->val.children[4].val.num = 6;
+    root->val.children[5].type    = TOKEN_NUM;
+    root->val.children[5].val.num = 7;
+    root->val.children[6].type    = TOKEN_EOL;
+
+    puts("Print test:");
+    tree_print(root, 0);
+
+    /*--------------------------------------------------------------------*/
+
     bool quit = false;
     while (!quit) {
         char* input = readline("Input> ");

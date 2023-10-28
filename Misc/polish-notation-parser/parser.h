@@ -21,8 +21,10 @@ typedef struct Token {
 
 /* FIXME: Make static */
 int token_count(char* in);
+Token* token_new(void);
 
 Token* parse(char* in);
+void tree_print(Token* parent, int indent);
 void tree_free(Token* parent);
 
 #endif /* PARSER_H_ */

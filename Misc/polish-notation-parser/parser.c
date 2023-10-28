@@ -8,10 +8,16 @@
 #include "parser.h"
 #include "util.h"
 
+/* Used for tree_print() */
+#define INDENT_STEP 3
+
+/*----------------------------------------------------------------------------*/
+
+/* FIXME: Make static */
 /* Allocate and initialize a new token */
-static Token* token_new(void) {
+Token* token_new(void) {
     Token* t        = malloc(sizeof(Token));
-    t->type         = TOKEN_EOL;
+    t->type         = TOKEN_PARENT;
     t->val.children = NULL;
     return t;
 }
@@ -159,6 +165,43 @@ Token* parse(char* in) {
     parse_list(root, in);
 
     return root;
+}
+
+static inline void print_indent(int indent) {
+    if (indent == 0)
+        return;
+
+    for (int i = 0; i < indent; i++)
+        /* if (i > 0 && (i - 1) % INDENT_STEP == 0) */
+        if (i % INDENT_STEP == 0)
+            putchar('|');
+        else
+            putchar(' ');
+}
+
+/* Recursively print all Tokens from a tree */
+void tree_print(Token* parent, int indent) {
+    switch (parent->type) {
+        case TOKEN_PARENT:
+            print_indent(indent);
+            printf("[LIST]\n");
+
+            /* If the token is a parent, print the children until End Of List */
+            for (int i = 0; parent->val.children[i].type != TOKEN_EOL; i++)
+                tree_print(&parent->val.children[i], indent + INDENT_STEP);
+            break;
+        case TOKEN_OPERATOR:
+            print_indent(indent);
+            printf("[OP] \"%s\"\n", parent->val.str);
+            break;
+        case TOKEN_NUM:
+            print_indent(indent);
+            printf("[NUM] %d\n", parent->val.num);
+            break;
+        case TOKEN_EOL:
+        default:
+            break;
+    }
 }
 
 /* Recursively free all Tokens from a tree */
