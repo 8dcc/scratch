@@ -5,14 +5,13 @@ enum ETokenType {
     TOKEN_EOL, /* End Of List. Indicates the last item of Token.val.children */
     TOKEN_PARENT,
     TOKEN_OPERATOR,
-    TOKEN_NUMLITERAL,
+    TOKEN_NUM,
 };
 
 typedef struct Token {
     enum ETokenType type;
     union {
-        int num;
-        char ch;
+        int32_t num;
         char* str;
         struct Token* children;
     } val;
@@ -20,11 +19,10 @@ typedef struct Token {
 
 /*----------------------------------------------------------------------------*/
 
-/* FIXME */
-int token_count(void);
+/* FIXME: Make static */
+int token_count(char* in);
 
-void input_init(char* in);
 Token* parse(char* in);
-void free_tree(Token* parent);
+void tree_free(Token* parent);
 
 #endif /* PARSER_H_ */

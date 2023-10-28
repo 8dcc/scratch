@@ -2,25 +2,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "parser.h"
 #include "util.h"
-
-static char* input   = NULL;
-static int input_pos = 0;
-
-/*----------------------------------------------------------------------------*/
-
-/* Returns the character at input[input_pos + n] */
-static inline char peek(int n) {
-    return input[input_pos + n];
-}
-
-/* Returns the character at input[input_pos + n], and jumps to that position */
-static inline char consume(int n) {
-    input_pos += n;
-    return input[input_pos];
-}
 
 /* Allocate and initialize a new token */
 static Token* token_new(void) {
@@ -31,91 +17,166 @@ static Token* token_new(void) {
 }
 
 /* FIXME: Make static */
-/* Counts tokens in a list from current position in input. Asumes input is
- * pointing to '(', and reads until ')' */
-int token_count(void) {
-    char c = 0, prev = 0;
+/* Counts tokens in a list from input. Asumes input is pointing to '(', and
+ * reads until ')' */
+int token_count(char* in) {
     int ret = 0;
 
-    for (int i = 0; (c = peek(i)) != ')'; i++) {
-        if (c == '\0') {
+    for (int i = 0; in[i] != ')'; i++) {
+        if (in[i] == '\0') {
         unexpected_eof:
             ERR("Reached end of input. Expected ')'");
             break;
         }
 
         /* Previous char was a token separator */
-        if (prev == '(' || prev == ' ') {
+        if (i > 0 && (in[i - 1] == '(' || in[i - 1] == ' ')) {
             /* Current token is not a separator */
-            if (c != ' ')
+            if (!isspace(in[i]))
                 ret++;
 
             /* If it's the start of another list, skip it since it's only 1
              * parent token and we don't care about the children for now */
-            if (c == '(') {
+            if (in[i] == '(') {
                 i++;
 
-                char tmp;
-                while ((tmp = peek(i)) != ')')
-                    if (tmp == '\0')
+                while (in[i] != ')')
+                    if (in[i] == '\0')
                         goto unexpected_eof;
                     else
                         i++;
             }
         }
-
-        prev = c;
     }
 
     return ret;
 }
 
-/* Parses the input, and stores Tokens */
-static void parse_token(Token* current) {
-    char c;
-    while ((c = consume(1)) != '\0') {
-        if (c == '(') {
-            /* Count tokens in current list */
-            int child_num = token_count();
+/* Reads input until whitespace, and fills `out` token. For lists, use
+ * parse_list() */
+static char* token_store(Token* out, char* in) {
+    bool only_digits = true;
 
-            /* Allocate children (+ 1 for EOL terminator) */
-            current->type         = TOKEN_PARENT;
-            current->val.children = malloc((child_num + 1) * sizeof(Token));
-
-            /* End Of List terminator */
-            current->val.children[child_num].type = TOKEN_EOL;
-
-            /* TODO */
-            for (int i = 0; i < child_num; i++)
-                parse_token(&current->val.children[i]);
+    int i;
+    for (i = 0; in[i] != '\0' && !isspace(in); i++) {
+        if (!isdigit(in[i])) {
+            only_digits = false;
+            break;
         }
-
-        /* TODO */
     }
+
+    if (only_digits) {
+        out->type = TOKEN_NUM;
+
+        /* Temporarily terminate string on space for atoi */
+        char tmp     = in[i];
+        in[i]        = '\0';
+        out->val.num = atoi(in);
+        in[i]        = tmp;
+    } else {
+        out->type    = TOKEN_OPERATOR;
+        out->val.str = calloc(i + 1, sizeof(char));
+        strncpy(out->val.str, in, i);
+    }
+
+    return in;
 }
 
-void input_init(char* in) {
-    input     = in;
-    input_pos = 0;
+/* Parse the input, store Tokens. The input should point to '(' and will
+ * recursivelly parse until ')'. It will return a pointer to the corresponding
+ * '('. The children token array should be already allocated by caller. */
+static char* parse_list(Token* parent, char* in) {
+    if (*in == '(')
+        in++;
+    else
+        ERR("Expected '(', ignoring");
+
+    /* Current token position inside parent->val.children[] */
+    int child_i = 0;
+
+    bool in_list = true;
+    while (in_list) {
+        switch (*in++) {
+            case '\0':
+                ERR("Reached end of input. Expected ')'");
+                /* fallthrough */
+            case ')':
+                in_list = false;
+                break;
+            case '(': {
+                /* Count tokens of child list */
+                int child_count = token_count(in);
+
+                /* Current child of `parent`, will be used as parent for the
+                 * sublist. Extra variable for readability */
+                Token* const cur = &parent->val.children[child_i];
+
+                /* Allocate children (+ 1 for EOL terminator) */
+                cur->type         = TOKEN_PARENT;
+                cur->val.children = malloc((child_count + 1) * sizeof(Token));
+
+                /* End Of List terminator (for the sublist) */
+                cur->val.children[child_count].type = TOKEN_EOL;
+
+                /* Parse sublist, update input pointer */
+                in = parse_list(&cur->val.children[0], in);
+
+                /* Skip char since it parse_list returned pointer to ')' */
+                in++;
+
+                break;
+            }
+            case ' ': /* isspace() */
+            case '\f':
+            case '\n':
+            case '\r':
+            case '\t':
+            case '\v':
+                break;
+            default: {
+                /* Current child of `parent`. Extra variable for readability */
+                Token* const cur = &parent->val.children[child_i];
+
+                /* Store token from input, update pointer */
+                in = token_store(cur, in);
+
+                /* Go to the next child Token */
+                child_i++;
+                break;
+            }
+        }
+    }
+
+    return in;
 }
 
-/* Returns the root of the Token tree. Must be free'd */
+/* Returns the root of the Token tree. Must be freed with tree_free() */
 Token* parse(char* in) {
-    input_init(in);
-
     Token* root = token_new();
 
-    parse_token(root);
+    /* TODO: Count root tokens and allocate root->val.children[]  */
+
+    parse_list(root, in);
 
     return root;
 }
 
-/* Recursively Free all tokens from a tree */
-void free_tree(Token* parent) {
-    /* If the token is a parent, free the children until End Of List */
-    if (parent->type == TOKEN_PARENT)
-        for (int i = 0; parent->val.children[i].type != TOKEN_EOL; i++)
-            free_tree(&parent->val.children[i]);
+/* Recursively free all Tokens from a tree */
+void tree_free(Token* parent) {
+    switch (parent->type) {
+        case TOKEN_PARENT:
+            /* If the token is a parent, free the children until End Of List */
+            for (int i = 0; parent->val.children[i].type != TOKEN_EOL; i++)
+                tree_free(&parent->val.children[i]);
+            break;
+        case TOKEN_OPERATOR:
+            /* If the token is an operator, free the allocated string before
+             * freeing the Token */
+            free(parent->val.str);
+            break;
+        default:
+            break;
+    }
 
     free(parent);
 }

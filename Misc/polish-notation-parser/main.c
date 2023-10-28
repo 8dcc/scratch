@@ -16,8 +16,6 @@
 #include "parser.h"
 #include "util.h"
 
-/*----------------------------------------------------------------------------*/
-
 /* Returns true if string `str` mathes regex pattern `pat`. Pattern uses BRE
  * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html */
 static bool regex(const char* str, const char* pat) {
@@ -60,18 +58,10 @@ int main(void) {
 
         add_history(input);
 
-        if (!strcmp(input, "quit")) {
-            quit = true;
-            goto exit_loop;
-        }
-
-        /* FIXME */
-        input_init(input);
-
-        int tokens = token_count();
+        /* TODO */
+        int tokens = token_count(input);
         printf("Count: %d\n", tokens);
 
-    exit_loop:
         /* Free allocated memory from readline() */
         free(input);
     }
