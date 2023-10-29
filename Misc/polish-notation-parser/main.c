@@ -29,10 +29,14 @@ int main(void) {
 
         add_history(input);
 
+        /* Generate Token tree from user input */
         Token* tokens = parse(input);
+
+        /* TODO: For now just print it */
         tree_print(tokens, 0);
 
-        /* TODO: Free tokens using tree_free() */
+        /* Free tokens using tree_free() */
+        tree_free(tokens);
 
         /* Free allocated memory from readline() */
         free(input);

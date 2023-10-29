@@ -185,9 +185,6 @@ Token* parse(char* in) {
 }
 
 static inline void print_indent(int indent) {
-    if (indent == 0)
-        return;
-
     for (int i = 0; i < indent; i++)
         putchar(' ');
 }
@@ -221,9 +218,13 @@ void tree_print(Token* parent, int indent) {
 void tree_free(Token* current) {
     switch (current->type) {
         case TOKEN_PARENT:
-            /* If the token is a parent, free the children until End Of List */
+            /* If the token is a parent, free each children until End Of List */
             for (int i = 0; current->val.children[i].type != TOKEN_EOL; i++)
                 tree_free(&current->val.children[i]);
+
+            /* And then free the Token array itself */
+            free(current->val.children);
+
             break;
         case TOKEN_OPERATOR:
             /* If the token is an operator, free the allocated string before
@@ -231,8 +232,8 @@ void tree_free(Token* current) {
             free(current->val.str);
             break;
         default:
+            /* Other types don't need to be freed because they are allocated
+             * (and freed) with their parents */
             break;
     }
-
-    free(current);
 }
