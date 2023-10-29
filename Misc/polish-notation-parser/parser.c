@@ -9,7 +9,7 @@
 #include "util.h"
 
 /* Used for tree_print() */
-#define INDENT_STEP 3
+#define INDENT_STEP 4
 
 /*----------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@ int token_count(char* in) {
         }
 
         /* Previous char was a token separator */
-        if (i > 0 && (in[i - 1] == '(' || in[i - 1] == ' ')) {
+        if (i > 0 && (in[i - 1] == '(' || isspace(in[i - 1]))) {
             /* Current token is not a separator */
             if (!isspace(in[i]))
                 ret++;
@@ -84,8 +84,15 @@ static char* token_store(Token* out, char* in) {
         in[i]        = tmp;
     } else {
         out->type    = TOKEN_OPERATOR;
-        out->val.str = calloc(i + 1, sizeof(char));
+        out->val.str = malloc(i + 1);
+
+        if (out->val.str == NULL) {
+            ERR("Error allocating token string. Aborting...");
+            exit(1);
+        }
+
         strncpy(out->val.str, in, i);
+        out->val.str[i] = '\0';
     }
 
     return &in[i];
@@ -128,11 +135,13 @@ static char* parse_list(Token* parent, char* in) {
                 cur->val.children[child_count].type = TOKEN_EOL;
 
                 /* Parse sublist, update input pointer */
-                in = parse_list(&cur->val.children[0], in);
+                in = parse_list(cur, in);
 
                 /* Skip char since it parse_list returned pointer to ')' */
                 in++;
 
+                /* Go to the next child Token */
+                child_i++;
                 break;
             }
             case ' ': /* isspace() */
@@ -182,11 +191,7 @@ static inline void print_indent(int indent) {
         return;
 
     for (int i = 0; i < indent; i++)
-        /* if (i > 0 && (i - 1) % INDENT_STEP == 0) */
-        if (i % INDENT_STEP == 0)
-            putchar('|');
-        else
-            putchar(' ');
+        putchar(' ');
 }
 
 /* Recursively print all Tokens from a tree */
