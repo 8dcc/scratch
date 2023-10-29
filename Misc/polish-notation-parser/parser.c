@@ -13,19 +13,17 @@
 
 /*----------------------------------------------------------------------------*/
 
-/* FIXME: Make static */
 /* Allocate and initialize a new token */
-Token* token_new(void) {
+static Token* token_new(void) {
     Token* t        = malloc(sizeof(Token));
     t->type         = TOKEN_PARENT;
     t->val.children = NULL;
     return t;
 }
 
-/* FIXME: Make static */
 /* Counts tokens in a list from input. Asumes input is pointing to '(', and
  * reads until ')' */
-int token_count(char* in) {
+static int token_count(char* in) {
     int ret = 0;
 
     for (int i = 0; in[i] != ')'; i++) {
@@ -220,21 +218,21 @@ void tree_print(Token* parent, int indent) {
 }
 
 /* Recursively free all Tokens from a tree */
-void tree_free(Token* parent) {
-    switch (parent->type) {
+void tree_free(Token* current) {
+    switch (current->type) {
         case TOKEN_PARENT:
             /* If the token is a parent, free the children until End Of List */
-            for (int i = 0; parent->val.children[i].type != TOKEN_EOL; i++)
-                tree_free(&parent->val.children[i]);
+            for (int i = 0; current->val.children[i].type != TOKEN_EOL; i++)
+                tree_free(&current->val.children[i]);
             break;
         case TOKEN_OPERATOR:
             /* If the token is an operator, free the allocated string before
              * freeing the Token */
-            free(parent->val.str);
+            free(current->val.str);
             break;
         default:
             break;
     }
 
-    free(parent);
+    free(current);
 }
