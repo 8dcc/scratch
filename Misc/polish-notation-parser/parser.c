@@ -216,6 +216,27 @@ void tree_print(Token* parent, int indent) {
 
 /* Recursively free all Tokens from a tree */
 void tree_free(Token* current) {
+    /* FIXME: Because the children of a token are a simple 1d array, tokens are
+     * not allocated individually, so you can't free each Token. The root token
+     * (allocated in parse() with token_new()) has to be manually allocated by
+     * the caller.
+     *
+     * A solution to this would be to use a linked list instead of a 1d array
+     * for the children:
+     *
+     *   Current (Allocate array once):
+     *     Parent
+     *      |
+     *      |--> [ Child0, Child1, Child2, ..., EOL ]
+     *
+     *   Goal (Allocate each token and link):
+     *     Parent
+     *      |
+     *      |--> Child0 --> Child1 --> Child2 -> ... --> (NULL)
+     *                                  |
+     *                                  |--> Child2_0 -> Child2_1 -> ...
+     */
+
     switch (current->type) {
         case TOKEN_PARENT:
             /* If the token is a parent, free each children until End Of List */
