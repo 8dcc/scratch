@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-Wall -Wextra
 LDFLAGS=-lreadline
 
-OBJ_FILES=main.c.o parser.c.o
+OBJ_FILES=main.c.o parser.c.o calc.c.o
 OBJS=$(addprefix obj/, $(OBJ_FILES))
 
 BIN=polish-notation-parser.out
