@@ -1,5 +1,7 @@
 #ifndef PARSER_H_
-#define PARSER_H_
+#define PARSER_H_ 1
+
+#include <stdint.h>
 
 enum ETokenType {
     TOKEN_EOL, /* End Of List. Indicates the last item of Token.val.children */

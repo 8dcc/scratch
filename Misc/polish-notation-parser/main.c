@@ -1,19 +1,12 @@
-/*
- * For more information on parsers, see:
- *   https://supunsetunga.medium.com/writing-a-parser-getting-started-44ba70bb6cc9
- *   https://supunsetunga.medium.com/writing-a-parser-algorithms-and-implementation-a7c40f46493d
- *
- * Reads each line from stdin, and uses an in-memory reader.
- */
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <regex.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
 #include "parser.h"
+#include "calc.h"
 #include "util.h"
 
 #if 0
@@ -47,8 +40,14 @@ int main(void) {
         /* Generate Token tree from user input */
         Token* tokens = parse(input);
 
-        /* TODO: For now just print it */
+#ifdef DEBUG
+        /* Print the tree */
         tree_print(tokens, 0);
+        putchar('\n');
+#endif
+
+        int32_t result = calc(tokens);
+        printf("  Out> %d\n", result);
 
         /* Free tokens using tree_free() */
         tree_free(tokens);
