@@ -1,0 +1,80 @@
+#+title: Bitmap rectangle
+#+options: toc:nil
+#+property: header-args:emacs-lisp :tangle bitmap-rect.el
+#+author: 8dcc
+
+* Width to bits
+
+We want to generate the binary =0b1111=, with 4 (=n=) ones. To do this, we can shift
+=1= to =n= places to get =0b10000= and subtract one.
+
+#+begin_src emacs-lisp
+(defun func-width-to-bits (n)
+  (- (ash 1 n) 1))
+
+(func-width-to-bits 6)
+#+end_src
+
+#+RESULTS:
+: 63
+
+Or as a macro:
+
+#+begin_src emacs-lisp
+(defmacro macro-width-to-bits (n)
+  `(- (ash 1 ,n) 1))
+
+(macro-width-to-bits 6)
+#+end_src
+
+#+RESULTS:
+: 63
+
+* Height to list of rows
+
+To get =n= rows of =x= bitmap, we can use =make-list=.
+
+#+begin_src emacs-lisp
+(defmacro height-to-rows (n x)
+  `(make-list ,n ,x))
+
+(height-to-rows 5 85)
+#+end_src
+
+#+RESULTS:
+| 85 | 85 | 85 | 85 | 85 |
+
+* Combined
+
+We can combine the two to create the following function:
+
+#+begin_src emacs-lisp
+(defun bitmap-rect (w h)
+  (make-list h
+             (- (ash 1 w) 1)))
+
+(bitmap-rect 7 5)
+#+end_src
+
+#+RESULTS:
+| 127 | 127 | 127 | 127 | 127 |
+
+We can print it in base 2 by mapping each element of the list to
+=math-format-radix=, after setting the correct base inside =calc-number-radix.=
+
+#+begin_src emacs-lisp
+(defun bitmap-rect (w h)
+  (make-list h
+             (- (ash 1 w) 1)))
+
+;; For math-format-radix
+(require 'calc-bin)
+
+(mapcar (lambda (n)
+          (let ((calc-number-radix 2))
+            (math-format-radix n)))
+        (bitmap-rect 7 5))
+#+end_src
+
+#+RESULTS:
+| 1111111 | 1111111 | 1111111 | 1111111 | 1111111 |
