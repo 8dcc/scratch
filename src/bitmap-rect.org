@@ -93,3 +93,24 @@ The =define-fringe-bitmap= function expects a [[https://www.gnu.org/software/ema
 
 #+RESULTS:
 : [127 127 127 127 127]
+
+* Final macro
+
+The final macro for using =define-fringe-bitmap=:
+
+#+begin_src emacs-lisp
+(defmacro my-fringe-helper-rect (name alignment w h)
+  `(define-fringe-bitmap ,name
+     (apply #'vector
+            (make-list ,h
+                       (- (ash 1 ,w) 1)))
+     nil nil ,alignment))
+
+(macroexpand
+ '(my-fringe-helper-rect 'git-gutter-fr:added 'center 3 20))
+#+end_src
+
+#+RESULTS:
+| define-fringe-bitmap | 'git-gutter-fr:added | (apply #'vector (make-list 20 (- (ash 1 3) 1))) | nil | nil | 'center |
+
+Special thanks to @wasamasa for the help in #lisp.
