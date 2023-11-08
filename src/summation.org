@@ -21,8 +21,39 @@ functions, we can't just use =(f a)=. We need to call the function with
 
 (princ (summation 1 5 (lambda (x) x)))
 (princ ", ")
-(princ (summation 1 5 (lambda (x) (expt x 2))))
+(princ (summation 1 5 (lambda (x) (expt 2 x))))
 #+end_src
 
 #+RESULTS:
-: 15, 55
+: 15, 62
+
+* C
+
+#+begin_src C :results output
+#include <stdio.h>
+
+typedef int (*FuncPtr)(int x);
+
+int summation(int a, int b, FuncPtr f) {
+    int ret = 0;
+
+    for (; a <= b; a++)
+        ret += f(a);
+
+    return ret;
+}
+
+int echo(int x) {
+    return x;
+}
+
+int pow2(int x) {
+    return (1 << x); /* (2 ^ x) */
+}
+
+printf("%d, ", summation(1, 5, echo));
+printf("%d\n", summation(1, 5, pow2));
+#+end_src
+
+#+RESULTS:
+: 15, 62
