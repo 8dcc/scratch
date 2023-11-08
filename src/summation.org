@@ -1,0 +1,28 @@
+#+title: Summation
+#+options: toc:nil
+#+property: header-args:emacs-lisp :tangle summation.el
+#+property: header-args:C :tangle summation.c
+#+author: 8dcc
+
+* Emacs lisp
+
+Function that calculates \(\sum_{i=a}^{b}f(i)\) with a given =n= and =f()=.
+
+Note that because emacs lisp uses different namespaces for variables and
+functions, we can't just use =(f a)=. We need to call the function with
+=(funcall f a)=, which is equivalent to =(apply f (a))=.
+
+#+begin_src emacs-lisp :results output
+(defun summation (a b f)
+  (if (> a b)
+      0
+    (+ (funcall f a)
+       (summation (+ a 1) b f))))
+
+(princ (summation 1 5 (lambda (x) x)))
+(princ ", ")
+(princ (summation 1 5 (lambda (x) (expt x 2))))
+#+end_src
+
+#+RESULTS:
+: 15, 55
