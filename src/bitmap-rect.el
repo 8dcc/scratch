@@ -30,3 +30,9 @@
           (let ((calc-number-radix 2))
             (math-format-radix n)))
         (bitmap-rect 7 5))
+
+(defun bitmap-rect (w h)
+  (make-list h
+             (- (ash 1 w) 1)))
+
+(apply #'vector (bitmap-rect 7 5))

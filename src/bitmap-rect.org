@@ -78,3 +78,18 @@ We can print it in base 2 by mapping each element of the list to
 
 #+RESULTS:
 | 1111111 | 1111111 | 1111111 | 1111111 | 1111111 |
+
+* Turning it to a vector
+
+The =define-fringe-bitmap= function expects a [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Vector-Type.html][vector]], so we need to use [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Calling-Functions.html][apply]].
+
+#+begin_src emacs-lisp
+(defun bitmap-rect (w h)
+  (make-list h
+             (- (ash 1 w) 1)))
+
+(apply #'vector (bitmap-rect 7 5))
+#+end_src
+
+#+RESULTS:
+: [127 127 127 127 127]
