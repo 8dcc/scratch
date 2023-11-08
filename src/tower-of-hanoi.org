@@ -1,0 +1,44 @@
+#+title: Towers of Hanoi
+#+options: toc:nil
+#+property: header-args:emacs-lisp :tangle tower-of-hanoi.el
+#+author: 8dcc
+
+* Emacs lisp
+
+See SICP lectures by Harold Abelson and Gerald Jay Sussman, 1986. [[https://youtu.be/V_7mmwpgJHU?si=taZcChDFRIyKGzLe&t=2843][Link]]
+
+#+begin_src emacs-lisp :results output
+(defun my-print-list (lst)
+  (if (not (null lst))
+      (progn
+        (princ (car lst))
+        (my-print-list (cdr lst)))))
+
+(defun move-stack (num from to aux)
+  (if (> num 0)
+      (progn
+        (move-stack (- num 1) from aux to)
+        (my-print-list (list "Moving from " from " to " to "\n"))
+        (move-stack (- num 1) aux to from))))
+
+(move-stack 4 'A 'B 'C)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Moving from A to C
+Moving from A to B
+Moving from C to B
+Moving from A to C
+Moving from B to A
+Moving from B to C
+Moving from A to C
+Moving from A to B
+Moving from C to B
+Moving from C to A
+Moving from B to A
+Moving from C to B
+Moving from A to C
+Moving from A to B
+Moving from C to B
+#+end_example
