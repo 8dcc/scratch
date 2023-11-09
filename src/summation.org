@@ -1,12 +1,12 @@
 #+title: Summation
 #+options: toc:nil
-#+property: header-args:emacs-lisp :tangle summation.el
-#+property: header-args:C :tangle summation.c
+#+property: header-args:emacs-lisp :tangle summation.el :exports both
+#+property: header-args:C :tangle summation.c :exports both
 #+author: 8dcc
 
 * Emacs lisp
 
-Function that calculates \(\sum_{i=a}^{b}f(i)\) with a given =n= and =f()=.
+Function that calculates \(\sum_{i=a}^{b}f(i)\) with a given =a=, =b= and =f()=.
 
 Note that because emacs lisp uses different namespaces for variables and
 functions, we can't just use =(f a)=. We need to call the function with
