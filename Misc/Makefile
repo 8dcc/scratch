@@ -4,7 +4,11 @@ CCPP=g++
 CFLAGS=-Wall -Wextra -g
 
 # Link with -lm
-MATH_BINS=ppm-mandelbrot.out bresenham-line.out rotation-matrix.out spinning-torus.out
+MATH_BINS=ppm-mandelbrot.out \
+          bresenham-line.out \
+          rotation-matrix.out \
+          spinning-torus.out \
+          generate-wav.out
 
 .PHONY: all clean
 
