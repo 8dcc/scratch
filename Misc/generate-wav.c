@@ -42,14 +42,14 @@ int main(void) {
     memcpy(h.ChunkID, "RIFF", 4);
     memcpy(h.Format, "WAVE", 4);
 
-    /* Including '\0' */
+    /* Including ' ' */
     memcpy(h.Subchunk1ID, "fmt ", 4);
 
     /* Size in bytes of next 6 properties */
     h.Subchunk1Size = 16;
 
     h.AudioFormat = PCM;
-    h.NumChannels = MONO;
+    h.NumChannels = STEREO;
 
     /* Samples per second */
     h.SampleRate = 8000;
@@ -77,13 +77,29 @@ int main(void) {
 
     const int wave_amplitude = 1000;
     const double note_freq   = 256.0;
-    uint16_t data[NumSamples];
 
-    /* Populate `data' with `NumSamples' notes of frequency `note_freq' */
-    for (int i = 0; i < NumSamples; i++)
+    /* Each element should be h.BlockAlign (2 bytes * 2 channels in our case) */
+    uint32_t data[NumSamples];
+
+    /* Populate left channel of `data' with `NumSamples' notes of frequency
+     * `note_freq' */
+    for (int i = 0; i < NumSamples; i++) {
         /* Generate cosine wave: https://www.desmos.com/calculator/fuv5xs95i5 */
-        data[i] = (uint16_t)(cos((2 * M_PI * note_freq * i) / h.SampleRate) *
-                             wave_amplitude);
+        const uint16_t left_sample =
+          (uint16_t)(cos((2 * M_PI * (note_freq + 100) * i) / h.SampleRate) *
+                     wave_amplitude);
+
+        /* Move left sample to upper 2 bytes */
+        data[i] = left_sample << 16;
+
+        /* Right channel */
+        const uint16_t right_sample =
+          (uint16_t)(cos((2 * M_PI * (note_freq - 100) * i) / h.SampleRate) *
+                     wave_amplitude);
+
+        /* Move right sample to lower 2 bytes */
+        data[i] |= right_sample;
+    }
 
     FILE* fp = fopen("output.wav", "w");
     fwrite(&h, 1, sizeof(wav_header), fp);
