@@ -27,7 +27,7 @@ static void generate_key(const char* user, uint8_t* out) {
             c = ((c & 0x55555555) << 1) | ((c & 0xAAAAAAAA) >> 1);
 
             /* XOR by the previous char */
-            c ^= (last_c * iter) & 0xFF;
+            c ^= (last_c * iter) % 0xFF;
 
             /* Depending on the length of the input, change the output */
             c ^= user_len & 0xFF;
