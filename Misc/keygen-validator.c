@@ -100,10 +100,7 @@ int main(void) {
     uint8_t real_key[KEY_LEN] = { 0 };
     generate_key(user, real_key);
 
-    bool match = true;
-    for (int i = 0; i < KEY_LEN; i++)
-        if (user_key[i] != real_key[i])
-            match = false;
+    bool match = memcmp(user_key, real_key, KEY_LEN) == 0;
 
     if (match)
         puts("Correct key.");
