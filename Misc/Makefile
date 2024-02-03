@@ -10,6 +10,8 @@ MATH_BINS=ppm-mandelbrot.out \
           spinning-torus.out \
           generate-wav.out
 
+SDL_BINS=sdl-bresenham-line.out
+
 .PHONY: all clean
 
 all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildcard ./*.cpp))
@@ -17,7 +19,7 @@ all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildca
 clean:
 	rm -f *.out
 
-sdl-bresenham-line.out: sdl-bresenham-line.c
+$(SDL_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< -lm `sdl2-config --cflags --libs`
 
 64bit-vars-in-32bit-pc.out: 64bit-vars-in-32bit-pc.c
