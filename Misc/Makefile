@@ -12,15 +12,14 @@ MATH_BINS=ppm-mandelbrot.out \
 
 SDL_BINS=sdl-bresenham-line.out
 
+RAYLIB_BINS=raylib-cube.out
+
 .PHONY: all clean
 
 all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildcard ./*.cpp))
 
 clean:
 	rm -f *.out
-
-$(SDL_BINS): %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< -lm `sdl2-config --cflags --libs`
 
 64bit-vars-in-32bit-pc.out: 64bit-vars-in-32bit-pc.c
 	$(CC) $(CFLAGS) -m32 -o $@ $<
@@ -33,6 +32,12 @@ ncurses-%.out: ncurses-%.c
 
 $(MATH_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< -lm
+
+$(SDL_BINS): %.out: %.c
+	$(CC) $(CFLAGS) -o $@ $< -lm `sdl2-config --cflags --libs`
+
+$(RAYLIB_BINS): %.out: %.c
+	$(CC) $(CFLAGS) -o $@ $< -lraylib
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $<
