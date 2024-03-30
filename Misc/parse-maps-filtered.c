@@ -9,11 +9,15 @@
  * include by just checking if c is a space.
  */
 
+/* Required by get_module_bounds() */
 #include <stdint.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h> /* strtoull() */
 #include <ctype.h>  /* isspace() */
+
+/* Used in main() */
+#include <stdio.h>
+#include <unistd.h> /* readlink() */
 
 static void get_module_bounds(const char* module_name, uintptr_t* start,
                               uintptr_t* end) {
@@ -122,16 +126,20 @@ static void print_maps(void) {
 }
 
 int main(void) {
-    /* Use NULL to disable name filtering */
-    static const char* MODULE_NAME = "/usr/lib/libc.so.6";
+    /* Get absolute path of main executable */
+    static char name_buffer[255];
+    readlink("/proc/self/exe", name_buffer, sizeof(name_buffer));
 
+    printf("[Info] /proc/self/exe -> %s\n\n", name_buffer);
+
+    /* Pass NULL to disable name filtering */
     uintptr_t start, end;
-    get_module_bounds(MODULE_NAME, &start, &end);
+    get_module_bounds(name_buffer, &start, &end);
 
-    printf("File output:\n");
+    printf("[Info] Contents of /proc/self/maps\n");
     print_maps();
 
-    printf("\nFunction output:\n"
+    printf("\n[Info] Function output:\n"
            "Start: 0x%lX\n"
            "End: 0x%lX\n",
            start, end);
