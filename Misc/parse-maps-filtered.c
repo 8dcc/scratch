@@ -5,6 +5,8 @@
  * The function assumes the format of maps is always:
  * 0000DEADBEEF-0000ABADCAFE rwxp 000123AB 103:03 12345678   /path/module
  *
+ * NOTE: For a good version of this, see https://github.com/8dcc/libsigscan
+ *
  * NOTE: You can replace most calls to isspace() and remove the <ctype.h>
  * include by just checking if c is a space.
  */
