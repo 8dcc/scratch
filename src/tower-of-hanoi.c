@@ -1,7 +1,6 @@
-int main() {
 #include <stdio.h>
 
-void move_stack (int num, char from, char to, char aux) {
+void move_stack(int num, char from, char to, char aux) {
     if (num <= 0)
         return;
 
@@ -10,6 +9,7 @@ void move_stack (int num, char from, char to, char aux) {
     move_stack(num - 1, aux, to, from);
 }
 
-move_stack(4, 'A', 'B', 'C');
-return 0;
+int main() {
+    move_stack(4, 'A', 'B', 'C');
+    return 0;
 }
