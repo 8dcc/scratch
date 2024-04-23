@@ -1,7 +1,7 @@
 
 CC=gcc
 CCPP=g++
-CFLAGS=-Wall -Wextra -g
+CFLAGS=-Wall -Wextra -ggdb3
 
 # Link with -lm
 MATH_BINS=ppm-mandelbrot.out \
