@@ -1,0 +1,26 @@
+
+CC=gcc
+CFLAGS=-Wall -Wextra
+LDFLAGS=
+
+ASM=nasm
+ASMFLAGS=-f elf64
+
+OBJS=memcpy-test.o memcpy-asm.o
+BIN=memcpy-test.out
+
+all: $(BIN)
+
+clean:
+	rm -f $(BIN) $(OBJS)
+
+#-------------------------------------------------------------------------------
+
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+memcpy-test.o: memcpy-test.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+memcpy-asm.o: memcpy-asm.asm
+	$(ASM) $(ASMFLAGS) -o $@ $<
