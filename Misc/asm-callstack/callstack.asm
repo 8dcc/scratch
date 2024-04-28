@@ -24,11 +24,11 @@ AsmPrintCallStack:
 
 .loop:
     ; If RBP is NULL, we are done.
-    ; We add 8 to the current RBP to get the current return address.
     test    r13, r13
     jz      .done
 
     ; Otherwise, we can print it.
+    ; We add 8 to the current RBP to get the current return address.
     ;   printf("%d: %p\n", i, cur_ret);
     mov     rdx, [r12 + 0x8]
     mov     rsi, r13
@@ -36,7 +36,9 @@ AsmPrintCallStack:
     call    printf wrt ..plt
 
     ; And jump to the next one
-    ;   i--; rbp = *rbp; continue;
+    ;   i--;
+    ;   rbp = *rbp;
+    ;   continue;
     dec     r13
     mov     r12, [r12]
     jmp     .loop
