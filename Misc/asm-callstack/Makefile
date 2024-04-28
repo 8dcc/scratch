@@ -1,7 +1,7 @@
 
 CC=gcc
 CFLAGS=-Wall -Wextra
-LDFLAGS=-no-pie
+LDFLAGS=-fPIE
 
 ASM=nasm
 ASMFLAGS=-f elf64

@@ -32,7 +32,7 @@ AsmPrintCallStack:
     ;   printf("%d: %p\n", i, cur_ret);
     mov     rdx, [r12 + 0x8]
     mov     rsi, r13
-    mov     rdi, fmt
+    lea     rdi, [rel fmt]
     call    printf wrt ..plt
 
     ; And jump to the next one
