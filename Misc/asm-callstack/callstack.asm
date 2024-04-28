@@ -1,3 +1,4 @@
+; See: https://8dcc.github.io/reversing/understanding-call-stack.html
 
 default rel
 extern printf

@@ -1,3 +1,5 @@
+/* See: https://8dcc.github.io/reversing/understanding-call-stack.html */
+
 #include <stdio.h>
 
 extern void AsmPrintCallStack(int depth);
