@@ -11,6 +11,8 @@ OBJS=$(addprefix obj/, $(OBJ_FILES))
 
 BIN=callstack-test.out
 
+.PHONY: all clean
+
 all: $(BIN)
 
 clean:
