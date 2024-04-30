@@ -1,12 +1,12 @@
-# ASM stuff
-**Stuff I made while learning assembly**
+# Assembly
+**Stuff I made while learning assembly.**
 
 ### Description
 Simple assembly files I used for learning. Most of them have only been tested on
 linux and/or use linux syscalls, so keep that in mind.
 
-Just like in [`c-stuff`](https://github.com/8dcc/c-stuff) you will be able to
-see my progression. And that might include bad practices at first.
+Just like in C, you will be able to see my progression. And that might include
+bad practices at first.
 
 ### Building
 You can use my small
@@ -16,7 +16,7 @@ script for quick nasm compile and link, or use the makefile like this:
 $ ls misc/11-xchg
 simple-lib.asm  xchg.asm
 
-$ make xchg.o     # Optional. Done automatic in .out
+$ make xchg.o     # Optional. Done automatically in .out
 $ make xchg.out   # Link object
 
 $ ls misc/11-xchg
