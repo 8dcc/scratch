@@ -1,6 +1,6 @@
 # Misc
-/Misc/mandelbrots/
-/Misc/*.wav
+/C/Misc/mandelbrots/
+/C/Misc/*.wav
 
 # Prerequisites
 *.d
