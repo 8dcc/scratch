@@ -1,0 +1,608 @@
+#+title: ANSI Common Lisp - Chapter 2
+#+options: toc:nil
+#+property: header-args:lisp :tangle acl-chapter2.lisp :comments link
+#+auto_tangle: t
+#+author: 8dcc
+
+[[file:acl-chapter3.org][Next Chapter]]
+
+-----
+
+#+TOC: headlines 2
+
+* Chapter 2.10: Variables
+The =let= macro is used to create local variables. It takes 2 arguments, the first
+one is a *list* of variable declarations and the second one is the body of
+expressions. The body is where we want to use our new local variables.
+
+Note: The first let is just used to show the multiple variable declarations. The
+return value of a function is always the last expression, in this case the
+second let.
+
+#+begin_src lisp
+(defun test-let ()
+  (let ((var1 5)
+        (var2 13)
+        (var3 10))
+    (+ var1 var2 var3))
+  (let ((var1 7))       ; Note the list of declarations even with only 1
+    (- var1 5)))
+
+(test-let)
+#+end_src
+
+#+RESULTS:
+: 2
+
+* Chapter 2.13: Iteration
+The =do= macro is used for iteration and takes 3 arguments (the third one being
+the contents of the loop). The first argument is, like with =let=, a *list* of
+variable specifications. Each specification of this list has the following
+format:
+
+~(variable initial update)~
+
+Which would be like:
+
+~for (variable = initial; ...; update)~
+
+The 2nd argument of the =do= macro is a list containing the conditions of the loop
+and extra expressions. This is the format:
+
+~(stop-condition expression ...)~
+
+The loop will keep going *until* the first expression is true. Once the expression
+is true, it will stop the loop and start evaluating the rest of the expressions.
+The =do= macro will return the value of the last expression of the list.
+
+After this list, the remaining arguments are expressions to be executed in the
+while loop.
+
+#+begin_src lisp :results output
+(defun test-do (n)
+  (do ((i 0 (+ i 1))
+       (j 0 (+ j 3)))
+      ((> i n)              ; Stop condition
+       (format t "Finished first loop.~%")      ; Will get executed once it stops
+       'done)               ; Last expresion, returned by do macro
+    (format t "i: ~A j: ~A~%" i j))
+  (do ((i n (- i 2)))       ; Note the list of declarations even with only 1
+      ((<= i 0) 'done)
+    (format t "i: ~A~%" i)))
+
+(test-do 5)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+i: 0 j: 0
+i: 1 j: 3
+i: 2 j: 6
+i: 3 j: 9
+i: 4 j: 12
+i: 5 j: 15
+Finished first loop.
+i: 5
+i: 3
+i: 1
+#+end_example
+
+* Chapter 2.14: Functions as Objects
+We used the =defun= macro for declaring functions with a name (associating the
+function to a symbol) but we don't need to do that. We can create a /lambda
+expression/, which is how we create function objects (that we can later use as
+parameters to functions, etc.).
+
+To create this /lambda expression/ we use the =lambda= symbol, a list of parameters,
+and zero or more expressions (body).
+
+#+begin_src lisp
+(lambda (x y)       ; No name
+  (* x y))
+#+end_src
+
+#+RESULTS:
+: #<FUNCTION (LAMBDA (X Y)) {5368A96B}>
+
+When we define a function with =defun=, we are just associating this /function
+object/ to a symbol (the name of the function). When we use that symbol, we will
+be referring to the function object.
+
+What this means is that in reality we can use a lambda function just like we
+would use a function name, so we can declare it and use it to call in the same
+expression:
+
+#+begin_src lisp
+((lambda (x) (* x x)) 5)    ; 5 is a parameter
+#+end_src
+
+#+RESULTS:
+: 25
+
+We can assign the value of a lambda expression (function object) to a symbol
+using =let=.
+
+Here is an example using =let=:
+
+#+begin_src lisp :results output
+(let ((mylambda #'(lambda (x y)
+                    (format t "I am an expression inside the lambda!~%")
+                    (* x y))))
+  (format t "Begining of the let expression block!~%")
+  (format t "Lambda return: ~A~%" (funcall mylambda 5 3)))
+#+end_src
+
+#+RESULTS:
+: Begining of the let expression block!
+: I am an expression inside the lambda!
+: Lambda return: 15
+
+Keep in mind that we cannot call the function directly using:
+
+~(mylambda 5 3)~
+
+Because =mylambda= is a variable that contains function object. Instead we need to
+use =funcall= or =apply=. Apply requires a list as its last argument. Usage:
+
+~(funcall mylambda 5 3)~
+~(apply mylambda '(5 3))~
+
+Lambdas and let:
+
+#+begin_src lisp :results output
+;;  'symbol -> (quote symbol)
+;; #'symbol -> (function symbol)
+(funcall #'(lambda (x)
+             (format t "(funcall) Value of x: ~A~%" x)) ; Body of lambda
+         "Test 1")                                      ; Argument
+
+(apply #'(lambda (x)
+           (format t "  (apply) Value of x: ~A~%" x))   ; Body of lambda
+       '("Test 2"))                                     ; Argument. Needs list
+#+end_src
+
+#+RESULTS:
+: (funcall) Value of x: Test 1
+:   (apply) Value of x: Test 2
+
+* Exercises
+** Exercise 1
+Describe what happens when the following expressions are evaluated.
+
+*** Expression 1
+
+#+begin_src lisp
+(+ (- 5 1) (+ 3 7))
+#+end_src
+
+#+RESULTS:
+: 14
+
+The =+= symbol is a function being called with 2 parameters, it starts evaluating
+the first one and encounters a =-= function call. It starts evaluating its first
+argument and because =5= evaluates to itself, it goes to the second argument, =1=,
+which also evaluates to itself. The 2 arguments are subtracted and the function
+returns =4=. The second parameter of the outer function is evaluated, and it
+encounters a =+= symbol, evaluates its arguments from left to right and returns
+=10=. The 2 arguments are finally passed to the outer =+= function and it returns
+=14=.
+
+*** Expression 2
+
+#+begin_src lisp
+(list 1 (+ 2 3))
+#+end_src
+
+#+RESULTS:
+| 1 | 5 |
+
+The =list= function gets called with 2 parameters. The first one evaluates to
+itself, so =1=. The second one is evaluated and the function call to =+= returns 5.
+The function returns a list from its arguments, in this case =(1, 5)=.
+
+*** Expression 3
+
+#+begin_src lisp
+(if (listp 1)
+    (+ 1 2)
+    (+ 3 4))
+#+end_src
+
+#+RESULTS:
+: 7
+
+The =if= function returns its second argument if the return value of the first one
+is not =nil=, or the third argument otherwise. In this case it begins evaluating
+the first argument (condition). The =listp= function checks if the parameter is a
+list, and in this case it gets called with =1= as its argument, so returns =nil=.
+Because the first argument of the =if= was =nil=, it jumps to its *third* argument.
+The ~(+ 3 4)~ expression returns =7=, and the =if= function returns that as well.
+
+*** Expression 4
+
+#+begin_src lisp
+(list (and (listp 3) t) (+ 1 2))
+#+end_src
+
+#+RESULTS:
+| NIL | 3 |
+
+The first expression that gets evaluated is the first argument of =list=.  The =and=
+function returns =t= if all of its arguments are true, so it begins checking from
+left to right. The =listp= function is called and returns =nil=, since =3= is not a
+list. The =and= function stops evaluating arguments once one is =nil= (since the
+return value is obviously known then), so it returns =nil=. Once the =and= function
+returns, it starts evaluating the second argument of the outer call to =list=, in
+this case ~(+ 1 2)~, which returns =3=.  The =list= function returns a list of those 2
+arguments, in this case =(nil, 3)=
+
+** Exercise 2
+Give three distinct =cons= expressions that return =(a b c)=.
+
+Note that =cons= takes only 2 arguments, and adds the first one to the start of
+the second argument.
+
+#+begin_src lisp
+(cons 'a (cons 'b (cons 'c nil)))
+#+end_src
+
+#+RESULTS:
+| A | B | C |
+
+#+begin_src lisp
+(cons 'a '(b c))
+#+end_src
+
+#+RESULTS:
+| A | B | C |
+
+#+begin_src lisp
+(cons 'a (cons 'b '(c)))
+#+end_src
+
+#+RESULTS:
+| A | B | C |
+
+** Exercise 3
+Using =car= and =cdr=, define a function to return the fourth element of a list.
+
+#+begin_src lisp
+(defun fourth-elem (lst)
+  (car (cdr (cdr (cdr lst)))))
+
+(fourth-elem '(10 20 30 40 50))
+#+end_src
+
+#+RESULTS:
+: 40
+
+** Exercise 4
+Define a function that takes two arguments and returns the greater of the two.
+
+#+begin_src lisp
+(defun greater (x y)
+  (if (> x y)
+      x
+      y))
+
+(greater 5 12)
+#+end_src
+
+#+RESULTS:
+: 12
+
+** Exercise 5
+What do these functions do?
+
+*** Function 1
+
+#+begin_src lisp
+(defun enigma (x)
+  (and (not (null x))
+       (or (null (car x))
+           (enigma (cdr x)))))
+
+(enigma '(1 2 3))
+(enigma '(1 2 nil 4))
+#+end_src
+
+#+RESULTS:
+: T
+
+The =enigma= function returns the =and= of the following:
+- Is the argument a list with items?
+- The or of the following:
+  - Is the first element of the argument =nil=?
+  - The return value of this function is true with the rest of the list?
+
+So it returns true if the list has elements and if the first element is =nul=, or
+if that condition applies to the rest of the list. So basically this
+function could be called =has-nil=.
+
+In the first call example, the process would be the following:
+1. Make sure the list ='(1 2 3)= has elements.
+2. It does, check if the first element is =nil=.
+3. It isn't, call the function with ='(2 3)=:
+   1. Make sure the list ='(2 3)= has elements.
+   2. It does, check if the first element is =nil=.
+   3. It isn't, call the function with ='(3)=:
+      1. Make sure the list ='(3)= has elements.
+      2. It does, check if the first element is =nil=.
+      3. It isn't, call the function with ='( )=:
+         1. Make sure the list ='( )= has elements.
+         2. It doesn't, return false.
+      4. None of the =or= conditions were true, return false.
+   4. None of the =or= conditions were true, return false.
+4. None of the =or= conditions were true, return false.
+
+In the first call example, the process would be the following:
+1. Make sure the list ='(1 2 nil 4)= has elements.
+2. It does, check if the first element is =nil=.
+3. It isn't, call the function with ='(2 nil 4)=:
+   1. Make sure the list ='(2 nil 4)= has elements.
+   2. It does, check if the first element is =nil=.
+   3. It isn't, call the function with ='(nil 4)=:
+      1. Make sure the list ='(nil 4)= has elements.
+      2. It does, check if the first element is =nil=.
+      3. It is, return =t=.
+   4. It returned =t=, one of the conditions of the =or= is true, return true.
+4. It returned =t=, one of the conditions of the =or= is true, return true.
+
+*** Function 2
+
+#+begin_src lisp
+(defun mystery (x y)
+  (if (null y)
+      nil
+      (if (eql (car y) x)
+          0
+          (let ((z (mystery x (cdr y))))
+            (and z (+ z 1))))))
+
+(mystery 4 '(1 2 3))
+(mystery 5 '(1 3 5 7))
+#+end_src
+
+#+RESULTS:
+: 2
+
+The =mistery= function returns =nil= if the second argument is an empty list, and =0=
+if =x= is the first argument of =y=. If none of those conditions are true, it
+creates a local variable called =z= that consists of the return value of calling
+this function of the rest of the list. When we get the return function from the
+rest of the list, the =mistery= function returns the =and= of =z= and =(+ z 1)=. Because
+=and= checks for the first expression before evaluating the second one, it will
+not add 1 to =z= unless it knows that =z= is not =nil=.
+
+So what it does is loop each element of the list by calling itself and checking
+if the first element matches =x=, once it does, we return =0=. If it doesn't match,
+we keep calling it with the rest of the list. Once we find a valid =0= from one of
+this recursive calls (we check that we didn't get =nil= with =and=), we return
+=(+ z 1)=, the =1= counts the number of recursive calls we made until =x= matched the first
+item of =y=.
+
+This way we can count how many times the function was called recursively until
+we found =x=, so this function could be called =get-idx=.
+
+In the first call example, the process would be the following:
+1. Check if =y= is full: ='(1 2 3)=
+2. It is, check if the first item is =4=.
+3. It's not, call the function with ='(2 3)=
+   1. Check if =y= is full: ='(2 3)=
+   2. It is, check if the first item is =4=.
+   3. It's not, call the function with ='(3)=
+      1. Check if =y= is full: ='(3)=
+      2. It is, check if the first item is =4=.
+      3. It's not, call the function with ='( )=
+         1. Check if =y= is full: ='( )=
+         2. It's not, return =nil=
+      4. Check if the returned value is =nil= using =and=.
+      5. It is, =and= failed so return =nil=.
+   4. Check if the returned value is =nil= using =and=.
+   5. It is, =and= failed so return =nil=.
+4. Check if the returned value is =nil= using =and=.
+5. It is, =and= failed so return =nil=.
+
+In the first call example, the process would be the following:
+1. Check if =y= is full: ='(1 3 5 7)=
+2. It is, check if the first item is =5=.
+3. It's not, call the function with ='(3 5 7)=
+   1. Check if =y= is full: ='(3 5 7)=
+   2. It is, check if the first item is =5=.
+   3. It's not, call the function with ='(5 7)=
+      1. Check if =y= is full: ='(5 7)=
+      2. It is, check if the first item is =5=.
+      3. It is return =0=.
+   4. Check if the returned value is =nil= using =and=.
+   5. It is not, return =(+ 0 1)= -> =1=.
+4. Check if the returned value is =nil= using =and=.
+5. It is not, return =(+ 1 1)= -> =2=.
+
+** Exercise 6
+What could occur in place of the =x= in each of the following exchanges?
+
+*** Expression 1
+
+~(car (x (cdr '(a (b c) d))))~
+
+#+begin_src lisp
+(car (car (cdr '(a (b c) d))))
+#+end_src
+
+#+RESULTS:
+: B
+
+*** Expression 2
+
+~(x 13 (/ 1 0))~
+
+Keep in mind that =and= will stop evaluating expressions once it finds a =nil= one,
+and =or= will stop evaluating once it finds a =non-nil= one.
+
+#+begin_src lisp
+(or 13 (/ 1 0))
+#+end_src
+
+#+RESULTS:
+: 13
+
+*** Expression 3
+
+~(x #'list 1 nil)~
+
+If we used =funcall=, each extra argument (in this case both =1= and =nil=) would be
+passed to =#'list=, returning a list with the elements: =(1, nil)=.  On the other
+hand, =apply= /needs/ a list as it's last argument, and the rest of the arguments
+(in this case =1=) will get appended in front of the list.  The final call to
+=#'list= would be ~(list 1)~.
+
+#+begin_src lisp
+(apply #'list 1 nil)
+#+end_src
+
+#+RESULTS:
+| 1 |
+
+** Exercise 7
+Using only operators introduced in this chapter, define a function that takes a
+list as an argument and returns true if one of its elements is a list.
+
+#+begin_src lisp
+(defun has-list (x)
+  (if (null x)
+      nil
+      (if (listp (car x))
+          t
+          (has-list (cdr x)))))
+
+(has-list '(1 2 3))             ; nil
+(has-list '(1 nil 3))           ; t (nil is an empty list)
+(has-list '(1 (25 26 27) 3))    ; t
+#+end_src
+
+#+RESULTS:
+: T
+
+** Exercise 8
+Give iterative and recursive definitions of a function that:
+
+*** Function 1
+Takes a positive integer and prints that many dots.
+
+#+begin_src lisp :results output
+(defun dots-iter (x)
+  (do ((i 0 (+ i 1)))
+      ((>= i x) 'done)
+    (format t ".")))
+
+(dots-iter 5)
+#+end_src
+
+#+RESULTS:
+: .....
+
+#+begin_src lisp :results output
+(defun dots-recur (x)
+  (format t ".")
+  (if (<= x 1)
+      'done
+      (dots-recur (- x 1))))
+
+(dots-recur 5)
+#+end_src
+
+#+RESULTS:
+: .....
+
+*** Function 2
+Takes a list and returns the number of times the symbol occurs in it.
+
+#+begin_src lisp
+(defun app-iter (x y)
+  (let ((ret 0))
+    (dolist (i y)
+      (if (= x i)
+          (setf ret (+ ret 1))))
+    ret))
+
+(app-iter 5 '(1 2 3 4))     ; 0
+(app-iter 1 '(1 8 1 9 1))   ; 3
+#+end_src
+
+#+RESULTS:
+: 3
+
+If we find a match, add one to the number appearances in the rest of the list.
+
+#+begin_src lisp
+(defun app-recur (x y)
+  (if (null y)
+      0
+      (if (= x (car y))
+          (+ 1 (app-recur x (cdr y)))   ; Match
+          (app-recur x (cdr y)))))      ; No mach
+
+(app-recur 5 '(1 2 3 4))    ; 0
+(app-recur 1 '(1 8 1 9 1))  ; 3
+#+end_src
+
+#+RESULTS:
+: 3
+
+** Exercise 9
+A friend is trying to write a function that returns the sum of all the non-nil
+elements in a list. He has written two versions of this function, and neither of
+them work. Explain what's wrong with each, and give a correct version:
+
+*** Function 1
+
+#+begin_src lisp
+(defun summit (lst)
+  (remove nil lst)
+  (apply #'+ lst))
+#+end_src
+
+The =remove= function does *not* remove items from a list directly. It returns the
+second argument after removing all appearances of the first one. Instead, we
+should pass the return value of =remove= to =apply=.
+
+#+begin_src lisp
+(defun summit (lst)
+  (apply #'+ (remove nil lst)))
+
+(summit '(1 nil 2 nil 3))
+#+end_src
+
+#+RESULTS:
+: 6
+
+*** Function 2
+
+#+begin_src lisp
+(defun summit (lst)
+  (let ((x (car lst)))
+    (if (null x)
+        (summit (cdr lst))
+        (+ x (summit (cdr lst))))))
+#+end_src
+
+That function is only missing a way of checking the last recursive call
+(checking if we are done with the list). Without this check, the recursive calls
+will never stop, since we will always be calling the same function with
+=(summit (cdr lst))=.
+
+#+begin_src lisp
+(defun summit (lst)
+  (if (null lst)
+      0
+      (let ((x (car lst)))
+        (if (null x)
+            (summit (cdr lst))
+            (+ x (summit (cdr lst)))))))
+
+(summit '(1 nil 2 nil 3))
+#+end_src
+
+#+RESULTS:
+: 6
+

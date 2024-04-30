@@ -1,0 +1,824 @@
+#+title: ANSI Common Lisp - Chapter 3
+#+options: toc:nil
+#+property: header-args:lisp :tangle acl-chapter3.lisp :comments link
+#+auto_tangle: t
+#+author: 8dcc
+
+[[file:acl-chapter2.org][Previous Chapter]] | [[file:acl-chapter4.org][Next Chapter]]
+
+-----
+
+#+TOC: headlines 2
+
+* Chapter 3.3: Why lisp has no pointers
+In lisp, variables point to an address in memory, meaning that if you assign a
+variable =x= to =y=, it will not have a copy of the data inside =y=, but instead will
+point to the same memory address as =y= was pointing to.
+
+If we assign =x= to =y=, and then modify the value of =x=, the value of =y= will *not*
+change, because we would be changing the address that =x= is pointing to, and =y=
+will still point to the same place.
+
+#+begin_src lisp :results output
+(setf x '(1 2 3 4))
+(setf y x)
+(format t "x:  ~A, y: ~A, eql: ~A~%" x y (eql x y))
+
+(setf x '(10 20 30))    ; y will point to the list from the first setf
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+#+end_src
+
+#+RESULTS:
+: x:  (1 2 3 4), y: (1 2 3 4), eql: T
+: x: (10 20 30), y: (1 2 3 4), eql: NIL
+
+Example in C:
+
+#+begin_src c
+void* x = &list_0;
+void* y = x;        /* Address of list 0 in y, not contents */
+printf("x: %p, y: %p\n", x, y);
+x = &list_1;        /* y is still &list_0 */
+printf("x: %p, y: %p\n", x, y);
+#+end_src
+
+However, changing an *element* of =x= edits its value in memory (obviously), and
+because =x= and =y= point to the same location, both will display the new values.
+
+#+begin_src lisp :results output
+(setf x '(1 2 3 4))
+(setf y x)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+
+(setf (car x) 0         ; y gets updated as well
+      (third x) 0)
+(format t "x: ~A, y: ~A, eql: ~A~%" x y (eql x y))
+#+end_src
+
+#+RESULTS:
+: x: (1 2 3 4), y: (1 2 3 4), eql: T
+: x: (0 2 0 4), y: (0 2 0 4), eql: T
+
+* Chapter 3.5: Compression
+** Compress
+An example of a simple list compression algorithm. The compress function first
+checks if the argument is a list, and it only compresses it if it is one.
+
+#+begin_src lisp
+(defun compress (x)                                             ; (7)
+  (if (consp x)
+      (compress-list (car x) 1 (cdr x))
+      x))
+
+(defun compress-list (last-item last-n rest)                    ; (2)
+  (if (null rest)
+      (list (n-items last-item last-n))                         ; (3)
+      (let ((next-item (car rest)))
+        (if (= last-item next-item)                             ; (4)
+            (compress-list last-item (+ last-n 1) (cdr rest))   ; (5)
+            (cons (n-items last-item last-n)                    ; (6)
+                  (compress-list next-item 1 (cdr rest)))))))
+
+
+(defun n-items (item n)                                         ; (1)
+  (if (> n 1)
+      (list n item)
+      item))
+
+(compress '(1 0 0 1 1 0 1 1 1 1 0 0 1 0 1 1 0))
+#+end_src
+
+#+RESULTS:
+: (1 (2 0) (2 1) 0 (4 1) (2 0) 1 0 (2 1) 0)
+
+Explanation:
+1. The =n-items= function is used to group numbers in a list. If there is one
+   item, it returns the item. If there is more than 1 item, returns a list with
+   the amount of items (=n=) and the item value (=item=).
+
+2. The =compress-list= function will compress a list consisting of
+   =(last-item + rest)=. The function also takes another parameter, =last-n=, used
+   to count the amount of consecutive =last-item='s that appeared on the list
+   until this call.
+
+3. The first thing the function does is checking if we are done with the list.
+   If we are, its the last recursive call, and we just return a list with the
+   last  amount of consecutive numbers we found.
+
+   For example in the last recursive call for the list =(1 0 1 0 0 0)=, would be
+   =(0 3 nil)= because the last item was =0= and it appeared =3= times in a row. This
+   last recursive call would return =(3 0)=: A compressed list of 3 zeros.
+
+4. Check if the =next-item= in the list is the same as the =last-item=, meaning we
+   got one more in a row.
+
+5. If this the same, we just want to keep compressing the rest of the list, but
+   keeping track of 1 more repetition.
+
+6. If it's not the same, meaning we got a different number than the last, we
+   want to call =n-items= to get the compressed list for the last items (or just
+   the item if it was not repeated, see 1).
+
+7. The =compress= function will return either the =compressed-list=, if the item is
+   a list, or just the item otherwise (=x=).
+
+   Keep in mind that the format for =compressed-list= will need the first item
+   (=car=), times it appeared in a row (because its the first one, =1=) and the rest
+   of the list (=cdr=)
+
+** Decompress
+The function for decompressing would be the following:
+
+#+begin_src lisp
+(defun decompress (lst)
+  (if (null lst)                                    ; (2)
+      nil
+      (let ((cur-item (car lst))                    ; (3)
+            (rest (decompress (cdr lst))))
+        (if (consp cur-item)                        ; (4)
+            (append (apply #'expand-items cur-item) ; (5)
+                    rest)
+            (cons cur-item rest)))))                ; (6)
+
+(defun expand-items (n item)                        ; (1)
+  (if (zerop n)
+      nil
+      (cons item (expand-items (- n 1) item))))
+
+(decompress '(10 20 (4 7) 40 (3 5) 60))
+(decompress '(1 (2 0) (2 1) 0 (4 1) (2 0) 1 0 (2 1) 0))
+#+end_src
+
+Explanation:
+1. The =expand-items= function is used to return a list of length =n= filled with
+   =item=. It is used to expand the compressed pairs generated by the previous
+   =n-items= function.
+
+   For example: =(3 1)= as parameters means generate a list of =3= items filled with
+   the atom =1=: =(1 1 1)=.
+
+   This function already exists in lisp and its called ~make-list~, but it uses
+   /keyword/ arguments.
+
+2. The first thing the =decompress= function does is check if the list is empty.
+   If this is true, we are in the last recursive call and we are done, so we
+   return =nil=.
+
+3. Next it saves the first item in the list in a local variable called =cur-item=
+   and the result of decompressing the rest of the list in another local
+   variable called =rest=.
+
+4. If the current item in the list is a cons, it means that we found a
+   compressed pair. For example:
+
+   #+begin_src
+   (10 20 (4 7) 40)
+          ^^^^^
+   (10 20 7 7 7 7 40)
+   #+end_src
+
+5. If it is a cons, append the expanded pair to the front of the =rest= of the
+   decompressed list. We use apply with =cur-item= because apply will directly
+   convert the argument *list* to individual arguments, which is what we want now
+   for =expand-items=. We don't want to call =(expand-items (4 7))=, instead we want
+   =(expand-items 4 7)=.
+
+   This could also be written as:
+
+   #+begin_src lisp
+(append (expand-items (car rest)
+                      (second rest))
+        rest)
+   #+end_src
+
+6. If the item in the list is not cons, for example =10= or =20=, we just append
+   that to the front of the rest of the decompressed list.
+
+** Both combined
+After loading the =compress= and =decompress= functions, you can try:
+
+#+begin_src lisp
+(let ((test '(1 0 0 1 1 0 1 1 1 1 0 0 1 0 1 1 0)))
+  (equal test
+         (decompress (compress test))))
+#+end_src
+
+#+RESULTS:
+: T
+
+* Chapter 3.15: Shortest Path
+
+[[https://user-images.githubusercontent.com/29655971/233706749-21da9696-fa9a-4f28-bbb4-61f93bc3dac7.png]]
+
+#+begin_src lisp
+(defun shortest-path (start end net)                    ; (8)
+  (get-path end (list (list start)) net))
+
+(defun get-path (end queue net)                         ; (2)
+  (if (null queue)
+      nil
+      (let ((path (car queue)))                         ; (3)
+        (let ((node (car path)))                        ; (4)
+          (if (eql node end)                            ; (5)
+              (reverse path)                            ; (6)
+              (get-path end
+                        (append (cdr queue)             ; (7)
+                                (new-paths path node net))
+                        net))))))
+
+(defun new-paths (path node net)                        ; (1)
+  (mapcar #'(lambda (x) (cons x path))
+          (cdr (assoc node net))))
+
+;; Example network. Each list consists on an element and its adjacent nodes.
+;; See figure 3.13
+(setf network '((a b c) (b c) (c d)))
+
+;; ((b a) (c a))
+(new-paths '(a) 'a network)
+
+;; (a c)
+(shortest-path 'a 'c network)
+
+;; (a c d)
+(shortest-path 'a 'd network)
+#+end_src
+
+#+RESULTS:
+| A | C | D |
+
+Explanation:
+1. The =new-paths= function will map each adjacent element in the network relative
+   to a specific node and pass it to a lambda that expands the current path.
+
+   What this means is that we will pass a path like =(a)= and it will append to
+   the front the possible paths in the network starting from that node. In this
+   case: =((b a) (c a)).=
+
+2. The =get-path= function will search for all the paths in a /network/ from a
+   specific /queue/ until it finds the /end/ node. First thing it does is checking
+   if the queue is empty, so we are done.
+
+3. Next it declares a local variable called =path=, that contains the current path
+   in the queue. Each element in the queue will be a list of paths we have
+   traveled. For example: =((b a) (c a))=
+
+   So path would be the first element on this list, the one we want to check in
+   the current call (In this case =(b a)=). See *7*.
+
+4. We also create another local variable called =node=, that contains the first
+   element of =path=. In the previous example: =b=.
+
+   We need to use a nested =let= because common lisp doesn't support
+   initialization of an item with a previous one in the variable list.
+
+5. We check if =node= (meaning the last node of the last path we traversed from
+   the /queue/) is the =end= node, meaning we found what we were looking for and we
+   are done.
+
+6. If we found the end node, we want to return the *reversed* path for visibility.
+   Keep in mind we add the new nodes to the front of each list of the queue (See
+   *1*).
+
+7. If we didn't find it, call the function after updating the queue. To update
+   the queue list we will calculate the new paths using the =new-paths= function
+   (*1*) and we will move those new paths to the *back* of the queue by appending
+   the rest of the list to the front.
+
+   For example with the queue =((b a) (c a))=, it will check if =b= is the end node
+   (*5*), and because its not it will get the =new-paths= from =b=, in this case =c=,
+   returning the list =(c b a)=. This list returned by =new-paths= will be moved to
+   the *back* of the =get-path= queue (*7*), and the function will get called again
+   with the updated queue =(c a) (c b a)=.
+
+8. The =shortest-path= function will create an initial queue for =get-path=
+   based on the first item, and return it.
+
+
+Example of recursive calls to =get-path=:
+#+begin_src conf
+((A))
+((B A) (C A))           # new-paths from A
+((C A) (C B A))         # new-paths from (b a), move to back
+((C B A) (D C A))       # new-paths from (c a), move to back
+((D C A) (D C B A))     # new-paths from (c b a), move to back
+
+# Compare (car (car queue)) with end, it matches so return reversed:
+(A C D)
+#+end_src
+
+* Exercises
+** Exercise 1
+Show the following lists in box notation:
+
+*** Expression 1
+#+begin_src lisp
+(a b (e d))
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+   +---+---+
+| a | ----->| b | ----->| | |nil|
++---+---+   +---+---+   +-|-+---+
+                          |
+                          v
+                        +---+---+   +---+---+
+                        | e | ----->| d |nil|
+                        +---+---+   +---+---+
+#+end_src
+
+*** Expression 2
+#+begin_src lisp
+(a (b (c (d))))
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| a | ----->| | |nil|
++---+---+   +-|-+---+
+              |
+              v
+            +---+---+   +---+---+
+            | b | ----->| | |nil|
+            +---+---+   +-|-+---+
+                          |
+                          v
+                        +---+---+   +---+---+
+                        | c | ----->| | |nil|
+                        +---+---+   +-|-+---+
+                                      |
+                                      v
+                                    +---+---+
+                                    | d |nil|
+                                    +---+---+
+#+end_src
+
+*** Expression 3
+#+begin_src lisp
+(((a b) c) d)
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| | | ----->| d |nil|
++-|-+---+   +---+---+
+  |
+  v
++---+---+   +---+---+
+| | | ----->| c |nil|
++-|-+---+   +---+---+
+  |
+  v
++---+---+   +---+---+
+| a | ----->| b |nil|
++---+---+   +---+---+
+#+end_src
+
+*** Expression 4
+#+begin_src lisp
+(a (b . c) . d)
+#+end_src
+
+Box notation:
+
+#+begin_src
++---+---+   +---+---+
+| a | ----->| | | d |
++---+---+   +-|-+---+
+              |
+              v
+            +---+---+
+            | b | c |
+            +---+---+
+#+end_src
+
+** Exercise 2
+Write a version of union that preserves the order of the elements in the
+original lists:
+
+#+begin_src lisp
+(defun remove-repeated (items lst)
+  (if (null items)
+      lst
+      (let ((cleaned (remove (car items) lst)))
+        (remove-repeated (cdr items) cleaned))))
+
+;; (6 5 4 0 4 5 6)
+(remove-repeated '(1 2 3)
+                 '(6 5 4 3 2 1 0 1 2 3 4 5 6))
+
+(defun new-union (x y)
+  (append x (remove-repeated x y)))
+
+;; (a b c d)
+(new-union '(a b c) '(b a d))
+#+end_src
+
+#+RESULTS:
+| A | B | C | D |
+
+** Exercise 3
+Define a function that takes a list and returns a list indicating the number of
+times each (=eql=) element appears, sorted from most common element to least
+common:
+
+#+begin_src lisp
+(defun occurrences-unsorted (lst)       ; (1)
+  (if (null lst)
+      nil
+      (let ((first (car lst)))
+        (cons (list first (count first lst))
+              (occurrences-unordered (remove first lst))))))
+
+;; ((A 2) (B 1) (C 3) (D 1))
+(occurrences-unordered '(a b c c d c a))
+
+(defun occurrences (lst)                ; (2)
+  (sort (occurrences-unordered lst)
+        (lambda (a b)
+          (> (second a)
+             (second b)))))
+
+;; ((C 3) (A 2) (B 1) (D 1))
+(occurrences '(a b c c d c a))
+#+end_src
+
+#+RESULTS:
+| C | 3 |
+| A | 2 |
+| B | 1 |
+| D | 1 |
+
+Explanation:
+1. The =occurrences-unsorted= function is used to count the items of a list, and
+   return a list of item-amount pairs. For example the list =(a b c b)= would
+   return =((a 1) (b 2) (c 1))=. (Remember this is not sorted by frequency yet,
+   so they will be counted and returned by order of appearance on the original
+   list).
+
+   This function stores the =first= element of the list (the one we want to check
+   in the current call) and creates a /pair/ consisting of the item itself and its
+   number of appearances in the list.
+
+   #+begin_comment
+   TODO: Does this create a pair like exercise 1.4?
+   #+end_comment
+
+   This new pair will be joined (using =cons=) to the rest of the item-amount
+   pairs from the list *after removing* the items we just counted.
+
+2. The =occurrences= function will return the list from =occurrences-unsorted=
+   after sorting it. To sort this list we will use the =sort= function, which
+   takes 2 parameters, the list to sort (return valued from unsorted function)
+   and the function for sorting. This function needs to accept 2 parameters,
+   like for example =<=.
+
+   In our case, however, because it is not a /plain/ list, we need to use our own
+   /lambda/ function for comparing the *second* element of the inner lists (which is
+   the amount of each item).
+
+** Exercise 4
+Why does =(member '(a) '((a) (b)))= return =nil=?
+
+The =member= function, by default, uses the =equ= function to compare the elements.
+The =equ= function compares if 2 values are *exactly* the same, meaning they have
+the same address in memory. In this case the first parameter we are passing,
+='(a)= is not in the same address as the =(a)= in the second list. Instead of =equ=,
+we can tell the =member= function to use another function that compares against
+contents, like =equal=. To do this we use the /keyword/ test, and pass the function
+object of =equal=:
+
+#+begin_src lisp
+(member '(a) '((a) (b)) :test #'equal)
+#+end_src
+
+#+RESULTS:
+| A |
+| B |
+
+Note: Keep in mind that member returns the part of the list starting with the
+element it was looking for.
+
+** Exercise 5
+Suppose the function =pos+= takes a list and returns a list of each element plus
+its position.
+
+*** Recursion
+
+#+begin_src lisp
+(defun add-1 (lst)                          ; (1)
+  (if (null lst)
+      nil
+      (cons (+ (car lst) 1)
+            (add-1 (cdr lst)))))
+
+(defun pos+ (lst)
+  (if (null lst)
+      nil
+      (let ((rest (pos+ (cdr lst))))        ; (2)
+        (cons (car lst) (add-1 rest)))))    ; (3)
+
+(pos+ '(7 5 1 4))
+#+end_src
+
+#+RESULTS:
+| 7 | 6 | 3 | 7 |
+
+Explanation:
+1. The =add-1= function adds 1 to all the elements of a list.
+
+   +We use a slight amount of =mapcar=.+ We append the first element of the list
+   plus 1 to the returned value of calling =add-1= with the rest of the list.
+
+2. We store the output of a call to this =pos+= function with the =cdr= of the
+   original list in a local variable called =rest=.
+
+3. We append the first element of the list to the returned value of calling
+   =add-1= with the =rest= local variable.
+
+Example:
+| Call # | Arguments | Return    |
+|--------+-----------+-----------|
+|      0 | =(7 5 1 4)= | =(7 6 3 7)= |
+|      1 | =(  5 1 4)= | =(  5 2 6)= |
+|      2 | =(    1 4)= | =(    1 5)= |
+|      3 | =(      4)= | =(      4)= |
+|      4 | =nil=       | =nil=       |
+
+*** Iteration
+
+#+begin_src lisp
+(defun pos+ (lst)
+  (let ((lstlen (length lst)))      ; (1)
+    (do ((i 0 (+ i 1)))             ; (2)
+        ((>= i lstlen) lst)         ; (4)
+      (setf (nth i lst)             ; (3)
+            (+ (nth i lst) i)))))
+
+(pos+ '(7 5 1 4))
+#+end_src
+
+#+RESULTS:
+| 7 | 6 | 3 | 7 |
+
+Explanation:
+1. We store the length of the list in a local variable called =lstlen=.
+2. We iterate from 0 to the length of the list increasing =i= every iteration.
+3. Each iteration we add =i= to the value on the list at index =i=.
+4. Once we are done, we return the list. +I am not sure if+ =length= would get
+   called every iteration if we used it here as exit condition.
+
+Example:
+| Iteration | List      | Operation  |
+|-----------+-----------+------------|
+|         0 | =(7 5 1 4)= | Add 0 to 7 |
+|         1 | =(7 6 1 4)= | Add 1 to 5 |
+|         2 | =(7 6 3 4)= | Add 2 to 1 |
+|         3 | =(7 6 3 7)= | Add 3 to 5 |
+
+*** Mapcar
+
+#+begin_src lisp
+(defun pos+ (lst)
+  (let ((i -1))                     ; (1)
+    (mapcar #'(lambda (x)
+                (setf i (+ i 1))    ; (2)
+                (+ x i))            ; (3)
+            lst)))
+
+(pos+ '(7 5 1 4))
+#+end_src
+
+#+RESULTS:
+| 7 | 6 | 3 | 7 |
+
+Explanation:
+1. We create a local variable =i= initialized as =-1=, because we will increment one
+   each call to the =mapcar= lambda (See *2*), and we want to add 0 to the first
+   element, not 1.
+
+2. Inside the lambda for =mapcar=, we first add 1 to the =i= local variable and then
+   add that value to =x= (the lambda parameter). We need to add one first because
+   if we did it after setting =x=, the value of the =setf= would be returned by the
+   lambda.
+
+   Note: Since =setf= returns the new value we are setting, we could inline this
+   inside the next call to =+=. E.g. =(+ x (setf i (+ i 1)))=.
+
+3. We add the =i= variable to the lambda parameter. In this case, because of
+   =mapcar=, =x= will be each element of =lst=.
+
+** Exercise 6
+After years of deliberation, a government commission has decided that lists
+should be represented by using the =cdr= to point to the first element and the =car=
+to point to the rest of the list. Define the government versions of the
+following functions:
+
+*** Section A
+
+#+begin_src lisp
+(defun my-cons (x y)
+  (let ((pair '(nil . nil)))
+    (setf (car pair) y
+          (cdr pair) x)
+    pair))
+
+;; (b . a)
+(my-cons 'a 'b)
+
+;; Not working
+;;(my-cons (my-cons nil 'b) 'a)
+#+end_src
+
+#+RESULTS:
+: (B . A)
+
+*** Section B
+
+#+begin_src lisp
+(defun my-list (x y z)                  ; (1)
+  (cons z (cons y (cons x nil))))       ; (2)
+
+(my-list 'a 'b 'c)
+#+end_src
+
+#+RESULTS:
+| C | B | A |
+
+Notes:
+1. The book didn't talk about =&rest= yet, so I will use 3 parameters in this
+   example.
+2. According to the "government commission", =cons= should be called with reverse
+   parameters, but I don't care.
+
+*** Section C
+
+#+begin_src lisp
+(defun my-length (lst)
+  (if (null lst)
+      0
+      (+ 1 (my-length (car lst)))))        ; (1)
+#+end_src
+
+#+RESULTS:
+: MY-LENGTH
+
+Noes:
+1. Kinda hard to understand the implications of the =car=-=cdr= switch.
+
+*** Section D
+
+#+begin_src lisp
+(defun my-member-norm (elem lst)
+  (if (null lst)
+      nil
+      (if (equal elem (car lst))                ; (1)
+          lst
+          (my-member-norm elem (cdr lst)))))
+
+;; (b c d)
+(my-member-norm 'b '(a b c d))
+
+(defun my-member (elem lst)
+  (if (null lst)
+      nil
+      (if (equal elem (cdr lst))
+          lst
+          (my-member-norm elem (car lst)))))
+#+end_src
+
+#+RESULTS:
+| B | C | D |
+
+Notes:
+1. The original =member= function compares using =eql=, although it *can* be
+   overwritten using a keyword. In this case I use =equal=, which is more
+   permissive.
+
+** Exercise 7
+Modify the program in Figure 3.6 to use fewer =cons= cells. (Hint: Use
+dotted lists.)
+
+#+begin_src lisp
+(defun compress (x)
+  (if (consp x)
+      (compress-list (car x) 1 (cdr x))
+      x))
+
+(defun compress-list (last-item last-n rest)
+  (if (null rest)
+      (list (n-items last-item last-n))
+      (let ((next-item (car rest)))
+        (if (= last-item next-item)
+            (compress-list last-item (+ last-n 1) (cdr rest))
+            (cons (n-items last-item last-n)
+                  (compress-list next-item 1 (cdr rest)))))))
+
+(defun n-items (item n)
+  (if (> n 1)
+      (cons n item)                                 ; (1)
+      item))
+
+(compress '(1 0 0 1 1 0 1 1 1 1 0 0 1 0 1 1 0))
+#+end_src
+
+#+RESULTS:
+: (1 (2 . 0) (2 . 1) 0 (4 . 1) (2 . 0) 1 0 (2 . 1) 0)
+
+
+For more information see [[*Chapter 3.5: Compression][Chapter 3.5: Compression]].
+
+Notes:
+1. Instead of using =list=, we directly use =cons= with the appearances and the
+   element. Difference in box notation:
+
+   #+begin_src
+Old:
+  +---+---+   +---+---+
+  | n | ----->|itm|nil|
+  +---+---+   +---+---+
+
+New:
+  +---+---+
+  | n |itm|
+  +---+---+
+   #+end_src
+
+** Exercise 8
+Define a function that takes a list and prints it in dot notation.
+
+#+begin_src lisp
+(defun show-dots (cns)
+  (if (not (consp cns))
+      (format nil "~A" cns)
+      (concatenate 'string
+                   "("
+                   (show-dots (car cns))
+                   " . "
+                   (show-dots (cdr cns))
+                   ")")))
+
+;; (A . (B . (C . NIL)))
+(show-dots '(a b c))
+
+;; (A . (B . ((E . (D . NIL)) . NIL))).
+(show-dots '(a b (e d)))                    ; (1)
+#+end_src
+
+#+RESULTS:
+: (A . (B . ((E . (D . NIL)) . NIL)))
+
+Notes:
+1. This is the same expression as [[*Expression 1][Expression 1]]. Output looks messy but it is
+   correct. Run:
+   =(format t "~A" '(A . (B . ((E . (D . NIL)) . NIL)))))=
+
+** Exercise 9
+Write a program to find the /longest/ finite path through a network represented as
+in Section 3.15. The network may contain cycles.
+
+#+begin_src lisp
+(defun longest-path (start end net)
+  (get-path end (list (list start)) net))
+
+(defun get-paths (start end net)
+  (if (null queue)
+      nil
+      (let ((path (car queue)))                         ; (3)
+        (let ((node (car path)))                        ; (4)
+          (if (eql node end)                            ; (5)
+              (reverse path)                            ; (6)
+              (get-path end
+                        (append (cdr queue)             ; (7)
+                                (new-paths path node net))
+                        net))))))
+
+(defun new-paths (path node net)
+  (mapcar #'(lambda (x) (cons x path))
+          (cdr (assoc node net))))
+
+;; TODO
+(defun new-paths2 (path node net)
+  (mapcar #'(lambda (x)
+              (cons x path))
+          (cdr (assoc node net))))
+
+;; Example network. Each list consists on an element and its adjacent nodes.
+(setf network '((a b c e) (b c) (c d) (d e)))
+
+(get-paths 'a 'e network)
+#+end_src
+
+#+RESULTS:
+| A | E |
+
+For more information, see comments on [[*Chapter 3.15: Shortest Path][Chapter 3.15: Shortest Path]]
+
+We can't just stop at the first valid path we find from /start/ to /end/, we need to
+get all of the paths and check which one is the largest.
