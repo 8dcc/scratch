@@ -3,7 +3,5 @@
 #+OPTIONS: toc:2
 #+STARTUP: nofold
 
-* Description
-
 Miscellaneous sources from different programming languages. Most folders have
 their own README.
