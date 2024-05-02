@@ -4,6 +4,7 @@
 
 # Ada
 *.ali
+/Ada/**/obj/*
 
 # Lisp
 *.FASL
