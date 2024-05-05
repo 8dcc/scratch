@@ -25,6 +25,21 @@
 *.wx64fsl
 *.wx32fsl
 
+# LaTeX
+/LaTeX/**/*.4ct
+/LaTeX/**/*.4tc
+/LaTeX/**/*.aux
+/LaTeX/**/*.css
+/LaTeX/**/*.dvi
+/LaTeX/**/*.html
+/LaTeX/**/*.idv
+/LaTeX/**/*.lg
+/LaTeX/**/*.log
+/LaTeX/**/*.tmp
+/LaTeX/**/*.xref
+/LaTeX/**/*.png
+/LaTeX/**/*.pdf
+
 # Prerequisites
 *.d
 
