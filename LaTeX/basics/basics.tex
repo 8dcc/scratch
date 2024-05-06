@@ -4,6 +4,9 @@
 \author{8dcc}
 \date{}
 
+% Various math utilities, like \begin{align*}
+\usepackage{amsmath}
+
 \begin{document}
 \maketitle
 
@@ -53,5 +56,18 @@ following.
 \begin{displaymath}
     a = \frac{F}{m}
 \end{displaymath}
+
+The force has a direction. It acts towards the direction of the line joining
+the centres of the two bodies. We can get the X and Y coordinates of the
+acceleration with some trigonometry.
+
+\begin{align*}
+    a_x &= a \cos(\theta) \\
+    a_y &= a \sin(\theta) \\
+\end{align*}
+
+Where \(a_x\) and \(a_y\) are the X and Y accelerations, \(a\) is the
+acceleration, and \(\theta\) is the angle that the line joining the centers make
+with the horizontal.
 
 \end{document}
