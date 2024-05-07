@@ -39,6 +39,7 @@
 /LaTeX/**/*.xref
 /LaTeX/**/*.png
 /LaTeX/**/*.pdf
+/LaTeX/**/*.toc
 
 # Prerequisites
 *.d
