@@ -6,10 +6,37 @@
 % Various math utilities, like \begin{align*}
 \usepackage{amsmath}
 
+% Graphs
+\usepackage{tikz}
+
+% New environment adding spacing for tikz pictures
+\newenvironment{tikzpicturecenter}
+{\vspace*{0.25cm}\begin{center}\begin{tikzpicture}}
+{\end{tikzpicture}\end{center}\vspace*{0.25cm}}
+
 \begin{document}
 \maketitle
 
 Simple scratch file for testing math in \LaTeX.
+
+% Insert empty line
+\bigskip
+
+The distance between two points is the hypotenuse of the triangle formed by
+joining the two points.
+
+% NOTE: Environment defined above
+\begin{tikzpicturecenter}
+    \draw[thin,dotted] (0,0) grid (6,5);
+    \draw[thick] (1,1) -- (1, 4) -- (5,1) -- cycle;
+    \draw (1,4) node[above left]  {a};
+    \draw (5,1) node[above right] {b};
+    \draw (1,1) node[below]       {(dx,dy)};
+\end{tikzpicturecenter}
+
+\begin{displaymath}
+    d = \sqrt{(b_x - a_x)^2 + (b_y - a_y)^2}
+\end{displaymath}
 
 The gravitational force of each body is calculated with the following formula.
 
