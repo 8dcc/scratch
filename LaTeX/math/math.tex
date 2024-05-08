@@ -12,10 +12,13 @@
 % Change the spacing between paragraphs
 \setlength{\parskip}{\baselineskip}
 
+% Remove author and extra info from the headers
+\pagestyle{plain}
+
 % New environment adding spacing for tikz pictures
 \newenvironment{tikzpicturecenter}
 {\begin{center}\begin{tikzpicture}}
-    {\end{tikzpicture}\end{center}}
+{\end{tikzpicture}\end{center}}
 
 \begin{document}
 \maketitle
