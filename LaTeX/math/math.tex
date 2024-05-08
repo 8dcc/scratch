@@ -3,7 +3,7 @@
 \title{Scratch - Math examples in \LaTeX}
 \author{8dcc}
 
-% Various math utilities, like \begin{align*}
+% Various math utilities, like align*
 \usepackage{amsmath}
 
 % Graphs
@@ -15,7 +15,7 @@
 % New environment adding spacing for tikz pictures
 \newenvironment{tikzpicturecenter}
 {\begin{center}\begin{tikzpicture}}
-{\end{tikzpicture}\end{center}}
+    {\end{tikzpicture}\end{center}}
 
 \begin{document}
 \maketitle
@@ -27,21 +27,21 @@ joining the two points.
 
 % NOTE: Environment defined above
 \begin{tikzpicturecenter}
-    \draw[thin,dotted] (0,0) grid (6,5);
-    \draw[thick] (1,1) -- (1, 4) -- (5,1) -- cycle;
-    \draw (1,4) node[above left]  {a};
-    \draw (5,1) node[above right] {b};
-    \draw (1,1) node[below]       {(dx,dy)};
+  \draw[thin,dotted] (0,0) grid (6,5);
+  \draw[thick] (1,1) -- (1, 4) -- (5,1) -- cycle;
+  \draw (1,4) node[above left]  {a};
+  \draw (5,1) node[above right] {b};
+  \draw (1,1) node[below]       {(dx,dy)};
 \end{tikzpicturecenter}
 
 \begin{displaymath}
-    d = \sqrt{(b_x - a_x)^2 + (b_y - a_y)^2}
+  d = \sqrt{(b_x - a_x)^2 + (b_y - a_y)^2}
 \end{displaymath}
 
 The gravitational force of each body is calculated with the following formula.
 
 \begin{displaymath}
-    F = G \frac{m_1m_2}{r^2}
+  F = G \frac{m_1m_2}{r^2}
 \end{displaymath}
 
 Where \(G\) is the gravitational constant, \(m_1\) and \(m_2\) are the mass of
@@ -51,7 +51,7 @@ The effect of a force is to accelerate the body. The relationship is the
 following.
 
 \begin{displaymath}
-   F = m a
+  F = m a
 \end{displaymath}
 
 Where \(F\) is the force, \(m\) is the mass and \(a\) is the acceleration of
@@ -59,7 +59,7 @@ the body. Therefore, to get the acceleration from the force, we can do the
 following.
 
 \begin{displaymath}
-    a = \frac{F}{m}
+  a = \frac{F}{m}
 \end{displaymath}
 
 The force has a direction. It acts towards the direction of the line joining
@@ -67,8 +67,8 @@ the centres of the two bodies. We can get the X and Y coordinates of the
 acceleration with some trigonometry.
 
 \begin{align*}
-    a_x &= a \cos(\theta) \\
-    a_y &= a \sin(\theta) \\
+  a_x &= a \cos(\theta) \\
+  a_y &= a \sin(\theta) \\
 \end{align*}
 
 Where \(a_x\) and \(a_y\) are the X and Y accelerations, \(a\) is the
