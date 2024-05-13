@@ -10,6 +10,8 @@
 #include <string.h> /* strlen */
 #include <time.h>   /* time */
 
+#define LENGTH(ARR) (sizeof(ARR) / sizeof((ARR)[0]))
+
 // TODO
 #define COMMENT_START "/* XOR(\""
 #define COMMENT_END   "\") */\n"
@@ -162,20 +164,107 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
     return ret;
 }
 
-int main(void) {
-    const char* real = "\x1f\123\034\t\n\a\b\e\f\n\r\t\v\\done\"";
-    for (int i = 0; real[i] != '\0'; i++)
-        printf("%02X ", real[i]);
-    putchar('\n');
+/* Consume and return a C string. Asumes the last call to `getchar' returned an
+ * opening double-quote. */
+static char* get_c_str(void) {
+    size_t ret_sz = 100;
+    char* ret     = calloc(ret_sz, sizeof(char));
 
-    /* Should output the same */
-    const char* str =
-      "\\x1f\\123\\034\\t\\n\\a\\b\\e\\f\\n\\r\\t\\v\\\\done\\\"\"";
-    size_t length  = 0;
-    uint8_t* bytes = str2bytes(str, &length);
-    for (size_t i = 0; i < length; i++)
-        printf("%02X ", bytes[i]);
-    putchar('\n');
+    /* Skip over '\"' character */
+    char c = getchar();
+
+    for (size_t i = 0; c != '\"' && c != EOF; i++) {
+        /* Reallocate output array if we ran out of space */
+        if (i >= ret_sz) {
+            ret_sz += 100;
+            ret = realloc(ret, ret_sz);
+        }
+
+        ret[i] = c;
+
+        /* Save the escaped character, and skip it. This is used to handle
+         * escaped double-quotes. */
+        if (c == '\\')
+            ret[i] = getchar();
+
+        /* Get the next character */
+        c = getchar();
+    }
+
+    return ret;
+}
+
+/* Print the function definition for `funcname'. It XORs a string using `key', a
+ * `key_sz' long string. */
+static void print_xor_func(const char* funcname, const uint8_t* key,
+                           size_t key_sz) {
+    printf("static const char* %s(char* str, unsigned long str_sz) {\n"
+           "    unsigned long i, kp;\n"
+           "    const char key[] = \"",
+           funcname);
+
+    /* Print the key */
+    for (size_t i = 0; i < key_sz; i++)
+        printf("\\x%02X", key[i]);
+    printf("\";\n");
+
+    printf("    for (i = 0, kp = 0; i < str_sz; i++, kp++) {\n"
+           "        if (kp >= (unsigned long)sizeof(key))\n"
+           "            kp = 0;\n"
+           "        str[i] ^= key[kp];\n"
+           "    }\n"
+           "    return str;\n"
+           "}\n\n");
+}
+
+/*----------------------------------------------------------------------------*/
+
+int main(void) {
+    /* TODO: Randomize function name */
+    const char* strxor_funcname = "RandomStrXor";
+
+    /* TODO: Randomize XOR key */
+    const uint8_t xor_key[] = "ABC123XYZ";
+
+    /* Print RandomStrXor function definition before the source */
+    print_xor_func(strxor_funcname, xor_key, LENGTH(xor_key));
+
+    int c;
+    while ((c = getchar()) != EOF) {
+        switch (c) {
+            case '\"':
+                /* Consume the C string, until closing '\"'. */
+                char* c_str = get_c_str();
+
+                /* Convert to array of bytes, parsing escaping sequences */
+                size_t bytes_sz;
+                uint8_t* bytes = str2bytes(c_str, &bytes_sz);
+
+                /* Free raw C string allocated by `get_c_str'. */
+                free(c_str);
+
+                /* Wrap in a call to our XOR function.
+                 * FIXME: We have to somehow specify that the literal is not
+                 * read-only.  */
+                printf("%s((char*)\"", strxor_funcname);
+
+                /* XOR the bytes, and print them in hex format */
+                for (size_t i = 0; i < bytes_sz; i++) {
+                    const size_t key_idx = i % LENGTH(xor_key);
+                    printf("\\x%02X", bytes[i] ^ xor_key[key_idx]);
+                }
+
+                /* Close the call to our XOR function, adding the length */
+                printf("\", %ld)", bytes_sz);
+
+                /* Free the bytes parsed by `str2bytes' */
+                free(bytes);
+                break;
+            default:
+                putchar(c);
+                break;
+        }
+    }
 
     return 0;
 }
