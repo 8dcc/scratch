@@ -24,8 +24,7 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
     size_t i = 0, ret_sz = 100;
     uint8_t* ret = calloc(ret_sz, sizeof(uint8_t));
 
-    char last_char = 0;
-    bool done      = false;
+    bool done = false;
     while (!done) {
         /* Reallocate output array if we ran out of space */
         if (i >= ret_sz) {
@@ -36,13 +35,7 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
         /* Process the current character of the input */
         switch (*str) {
             case '\\':
-                /* Only insert backslash if it was escaped */
-                if (last_char == '\\') {
-                    ret[i++] = *str;
-                    break;
-                }
-
-                /* Otherwise asume we are escaping. See:
+                /* Always asume we are escaping. See:
                  * https://en.wikipedia.org/wiki/Escape_sequences_in_C */
                 str++;
                 switch (*str) {
@@ -50,6 +43,10 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
                         /* If we encountered a closing quote, and it was
                          * escaped, add it literally. */
                         ret[i++] = '\"';
+                        break;
+                    case '\\':
+                        /* Only insert backslash if it was escaped */
+                        ret[i++] = '\\';
                         break;
                     case 'a':
                         /* Possible character escape sequences.
@@ -78,14 +75,18 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
                         ret[i++] = '\v';
                         break;
                     case 'x':
-                        /* Search for "\xHH" sequences. */
-                        str++;
+                        /* Search for "\xHH" sequences */
+                        ret[i] = 0;
 
                         for (;;) {
                             /* Make sure we are not discarding bits, should
                              * never happen in valid sequences. */
                             if (ret[i] & 0xF0)
                                 break;
+
+                            /* Unlike when parsing octal, we can increase the
+                             * pointer here since we have to consume the 'x' */
+                            str++;
 
                             uint8_t digit = 0;
                             if (*str >= '0' && *str <= '9')
@@ -100,10 +101,9 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
                             /* Max hex is 4 bits */
                             ret[i] <<= 4;
                             ret[i] |= digit;
-
-                            i++;
-                            str++;
                         }
+
+                        i++;
                         break;
                     case '0':
                     case '1':
@@ -114,19 +114,27 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
                     case '6':
                     case '7':
                         /* Search for "\NNN" sequences. */
-                        while (*str >= '0' && *str <= '7') {
+                        ret[i] = 0;
+
+                        for (;;) {
                             /* Make sure we are not discarding bits, should
                              * never happen in valid sequences. */
-                            if (ret[i] & 0700)
+                            if (ret[i] & 0300)
                                 break;
 
                             /* Max octal is 3 bits */
                             ret[i] <<= 3;
                             ret[i] |= *str - '0';
 
-                            i++;
-                            str++;
+                            /* Need to increase this way so we don't consume an
+                             * extra character. */
+                            if (str[1] >= '0' && str[1] <= '7')
+                                str++;
+                            else
+                                break;
                         }
+
+                        i++;
                         break;
                     default:
                         /* NOTE: "\uHHHH" is unsupported for now. */
@@ -147,7 +155,6 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
                 break;
         }
 
-        last_char = *str;
         str++;
     }
 
@@ -156,12 +163,14 @@ static uint8_t* str2bytes(const char* str, size_t* length) {
 }
 
 int main(void) {
-    const char* str = "testing\x1f balls\tdone\n";
-    for (int i = 0; str[i] != '\0'; i++)
-        printf("%02X ", str[i]);
+    const char* real = "\x1f\123\034\t\n\a\b\e\f\n\r\t\v\\done\"";
+    for (int i = 0; real[i] != '\0'; i++)
+        printf("%02X ", real[i]);
     putchar('\n');
 
     /* Should output the same */
+    const char* str =
+      "\\x1f\\123\\034\\t\\n\\a\\b\\e\\f\\n\\r\\t\\v\\\\done\\\"\"";
     size_t length  = 0;
     uint8_t* bytes = str2bytes(str, &length);
     for (size_t i = 0; i < length; i++)
