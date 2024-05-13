@@ -6,17 +6,25 @@
 static uint8_t parseoct(const char* str) {
     uint8_t ret = 0;
 
-    while (*str >= '0' && *str <= '7') {
-        /* Make sure we are not discarding bits, should never
-         * happen in valid sequences. */
-        if (ret & 0700)
-            break;
+    /* Conditional made on purpose to match other program's */
+    if (*str >= '0' && *str <= '7') {
+        for (;;) {
+            /* Make sure we are not discarding bits, should
+             * never happen in valid sequences. */
+            if (ret & 0300)
+                break;
 
-        /* Max octal is 3 bits */
-        ret <<= 3;
-        ret |= *str - '0';
+            /* Max octal is 3 bits */
+            ret <<= 3;
+            ret |= *str - '0';
 
-        str++;
+            /* Need to increase this way so we don't consume an
+             * extra character. */
+            if (str[1] >= '0' && str[1] <= '7')
+                str++;
+            else
+                break;
+        }
     }
 
     return ret;
@@ -28,13 +36,15 @@ static uint8_t parsehex(const char* str) {
 
     /* Conditional made on purpose to match other program's */
     if (*str == 'x') {
-        str++;
-
         for (;;) {
-            /* Make sure we are not discarding bits, should
-             * never happen in valid sequences. */
+            /* Make sure we are not discarding bits, should never happen in
+             * valid sequences. */
             if (ret & 0xF0)
                 break;
+
+            /* Unlike when parsing octal, we can increase the pointer here since
+             * we have to consume the 'x' */
+            str++;
 
             uint8_t digit = 0;
             if (*str >= '0' && *str <= '9')
@@ -49,8 +59,6 @@ static uint8_t parsehex(const char* str) {
             /* Max hex is 4 bits */
             ret <<= 4;
             ret |= digit;
-
-            str++;
         }
     }
 
@@ -58,7 +66,11 @@ static uint8_t parsehex(const char* str) {
 }
 
 int main(void) {
-    printf("%u\n", parseoct("123 ignored"));
-    printf("%u\n", parsehex("xA3 ignored"));
+    uint8_t a = parseoct("123 ignored");
+    printf("%u (o%o)\n", a, a);
+
+    uint8_t b = parsehex("xA3 ignored");
+    printf("%u (x%02X)\n", b, b);
+
     return 0;
 }
