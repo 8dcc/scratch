@@ -10,7 +10,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h> /* srand, rand */
-#include <string.h> /* strlen */
 #include <time.h>   /* time */
 
 #define LENGTH(ARR) (sizeof(ARR) / sizeof((ARR)[0]))
