@@ -243,10 +243,8 @@ int main(void) {
                 /* Free raw C string allocated by `get_c_str'. */
                 free(c_str);
 
-                /* Wrap in a call to our XOR function.
-                 * FIXME: We have to somehow specify that the literal is not
-                 * read-only.  */
-                printf("%s((char*)\"", strxor_funcname);
+                /* Wrap in a call to our XOR function */
+                printf("%s((char[]){\"", strxor_funcname);
 
                 /* XOR the bytes, and print them in hex format */
                 for (size_t i = 0; i < bytes_sz; i++) {
@@ -255,7 +253,7 @@ int main(void) {
                 }
 
                 /* Close the call to our XOR function, adding the length */
-                printf("\", %ld)", bytes_sz);
+                printf("\"}, %ld)", bytes_sz);
 
                 /* Free the bytes parsed by `str2bytes' */
                 free(bytes);
