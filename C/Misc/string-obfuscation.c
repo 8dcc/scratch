@@ -12,13 +12,6 @@
 
 #define LENGTH(ARR) (sizeof(ARR) / sizeof((ARR)[0]))
 
-// TODO
-#define COMMENT_START "/* XOR(\""
-#define COMMENT_END   "\") */\n"
-#define ARR1_STR      "char s1[] = \""
-#define ARR2_STR      "char s2[] = \""
-#define ARR_END       "\";\n"
-
 /* Convert a C string into the real array of bytes that would be compiled. The
  * allocated array must be freed by the caller.
  * The length of the new array will be written to `length' */
