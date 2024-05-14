@@ -1,6 +1,9 @@
 /*
  * XOR strings in a C source file with random key.
  * Usage: ./string-obfuscation.out < input.c > output.c
+ *
+ * TODO: Uses compound literals, so it produces a warning when using the -ansi
+ * and -Wpedantic flags.
  */
 
 #include <stdint.h>
@@ -178,7 +181,7 @@ static char* get_c_str(void) {
         /* Save the escaped character, and skip it. This is used to handle
          * escaped double-quotes. */
         if (c == '\\')
-            ret[i] = getchar();
+            ret[++i] = getchar();
 
         /* Get the next character */
         c = getchar();
@@ -193,13 +196,13 @@ static void print_xor_func(const char* funcname, const uint8_t* key,
                            size_t key_sz) {
     printf("static const char* %s(char* str, unsigned long str_sz) {\n"
            "    unsigned long i, kp;\n"
-           "    const char key[] = \"",
+           "    const unsigned char key[] = {",
            funcname);
 
     /* Print the key */
     for (size_t i = 0; i < key_sz; i++)
-        printf("\\x%02X", key[i]);
-    printf("\";\n");
+        printf("0x%02X,", key[i]);
+    printf("};\n");
 
     printf("    for (i = 0, kp = 0; i < str_sz; i++, kp++) {\n"
            "        if (kp >= (unsigned long)sizeof(key))\n"
@@ -240,9 +243,11 @@ int main(void) {
                 printf("%s((char[]){\"", strxor_funcname);
 
                 /* XOR the bytes, and print them in hex format */
-                for (size_t i = 0; i < bytes_sz; i++) {
-                    const size_t key_idx = i % LENGTH(xor_key);
-                    printf("\\x%02X", bytes[i] ^ xor_key[key_idx]);
+                for (size_t i = 0, kp = 0; i < bytes_sz; i++, kp++) {
+                    if (kp >= LENGTH(xor_key))
+                        kp = 0;
+
+                    printf("\\x%02X", bytes[i] ^ xor_key[kp]);
                 }
 
                 /* Close the call to our XOR function, adding the length */
