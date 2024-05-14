@@ -25,20 +25,22 @@
 
 Simple scratch file for testing math in \LaTeX.
 
-The distance between two points is the hypotenuse of the triangle formed by
-joining the two points.
+The distance between two points is the hypotenuse of a right triangle whose two
+cathetus are the difference between the \(x\) and \(y\) coordinates of the two
+points.
 
 % NOTE: Environment defined above
 \begin{tikzpicturecenter}
-  \draw[thin,dotted] (0,0) grid (6,5);
-  \draw[thick] (1,1) -- (1, 4) -- (5,1) -- cycle;
-  \draw (1,4) node[above left]  {a};
-  \draw (5,1) node[above right] {b};
-  \draw (1,1) node[below]       {(dx,dy)};
+  \draw[thin, gray, dotted] (0,0) grid (6,5);
+  \draw[thick] (1,4) -- (5,1);
+  \draw[thick, blue] (1,1) -- (1,4) node[pos=0.5, left]{\(d_y\)};
+  \draw[thick, red] (1,1) -- (5,1) node[pos=0.5, below]{\(d_x\)};
+  \filldraw (1,4) circle (2pt) node[above right]{A};
+  \filldraw (5,1) circle (2pt) node[above right]{A};
 \end{tikzpicturecenter}
 
 \begin{displaymath}
-  d = \sqrt{(b_x - a_x)^2 + (b_y - a_y)^2}
+  d = \sqrt{(B_x - A_x)^2 + (B_y - A_y)^2}
 \end{displaymath}
 
 The gravitational force of each body is calculated with the following formula.
