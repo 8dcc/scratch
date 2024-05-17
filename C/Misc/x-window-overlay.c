@@ -1,4 +1,7 @@
 /*
+ * On some distros or WMs, you will have to install and run a compositor like
+ * `picom' for the window opacity.
+ *
  * Compile with:
  *  gcc -Wall -Wextra -ggdb3 -o xwindow.out xwindow.c -lX11 -lXext -lXfixes -lm
  */
