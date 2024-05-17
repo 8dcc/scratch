@@ -1,3 +1,8 @@
+/*
+ * Compile with:
+ *  gcc -Wall -Wextra -ggdb3 -o xwindow.out xwindow.c -lX11 -lXext -lXfixes -lm
+ */
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -105,8 +110,6 @@ static inline void allow_input_passthrough(Window w) {
 }
 
 static void windowInit() {
-    XColor bgcolor = createXColorFromRGBA(0, 0, 0, 0);
-
     Window root = DefaultRootWindow(ctx.d);
 
     XVisualInfo vinfo;
@@ -117,7 +120,7 @@ static void windowInit() {
 
     XSetWindowAttributes attr;
     attr.background_pixmap     = None;
-    attr.background_pixel      = bgcolor.pixel;
+    attr.background_pixel      = 0;
     attr.border_pixel          = 0;
     attr.win_gravity           = NorthWestGravity;
     attr.bit_gravity           = ForgetGravity;
@@ -133,7 +136,7 @@ static void windowInit() {
 
     /* TODO: Change possition */
     ctx.win =
-      XCreateWindow(ctx.d, root, 30, 30, WINDOW_W, WINDOW_H, 0, vinfo.depth,
+      XCreateWindow(ctx.d, root, 400, 400, WINDOW_W, WINDOW_H, 0, vinfo.depth,
                     InputOutput, vinfo.visual, mask, &attr);
     if (!ctx.win) {
         fprintf(stderr, "Failed to create X window.\n");
