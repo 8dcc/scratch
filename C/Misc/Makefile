@@ -30,6 +30,9 @@ readline.out: readline.c
 ncurses-%.out: ncurses-%.c
 	$(CC) $(CFLAGS) -o $@ $< -lncurses
 
+xwindow.out: xwindow.c
+	$(CC) $(CFLAGS) -o $@ $< -lX11 -lXext -lXfixes -lm
+
 $(MATH_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< -lm
 
