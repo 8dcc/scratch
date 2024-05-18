@@ -2,8 +2,10 @@
  * On some distros or WMs, you will have to install and run a compositor like
  * `picom' for the window opacity.
  *
+ * See also: https://github.com/8dcc/cs-source-external
+ *
  * Compile with:
- *  gcc -Wall -Wextra -ggdb3 -o xwindow.out xwindow.c -lX11 -lXext -lXfixes -lm
+ *  gcc -Wall -Wextra -o x-window-overlay.out x-window-overlay.c -lX11 -lXext -lXfixes -lm
  */
 
 #include <stdint.h>
