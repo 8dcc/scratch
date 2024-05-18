@@ -77,7 +77,7 @@ int main(void) {
            ";\n"
            "; Assemble and link with:\n"
            ";   nasm -f elf64 -o file.o file.asm\n"
-           ";   ld -m elf_x86_64 -o file.out file.o\n\n");
+           ";   gcc -o file.out file.o\n\n");
 
     /* Reserve the heap, declare the extern functions */
     printf("default rel\n\n"
