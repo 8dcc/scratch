@@ -7,21 +7,46 @@
  * here. */
 #define HEAP_SZ 1024
 
-/* Entry point of the generated assembly */
-#define ENTRY_POINT "main"
+/* If defined, the compiled assembly will define its own print/read/write
+ * functions */
+#define LINUX_SYSCALLS
 
-/* Print and read functions for the '.' and ',' brainfuck characters. The
+/*
+ * Entry point of the generated assembly.
+ *
+ * NOTE: If LINUX_SYSCALLS is defined, it's best to use '_start' as entry point,
+ * instead of 'main'.
+ */
+#ifdef LINUX_SYSCALLS
+#define ENTRY_POINT "_start"
+#else
+#define ENTRY_POINT "main"
+#endif
+
+/*
+ * Will be appended to the end of 'call' instructions.
+ *
+ * NOTE: If LINUX_SYSCALLS is not defined, it will call LIBC functions. With the
+ * 'wrt ..plt' subfix, we tell the linker to grab the address of this symbol
+ * from the PLT. See:
+ *   https://8dcc.github.io/reversing/understanding-call-stack.html#note-about-position-independent-executables
+ */
+#ifdef LINUX_SYSCALLS
+#define CALL_SUBFIX ""
+#else
+#define CALL_SUBFIX " wrt ..plt"
+#endif
+
+/*
+ * Print and read functions for the '.' and ',' brainfuck characters. The
  * printing function must take a value in 'rdi', and the read function must
- * return a value in 'rax'. */
+ * return a value in 'rax'.
+ */
 #define FN_PRINT "putchar"
 #define FN_READ  "getchar"
 
 /* Will be called with zero as it's only argument when the program is done */
 #define FN_EXIT "exit"
-
-/* Will be appended to the end of 'call' instructions. Used to tell the linker
- * to grab the address of this symbol from the PLT. */
-#define CALL_SUBFIX " wrt ..plt"
 
 /*----------------------------------------------------------------------------*/
 
@@ -76,37 +101,86 @@ int main(void) {
            "; https://github.com/8dcc/scratch\n"
            ";\n"
            "; Assemble and link with:\n"
-           ";   nasm -f elf64 -o file.o file.asm\n"
-           ";   gcc -o file.out file.o\n\n");
+           ";   nasm -f elf64 -o file.o file.asm\n");
 
-    /* Reserve the heap, declare the extern functions */
-    printf("default rel\n\n"
-           "section .bss\n"
-           "heap: resb %d\n\n"
-           "section .text\n"
+#ifdef LINUX_SYSCALLS
+    printf(";   ld -m elf_x86_64 -o file.out file.o\n");
+#else
+    printf(";   gcc -o file.out file.o");
+#endif
+
+    /* Use relative offsets, specify the architecture */
+    printf("default rel\n"
+           "bits 64\n\n");
+
+    /* Reserve the heap in the .bss section. Has to be nobits. */
+    printf("section .bss\n"
+           "heap: resb %d\n\n",
+           HEAP_SZ);
+
+#ifdef LINUX_SYSCALLS
+    /* Define our own read/write/quit functions using linux syscalls */
+    printf("section .text\n\n");
+
+    printf("global %s\n"
+           "%s:\n"
+           "push rdi\n"
+           "mov rax, 4\n"
+           "mov rdi, 1\n"
+           "mov rsi, rsp\n"
+           "mov rdx, 1\n"
+           "int 0x80\n"
+           "add rsp, 8\n"
+           "ret\n",
+           FN_PRINT, FN_PRINT);
+
+    printf("global %s\n"
+           "%s:\n"
+           "sub rsp, 8\n"
+           "mov rax, 3\n"
+           "mov rdi, 0\n"
+           "mov rsi, rsp\n"
+           "mov rdx, 1\n"
+           "int 0x80\n"
+           "add rsp, 8\n"
+           "ret\n",
+           FN_READ, FN_READ);
+
+    printf("global %s\n"
+           "%s:\n"
+           "mov rax, 1\n"
+           "mov rdi, 0\n"
+           "int 0x80\n",
+           FN_EXIT, FN_EXIT);
+#else
+    /* Declare the extern functions */
+    printf("section .text\n"
            "extern %s:function\n"
            "extern %s:function\n"
            "extern %s:function\n\n",
-           HEAP_SZ, FN_PRINT, FN_READ, FN_EXIT);
+           FN_PRINT, FN_READ, FN_EXIT);
+#endif
 
-    /* Print the start of our entry point. Clear used registers and store the
-     * heap pointer in 'rcx'.
+    /* Print the start of our entry point */
+    printf("global %s\n"
+           "%s:\n",
+           ENTRY_POINT, ENTRY_POINT);
+
+    /* Clear used registers and store the heap pointer in 'rcx'.
      *
      * We have to use:
      *   lea REGISTER, [rel LABEL]
      * Instead of:
      *   mov REGISTER, LABEL
-     * Because we are using relative addresses from the PLT. See:
+     * Because we are using addresses relative to RIP. Again, see:
      *   https://8dcc.github.io/reversing/understanding-call-stack.html#note-about-position-independent-executables
      */
-    printf("global %s\n"
-           "%s:\n"
+    printf("xor rax, rax\n"
            "xor rax, rax\n"
-           "xor rdi, rdi\n"
-           "lea rcx, [rel heap]\n",
-           ENTRY_POINT, ENTRY_POINT);
+           "lea rcx, [rel heap]\n");
 
     for (int i = 0; input[i] != '\0'; i++) {
+        /* If we reached the top of the label stack, resize */
         if (label_stack_i >= label_stack_sz) {
             label_stack_sz += 25;
             label_stack = realloc(label_stack, label_stack_sz);
