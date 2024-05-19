@@ -9,7 +9,7 @@
 
 /* If defined, the compiled assembly will define its own print/read/write
  * functions */
-#define LINUX_SYSCALLS
+// #define LINUX_SYSCALLS
 
 /*
  * Entry point of the generated assembly.
@@ -106,7 +106,7 @@ int main(void) {
 #ifdef LINUX_SYSCALLS
     printf(";   ld -m elf_x86_64 -o file.out file.o\n");
 #else
-    printf(";   gcc -o file.out file.o");
+    printf(";   gcc -o file.out file.o\n");
 #endif
 
     /* Use relative offsets, specify the architecture */
