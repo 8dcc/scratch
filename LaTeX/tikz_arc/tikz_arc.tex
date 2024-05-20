@@ -1,0 +1,208 @@
+\documentclass{amsart}
+
+\title{Tikz Arc}
+\author{8dcc}
+
+% Graphs, with coordinate calculations
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% Code highlighting
+\usepackage{listings}
+\lstset{frame=tblr,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+% Hyperlinks, for the bibliography
+\usepackage[hidelinks]{hyperref}
+
+% Remove author and extra info from the headers
+\pagestyle{plain}
+
+% Change the spacing between paragraphs
+\setlength{\parskip}{\baselineskip}
+
+% New environment adding spacing for tikz pictures
+\newenvironment{tikzpicturecenter}
+{\begin{center}\begin{tikzpicture}}
+{\end{tikzpicture}\end{center}}
+
+\begin{document}
+\maketitle
+
+When I started reading about arcs in TikZ, I had some trouble understanding
+them. This short explanation might help someone who is looking for more
+information.
+
+A TikZ arc is just a portion of a circumference that starts at an angle $\alpha$
+and ends at an angle $\beta$.
+
+\begin{tikzpicturecenter}
+  % Radius of the circumference.
+  \pgfmathsetmacro{\Radius}{2}
+
+  % Angle of the Alpha and Beta arcs.
+  \pgfmathsetmacro{\ArcAngleAlpha}{15}
+  \pgfmathsetmacro{\ArcAngleBeta}{40}
+
+  % Point in the circumference where the Alpha arc will end, and the Beta arc
+  % will start. Based on the Alpha angle and circumference radius.
+  \pgfmathsetmacro{\AlphaX}{\Radius*cos(\ArcAngleAlpha)}
+  \pgfmathsetmacro{\AlphaY}{\Radius*sin(\ArcAngleAlpha)}
+
+  % Point in the circumference where the Beta arc will start. Same as before,
+  % but we accumulate the angle of Alpha.
+  \pgfmathsetmacro{\BetaX}{\Radius*cos(\ArcAngleAlpha+\ArcAngleBeta)}
+  \pgfmathsetmacro{\BetaY}{\Radius*sin(\ArcAngleAlpha+\ArcAngleBeta)}
+
+  % Calculate the middle point of the Alpha and Beta arcs. In other words,
+  % calculate the end point of an arc of half the angles.
+  \pgfmathsetmacro{\AlphaLabelX}{\Radius*cos(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\AlphaLabelY}{\Radius*sin(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\BetaLabelX}{\Radius*cos(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+  \pgfmathsetmacro{\BetaLabelY}{\Radius*sin(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+
+  % Origin: Center of the circle.
+  \coordinate (o) at (0,0);
+  \coordinate (a) at (\AlphaX, \AlphaY);
+  \coordinate (b) at (\BetaX, \BetaY);
+
+  % Draw horizontal line
+  \draw[-stealth] (o) -- (2.3,0);
+  \draw[blue] (o) -- (a);
+  \draw[red] (o) -- (b);
+
+  % Draw circle and center.
+  \draw[dotted] (o) circle (\Radius);
+  \filldraw (o) circle (1pt);
+
+  % Draw the Alpha arc.
+  \draw[thick, blue] (\Radius, 0) arc(0:\ArcAngleAlpha:\Radius);
+
+  % Draw the Beta arc, with alternative syntax.
+  \draw[very thick, red] (a) arc[start angle=\ArcAngleAlpha, end angle=\ArcAngleAlpha + \ArcAngleBeta, radius=\Radius];
+
+  % Draw the Alpha and Beta labels.
+  \node at (\AlphaLabelX, \AlphaLabelY) [left, blue] {$\alpha$};
+  \filldraw (a) circle (1pt) node[above right]{$A$};
+  \node at (\BetaLabelX, \BetaLabelY) [below left, red] {$\beta$};
+\end{tikzpicturecenter}
+
+Where the red arc for the angle $\beta$ is what we are trying to draw. The arc
+starts at point $A$, which itself is at an angle $\alpha$ relative to the
+positive horizontal.
+
+These are the two main ways of declaring an arc in TikZ, both are equivalent:
+
+\begin{lstlisting}[language=tex]
+  \draw (X,Y) arc (START:END:RADIUS);
+  \draw (X,Y) arc [start angle=START, end angle=END, radius=RADIUS];
+\end{lstlisting}
+
+The $(X,Y)$ point does not represent the center of the circumference, but the
+point where the arc itself starts, which was named $A$ in the previous example.
+
+You also need to provide the \textit{start} angle of the arc. This angle, in
+degrees, is relative to the positive horizontal axis. In the previous example,
+it was the blue angle, named $\alpha$. The \textit{end} angle indicates where
+the arc will end on the circumference, and is \textbf{not} relative to the start
+angle $\alpha$, but relative to the positive horizontal axis. In other words, it
+expects an angle relative to the horizontal, instead of the angle of the arc we
+are trying to draw.
+
+Finally, it expects the \textit{radius} of the circumference. If you are, for
+example, drawing an arc to represent the angle between two lines, the radius
+will probably be the distance between the start of your arc and the point where
+the lines join, which will be the center of this ``circumference''.
+
+Note how we didn't specify the center of the circumference ourselves, but the
+arc function will calculate it with the \textit{start point}, \textit{start
+  angle} and \textit{radius} values. Specifically, it calculates the center of
+the circumference with the following formula:
+
+\begin{align*}
+C_x &= A_x - r \cos \alpha \\
+C_y &= A_y - r \sin \alpha
+\end{align*}
+
+Therefore, we can also calculate the $A$ (and optionally $B$) positions if we
+already know the \textit{center}, \textit{radius} and \textit{start angle} with
+the following formula:
+
+\begin{align*}
+A_x &= C_x + r \cos \alpha \\
+A_y &= C_y + r \sin \alpha
+\end{align*}
+
+% TODO: Draw sine and cosine graphs here
+
+Let's look at a more specific example of how the arc would be drawn.
+
+% TODO: Draw specific example
+
+\begin{tikzpicturecenter}
+  % For details on un-commented sections, see previous TikZ picture.
+
+  \pgfmathsetmacro{\Radius}{2}
+
+  % Center of the circumference. Not needed for this example.
+  \pgfmathsetmacro{\OriginX}{0}%
+  \pgfmathsetmacro{\OriginY}{0}%
+
+  \pgfmathsetmacro{\ArcAngleAlpha}{15}
+  \pgfmathsetmacro{\ArcAngleBeta}{40}
+
+  \pgfmathsetmacro{\AlphaX}{\OriginX+\Radius*cos(\ArcAngleAlpha)}
+  \pgfmathsetmacro{\AlphaY}{\OriginY+\Radius*sin(\ArcAngleAlpha)}
+
+  \pgfmathsetmacro{\BetaX}{\OriginX+\Radius*cos(\ArcAngleAlpha+\ArcAngleBeta)}
+  \pgfmathsetmacro{\BetaY}{\OriginY+\Radius*sin(\ArcAngleAlpha+\ArcAngleBeta)}
+
+  \pgfmathsetmacro{\AlphaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\AlphaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\BetaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+  \pgfmathsetmacro{\BetaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+
+  \coordinate (o) at (\OriginX, \OriginY);
+  \coordinate (a) at (\AlphaX, \AlphaY);
+  \coordinate (b) at (\BetaX, \BetaY);
+
+  % Horizontal line from Origin, with length Radius+0.3 units.
+  \draw[-stealth] (o) -- ($(\OriginX+\Radius+0.3, 0)$);
+  \draw[blue] (o) -- (a);
+  \draw[red] (o) -- (b);
+
+  \draw[dotted] (o) circle (\Radius);
+  \filldraw (o) circle (1pt);
+
+  % The Alpha arc starts to the left of the Origin, at Radius units.
+  \draw[thick, blue] ($(\OriginX+\Radius, 0)$) arc(0:\ArcAngleAlpha:\Radius);
+
+  \draw[very thick, red] (a) arc[start angle=\ArcAngleAlpha, end angle=\ArcAngleAlpha + \ArcAngleBeta, radius=\Radius];
+
+  \node at (\AlphaLabelX, \AlphaLabelY) [left, blue] {$\alpha$};
+  \filldraw (a) circle (1pt) node[above right]{$A$};
+  \node at (\BetaLabelX, \BetaLabelY) [below left, red] {$\beta$};
+
+  % DELME
+  \node at (-2, 2) {\textbf{WIP}};
+\end{tikzpicturecenter}
+
+\begin{thebibliography}{9}
+\bibitem{definearc}
+  \url{https://tex.stackexchange.com/q/175016/292826}
+\bibitem{drawarc}
+  \url{https://tex.stackexchange.com/q/54142/292826}
+\bibitem{fillarc}
+  \url{https://tex.stackexchange.com/q/62128/292826}
+\end{thebibliography}
+
+\end{document}
