@@ -1,25 +1,37 @@
 \documentclass{amsart}
 
-\title{Tikz Arc}
+% Source: https://github.com/8dcc/scratch/blob/main/LaTeX/tikz_arc/tikz_arc.tex
+\title{Arcs in TikZ}
 \author{8dcc}
 
-% Graphs, with coordinate calculations
+% Tikz for graphs, Calc for coordinate calculations, and Decorations for drawing
+% the braces.
 \usepackage{tikz}
 \usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathreplacing}
 
-% Code highlighting
+% Code highlighting. We add dots to zeros.
 \usepackage{listings}
-\lstset{frame=tblr,
-  aboveskip=3mm,
-  belowskip=3mm,
+\lstset{
+  % Showing spaces
+  showspaces=false,
   showstringspaces=false,
-  columns=flexible,
-  basicstyle={\small\ttfamily},
-  numbers=none,
+  showtabs=false,
+  % Indentation and breaks
+  tabsize=4,
   breaklines=true,
   breakatwhitespace=true,
-  tabsize=4
+  columns=flexible,
+  % Show left, right, top and bottom borders
+  frame=tblr,
+  % Misc
+  aboveskip=3mm,
+  belowskip=3mm,
+  basicstyle={\small\ttfamily},
 }
+
+% Different monospace font for code blocks (listings)
+\usepackage{inconsolata}
 
 % Hyperlinks, for the bibliography
 \usepackage[hidelinks]{hyperref}
@@ -35,15 +47,18 @@
 {\begin{center}\begin{tikzpicture}}
 {\end{tikzpicture}\end{center}}
 
+% Fancy TikZ text, like \LaTeX
+\newcommand{\TikZ}{Ti\textit{k}Z}
+
 \begin{document}
 \maketitle
 
-When I started reading about arcs in TikZ, I had some trouble understanding
-them. This short explanation might help someone who is looking for more
-information.
+When I started reading about arcs in \TikZ, the \LaTeX\ graphics library, I had
+some trouble understanding how they worked. This short explanation (made with
+\TikZ\ itself) might help someone who is looking for more information.
 
-A TikZ arc is just a portion of a circumference that starts at an angle $\alpha$
-and ends at an angle $\beta$.
+A \TikZ\ arc is just a portion of a circumference that starts at an angle
+$\alpha$ and ends at an angle $\beta$.
 
 \begin{tikzpicturecenter}
   % Radius of the circumference.
@@ -75,7 +90,7 @@ and ends at an angle $\beta$.
   \coordinate (a) at (\AlphaX, \AlphaY);
   \coordinate (b) at (\BetaX, \BetaY);
 
-  % Draw horizontal line
+  % Draw horizontal line.
   \draw[-stealth] (o) -- (2.3,0);
   \draw[blue] (o) -- (a);
   \draw[red] (o) -- (b);
@@ -96,11 +111,11 @@ and ends at an angle $\beta$.
   \node at (\BetaLabelX, \BetaLabelY) [below left, red] {$\beta$};
 \end{tikzpicturecenter}
 
-Where the red arc for the angle $\beta$ is what we are trying to draw. The arc
-starts at point $A$, which itself is at an angle $\alpha$ relative to the
-positive horizontal.
+Where the red arc, representing the angle $\beta$, is what we are trying to
+draw. The arc starts at point $A$, which itself is at an angle $\alpha$ relative
+to the positive horizontal.
 
-These are the two main ways of declaring an arc in TikZ, both are equivalent:
+These are the two main ways of declaring an arc in \TikZ, both are equivalent:
 
 \begin{lstlisting}[language=tex]
   \draw (X,Y) arc (START:END:RADIUS);
@@ -118,10 +133,12 @@ angle $\alpha$, but relative to the positive horizontal axis. In other words, it
 expects an angle relative to the horizontal, instead of the angle of the arc we
 are trying to draw.
 
-Finally, it expects the \textit{radius} of the circumference. If you are, for
-example, drawing an arc to represent the angle between two lines, the radius
-will probably be the distance between the start of your arc and the point where
-the lines join, which will be the center of this ``circumference''.
+Finally, it expects the \textit{radius} of the circumference. That is, the
+distance between the \textit{start point} and the center of the ``hypothetical''
+circumference where the arc is. If you are, for example, drawing an arc to
+represent the angle between two lines, the radius will probably be the distance
+between the start of your arc and the vertex where the lines join, which would
+be the center of this ``circumference''.
 
 Note how we didn't specify the center of the circumference ourselves, but the
 arc function will calculate it with the \textit{start point}, \textit{start
@@ -144,9 +161,9 @@ A_y &= C_y + r \sin \alpha
 
 % TODO: Draw sine and cosine graphs here
 
-Let's look at a more specific example of how the arc would be drawn.
-
-% TODO: Draw specific example
+Let's look at a more specific example of how the arc would be drawn. Imagine we
+wanted to draw the arc representing the $\beta$ angle formed by the $A$ and $B$
+lines.
 
 \begin{tikzpicturecenter}
   % For details on un-commented sections, see previous TikZ picture.
@@ -154,8 +171,8 @@ Let's look at a more specific example of how the arc would be drawn.
   \pgfmathsetmacro{\Radius}{2}
 
   % Center of the circumference. Not needed for this example.
-  \pgfmathsetmacro{\OriginX}{0}%
-  \pgfmathsetmacro{\OriginY}{0}%
+  \pgfmathsetmacro{\OriginX}{0}
+  \pgfmathsetmacro{\OriginY}{0}
 
   \pgfmathsetmacro{\ArcAngleAlpha}{15}
   \pgfmathsetmacro{\ArcAngleBeta}{40}
@@ -166,37 +183,104 @@ Let's look at a more specific example of how the arc would be drawn.
   \pgfmathsetmacro{\BetaX}{\OriginX+\Radius*cos(\ArcAngleAlpha+\ArcAngleBeta)}
   \pgfmathsetmacro{\BetaY}{\OriginY+\Radius*sin(\ArcAngleAlpha+\ArcAngleBeta)}
 
+  % Magnitudes of A, B and H vectors. Will be used for getting the end of the
+  % lines by multiplying by the unit vectors.
+  \pgfmathsetmacro{\LineMagnitude}{1.75}
+
   \pgfmathsetmacro{\AlphaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha/2)}
   \pgfmathsetmacro{\AlphaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha/2)}
   \pgfmathsetmacro{\BetaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha+(\ArcAngleBeta/2))}
   \pgfmathsetmacro{\BetaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha+(\ArcAngleBeta/2))}
 
+  % The UA and UB coordinates represent where the arc starts and ends, while the
+  % A and B coordinates represent where the lines themselves will end.
   \coordinate (o) at (\OriginX, \OriginY);
-  \coordinate (a) at (\AlphaX, \AlphaY);
-  \coordinate (b) at (\BetaX, \BetaY);
+  \coordinate (ua) at (\AlphaX, \AlphaY);
+  \coordinate (ub) at (\BetaX, \BetaY);
+  \coordinate (a) at ($\LineMagnitude*(ua)$);
+  \coordinate (b) at ($\LineMagnitude*(ub)$);
 
-  % Horizontal line from Origin, with length Radius+0.3 units.
-  \draw[-stealth] (o) -- ($(\OriginX+\Radius+0.3, 0)$);
-  \draw[blue] (o) -- (a);
-  \draw[red] (o) -- (b);
-
+  % Draw dotted circle itself.
   \draw[dotted] (o) circle (\Radius);
-  \filldraw (o) circle (1pt);
 
   % The Alpha arc starts to the left of the Origin, at Radius units.
-  \draw[thick, blue] ($(\OriginX+\Radius, 0)$) arc(0:\ArcAngleAlpha:\Radius);
+  \draw[thick, blue] ($(o) + (\Radius, 0)$) arc[start angle=0, end angle=\ArcAngleAlpha, radius=\Radius];
+  \draw[thick, red] (ua) arc[start angle=\ArcAngleAlpha, end angle=\ArcAngleAlpha + \ArcAngleBeta, radius=\Radius];
 
-  \draw[very thick, red] (a) arc[start angle=\ArcAngleAlpha, end angle=\ArcAngleAlpha + \ArcAngleBeta, radius=\Radius];
+  % The brace to indicate the length of the Radius.
+  \draw[decorate, decoration={brace,amplitude=5pt,mirror}] (o) -- ($(o) + (\Radius, 0)$) node [midway, yshift=-0.4cm] {$r$};
 
+  % Horizontal line from Origin, with the same length as the A and B lines.
+  \draw[-stealth, gray] (o) -- ($(o) + (\LineMagnitude*\Radius, 0)$) node[below, pos=0.8]{$x$};
+
+  % The A and B lines.
+  \draw[-stealth] (o) -- (a) node[above]{$A$};
+  \draw[-stealth] (o) -- (b) node[above]{$B$};
+
+  % The Alpha and Beta arcs.
   \node at (\AlphaLabelX, \AlphaLabelY) [left, blue] {$\alpha$};
-  \filldraw (a) circle (1pt) node[above right]{$A$};
   \node at (\BetaLabelX, \BetaLabelY) [below left, red] {$\beta$};
 
-  % DELME
-  \node at (-2, 2) {\textbf{WIP}};
+  % The center of the circumference, also the vertex of A and B.
+  \filldraw (o) circle (1pt) node[below left]{$c$};
+
+  % The points where the Alpha and Beta arcs end.
+  \filldraw (\AlphaX, \AlphaY) circle (1pt) node [xshift=0.2cm, yshift=0.35cm] {$A_1$};
+  \filldraw (\BetaX, \BetaY) circle (1pt) node [xshift=-0.1cm, yshift=0.35cm] {$B_1$};
 \end{tikzpicturecenter}
 
+Note that the arc will be drawn from $A_1$ to $B_1$, not the other way around.
+
+We should know, at least, the distance from the center $c$ where the arc will be
+drawn inside the line $A$. This is the radius $r$ of the circumference. Perhaps
+we don't know specifically where the $A_1$ point will be, but we can calculate
+it with some simple trigonometry:
+
+\newpage
+
+\begin{lstlisting}[language=tex]
+  % Radius of the circumference.
+  \pgfmathsetmacro{\Radius}{2}
+
+  % Center of the circumference, vertex where A and B join.
+  \pgfmathsetmacro{\OriginX}{0}
+  \pgfmathsetmacro{\OriginY}{0}
+
+  % Angle in degrees where the arc Alpha ends.
+  \pgfmathsetmacro{\ArcAngleAlpha}{15}
+
+  % Calculate A1 point, from the Center, Radius and Angle.
+  \pgfmathsetmacro{\AlphaX}{\OriginX+\Radius*cos(\ArcAngleAlpha)}
+  \pgfmathsetmacro{\AlphaY}{\OriginY+\Radius*sin(\ArcAngleAlpha)}
+
+  % Define the coordinate for the A1 point, for convenience.
+  \coordinate (a1) at (\AlphaX, \AlphaY);
+\end{lstlisting}
+
+With that, we can draw our arc using the vertex as the center of the
+``circumference'':
+
+\begin{lstlisting}[language=tex]
+  % Angle in degrees where the arc Beta ends. Relative to `x'.
+  \pgfmathsetmacro{\ArcAngleBeta}{40}
+
+  % Draw the arc itself.
+  \draw[thick, red] (a1)
+      arc[start angle=\ArcAngleAlpha,
+          end angle=\ArcAngleAlpha + \ArcAngleBeta,
+          radius=\Radius];
+\end{lstlisting}
+
+We are drawing a thick red arc, starting at point $A_1$, which is at 15 degrees
+in a hypotetical circumference of radius 2. The arc ends at 40 degrees relative
+to $x$.
+
 \begin{thebibliography}{9}
+\bibitem{manual}
+  TikZ and PGF Manual for version 1.18, 2007. Section 11.8, The Arc Operation.
+  \url{https://www.bu.edu/math/files/2013/08/tikzpgfmanual.pdf}
+\bibitem{tutorial}
+  \url{https://tikz.dev/tutorial}
 \bibitem{definearc}
   \url{https://tex.stackexchange.com/q/175016/292826}
 \bibitem{drawarc}
