@@ -26,6 +26,7 @@
 *.wx32fsl
 
 # LaTeX
+*.log
 /LaTeX/**/*.4ct
 /LaTeX/**/*.4tc
 /LaTeX/**/*.aux
@@ -34,7 +35,6 @@
 /LaTeX/**/*.html
 /LaTeX/**/*.idv
 /LaTeX/**/*.lg
-/LaTeX/**/*.log
 /LaTeX/**/*.tmp
 /LaTeX/**/*.xref
 /LaTeX/**/*.png
