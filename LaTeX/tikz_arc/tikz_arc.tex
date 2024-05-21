@@ -57,6 +57,8 @@ When I started reading about arcs in \TikZ, the \LaTeX\ graphics library, I had
 some trouble understanding how they worked. This short explanation (made with
 \TikZ\ itself) might help someone who is looking for more information.
 
+\section{Syntax}
+
 A \TikZ\ arc is just a portion of a circumference that starts at an angle
 $\alpha$ and ends at an angle $\beta$.
 
@@ -161,7 +163,9 @@ A_y &= C_y + r \sin \alpha
 
 % TODO: Draw sine and cosine graphs here
 
-Let's look at a more specific example of how the arc would be drawn. Imagine we
+\section{Example}
+
+Let's look at a more specific example of how an arc would be drawn. Imagine we
 wanted to draw the arc representing the $\beta$ angle formed by the $A$ and $B$
 lines.
 
@@ -231,12 +235,12 @@ lines.
 
 Note that the arc will be drawn from $A_1$ to $B_1$, not the other way around.
 
+\newpage
+
 We should know, at least, the distance from the center $c$ where the arc will be
 drawn inside the line $A$. This is the radius $r$ of the circumference. Perhaps
 we don't know specifically where the $A_1$ point will be, but we can calculate
 it with some simple trigonometry:
-
-\newpage
 
 \begin{lstlisting}[language=tex]
   % Radius of the circumference.
@@ -275,9 +279,125 @@ We are drawing a thick red arc, starting at point $A_1$, which is at 15 degrees
 in a hypotetical circumference of radius 2. The arc ends at 40 degrees relative
 to $x$.
 
+\newpage
+
+\section{Filling the arc}
+
+If we wanted to fill the arc, we would need to use \verb|\filldraw| instead of
+\verb|\draw|, and we would have to manually specify the origin of our
+``circumference''. We would also need to add \verb|cycle| at the end:
+
+
+\begin{lstlisting}[language=tex]
+  % Without filling
+  \draw[blue] (a1) arc (15:55:2);
+
+  % With filling
+  \filldraw[blue, fill opacity=0.3] (o) -- (a1) arc (15:55:2) -- cycle;
+\end{lstlisting}
+
+This is the result:
+
+\begin{tikzpicturecenter}
+  \pgfmathsetmacro{\Radius}{1.5}
+
+  \pgfmathsetmacro{\OriginX}{0}
+  \pgfmathsetmacro{\OriginY}{0}
+
+  \pgfmathsetmacro{\ArcAngleAlpha}{10}
+  \pgfmathsetmacro{\ArcAngleBeta}{110}
+
+  \pgfmathsetmacro{\AlphaX}{\OriginX+\Radius*cos(\ArcAngleAlpha)}
+  \pgfmathsetmacro{\AlphaY}{\OriginY+\Radius*sin(\ArcAngleAlpha)}
+  \pgfmathsetmacro{\BetaX}{\OriginX+\Radius*cos(\ArcAngleAlpha+\ArcAngleBeta)}
+  \pgfmathsetmacro{\BetaY}{\OriginY+\Radius*sin(\ArcAngleAlpha+\ArcAngleBeta)}
+
+  \pgfmathsetmacro{\LineMagnitude}{1.5}
+
+  \pgfmathsetmacro{\LabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+  \pgfmathsetmacro{\LabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+
+  \coordinate (o) at (\OriginX, \OriginY);
+  \coordinate (ua) at (\AlphaX, \AlphaY);
+  \coordinate (ub) at (\BetaX, \BetaY);
+  \coordinate (a) at ($\LineMagnitude*(ua)$);
+  \coordinate (b) at ($\LineMagnitude*(ub)$);
+
+  % Fill the arc between O, A1 and B1.
+  \filldraw[blue, fill opacity=0.3] (o) -- (ua) arc (\ArcAngleAlpha:\ArcAngleAlpha+\ArcAngleBeta:\Radius) -- cycle;
+
+  \node at (\LabelX, \LabelY) [below left] {$\theta$};
+
+  % Lines and dot
+  \draw[-stealth, thick] (o) -- (a) node[above]{$A$};
+  \draw[-stealth, thick] (o) -- (b) node[above]{$B$};
+  \filldraw (o) circle (1pt);
+\end{tikzpicturecenter}
+
+\section{Getting the position for the labels}
+
+To get the positions where the $\alpha$, $\beta$ and $\theta$ labels will go,
+you just need to calculate the point in the middle of the arc. Just divide the
+angle of the arc by two, and calculate the point like we did before. This is the
+code used for getting the labels of section 2:
+
+\begin{lstlisting}[language=tex]
+  \pgfmathsetmacro{\AlphaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\AlphaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha/2)}
+
+  \pgfmathsetmacro{\BetaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+  \pgfmathsetmacro{\BetaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+\end{lstlisting}
+
+In the following image, the dots in black represent the points for the
+labels. The actual label text would be calculated relative to that.
+
+\begin{tikzpicturecenter}
+  % For details on un-commented sections, see previous TikZ picture.
+
+  \pgfmathsetmacro{\Radius}{1.5}
+
+  \pgfmathsetmacro{\OriginX}{0}
+  \pgfmathsetmacro{\OriginY}{0}
+
+  \pgfmathsetmacro{\ArcAngleAlpha}{15}
+  \pgfmathsetmacro{\ArcAngleBeta}{40}
+
+  \pgfmathsetmacro{\AlphaX}{\OriginX+\Radius*cos(\ArcAngleAlpha)}
+  \pgfmathsetmacro{\AlphaY}{\OriginY+\Radius*sin(\ArcAngleAlpha)}
+
+  \pgfmathsetmacro{\BetaX}{\OriginX+\Radius*cos(\ArcAngleAlpha+\ArcAngleBeta)}
+  \pgfmathsetmacro{\BetaY}{\OriginY+\Radius*sin(\ArcAngleAlpha+\ArcAngleBeta)}
+
+  \pgfmathsetmacro{\LineMagnitude}{1.5}
+
+  \pgfmathsetmacro{\AlphaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\AlphaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\BetaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+  \pgfmathsetmacro{\BetaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+
+  \coordinate (o) at (\OriginX, \OriginY);
+  \coordinate (ua) at (\AlphaX, \AlphaY);
+  \coordinate (ub) at (\BetaX, \BetaY);
+  \coordinate (a) at ($\LineMagnitude*(ua)$);
+  \coordinate (b) at ($\LineMagnitude*(ub)$);
+
+  \draw[thick, blue] ($(o) + (\Radius, 0)$) arc[start angle=0, end angle=\ArcAngleAlpha, radius=\Radius];
+  \draw[thick, red] (ua) arc[start angle=\ArcAngleAlpha, end angle=\ArcAngleAlpha + \ArcAngleBeta, radius=\Radius];
+
+  % Draw points where the Alpha and Beta labels would go.
+  \filldraw (\AlphaLabelX, \AlphaLabelY) circle (1pt);
+  \filldraw (\BetaLabelX, \BetaLabelY) circle (1pt);
+
+  \draw[-stealth, gray] (o) -- (a) node[above]{$A$};
+  \draw[-stealth, gray] (o) -- (b) node[below right]{$B$};
+  \draw[-stealth, gray] (o) -- ($(o) + (\LineMagnitude*\Radius, 0)$) node[below]{$x$};
+\end{tikzpicturecenter}
+
 \begin{thebibliography}{9}
 \bibitem{manual}
   TikZ and PGF Manual for version 1.18, 2007. Section 11.8, The Arc Operation.
+
   \url{https://www.bu.edu/math/files/2013/08/tikzpgfmanual.pdf}
 \bibitem{tutorial}
   \url{https://tikz.dev/tutorial}
