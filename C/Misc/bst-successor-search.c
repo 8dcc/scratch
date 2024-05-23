@@ -36,8 +36,38 @@ typedef struct Node {
 } Node;
 
 Node* findInOrderSuccessor(Node* input) {
-    /* TODO */
-    return input;
+    /* Invalid input */
+    if (input == NULL)
+        return NULL;
+
+    /* If we have a node in the right, there is a group of keys greater than the
+     * input. */
+    if (input->right != NULL) {
+        /* Return the smallest (leftmost) value in that group. */
+        for (input = input->right; input->left != NULL; input = input->left)
+            ;
+
+        return input;
+    }
+
+    Node* parent = input->parent;
+
+    /* If we came from the left, the parent has a greater key, so we can
+     * immediately return it. If however, we came from the right, keep going up
+     * until we came from the right.
+     *
+     * In other words, we have to keep going up until we come from the left
+     * side. */
+    while (parent->right == input) {
+        /* We reached the top, no node was found */
+        if (parent->parent == NULL)
+            return NULL;
+
+        input  = parent;
+        parent = parent->parent;
+    }
+
+    return parent;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -61,6 +91,7 @@ static Node* newNode(Node* parent, bool left, int key) {
 }
 
 static Node* treeCreate(void) {
+    /* Obviously a bad and tedious method of inserting, but short enough */
     Node* node20 = newNode(NULL, false, 20);
     Node* node9  = newNode(node20, true, 9);
     newNode(node20, false, 25);
@@ -113,6 +144,33 @@ int main(void) {
 
     puts("Printing tree:");
     treePrint(tree);
+
+    printf("\nTests:\n");
+    Node *solution, *input, *returned;
+
+    input    = tree->left->right->left;
+    solution = tree->left->right;
+    returned = findInOrderSuccessor(input);
+    printf("%2d -> %2d (%s)\n", input->key, (returned) ? returned->key : -1,
+           (returned == solution) ? "ok" : "wrong");
+
+    input    = tree->right;
+    solution = NULL;
+    returned = findInOrderSuccessor(input);
+    printf("%2d -> %2d (%s)\n", input->key, (returned) ? returned->key : -1,
+           (returned == solution) ? "ok" : "wrong");
+
+    input    = tree;
+    solution = tree->right;
+    returned = findInOrderSuccessor(input);
+    printf("%2d -> %2d (%s)\n", input->key, (returned) ? returned->key : -1,
+           (returned == solution) ? "ok" : "wrong");
+
+    input    = tree->left->left;
+    solution = tree->left;
+    returned = findInOrderSuccessor(input);
+    printf("%2d -> %2d (%s)\n", input->key, (returned) ? returned->key : -1,
+           (returned == solution) ? "ok" : "wrong");
 
     treeFree(tree);
     return 0;
