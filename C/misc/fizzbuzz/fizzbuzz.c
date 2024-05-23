@@ -24,4 +24,3 @@ void fizzbuzz_loop(const int iterations) {
         printf("\n");
     }
 }
-

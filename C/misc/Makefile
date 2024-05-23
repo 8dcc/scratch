@@ -1,14 +1,13 @@
 
 CC=gcc
-CCPP=g++
+CXX=g++
 CFLAGS=-Wall -Wextra -ggdb3
 
 # Link with -lm
-MATH_BINS=ppm-mandelbrot.out \
-          bresenham-line.out \
-          rotation-matrix.out \
-          spinning-torus.out \
-          generate-wav.out
+ MATH_BINS=bresenham-line.out \
+           rotation-matrix.out \
+           spinning-torus.out \
+           generate-wav.out
 
 SDL_BINS=sdl-bresenham-line.out
 
@@ -21,14 +20,7 @@ all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildca
 clean:
 	rm -f *.out
 
-64bit-vars-in-32bit-pc.out: 64bit-vars-in-32bit-pc.c
-	$(CC) $(CFLAGS) -m32 -o $@ $<
-
-readline.out: readline.c
-	$(CC) $(CFLAGS) -o $@ $< -lreadline
-
-ncurses-%.out: ncurses-%.c
-	$(CC) $(CFLAGS) -o $@ $< -lncurses
+#-------------------------------------------------------------------------------
 
 x-window-overlay.out: x-window-overlay.c
 	$(CC) $(CFLAGS) -o $@ $< -lX11 -lXext -lXfixes -lm
@@ -37,7 +29,7 @@ $(MATH_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< -lm
 
 $(SDL_BINS): %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< -lm `sdl2-config --cflags --libs`
+	$(CC) $(CFLAGS) -o $@ $< -lm $(shell sdl2-config --cflags --libs)
 
 $(RAYLIB_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< -lraylib
@@ -46,4 +38,4 @@ $(RAYLIB_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 %.out: %.cpp
-	$(CCPP) $(CFLAGS) -o $@ $<
+	$(CXX) $(CFLAGS) -o $@ $<

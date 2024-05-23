@@ -1,6 +1,6 @@
 # Misc
-/C/Misc/mandelbrots/
-/C/Misc/*.wav
+/C/**/mandelbrots/
+/C/**/*.wav
 
 # Ada
 *.ali
