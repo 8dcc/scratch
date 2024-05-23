@@ -161,7 +161,43 @@ A_x &= C_x + r \cos \alpha \\
 A_y &= C_y + r \sin \alpha
 \end{align*}
 
-% TODO: Draw sine and cosine graphs here
+If you are not sure why this works, the classic $\sin$ and $\cos$ graph might
+help:
+
+\begin{tikzpicturecenter}
+  \pgfmathsetmacro{\Radius}{2}
+  \pgfmathsetmacro{\ArcRadius}{1}
+
+  \pgfmathsetmacro{\ArcAngleAlpha}{40}
+
+  \pgfmathsetmacro{\AlphaX}{\ArcRadius*cos(\ArcAngleAlpha)}
+  \pgfmathsetmacro{\AlphaY}{\ArcRadius*sin(\ArcAngleAlpha)}
+
+  \pgfmathsetmacro{\LabelX}{\ArcRadius*cos(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\LabelY}{\ArcRadius*sin(\ArcAngleAlpha/2)}
+
+  \coordinate (o) at (0,0);
+  \coordinate (ux) at (\Radius,0);
+  \coordinate (uy) at (0,\Radius);
+  \coordinate (ua) at (\AlphaX, \AlphaY);
+  \coordinate (x) at ($1.1*(ux)$);
+  \coordinate (y) at ($1.1*(uy)$);
+  \coordinate (a) at ($\Radius*(ua)$);
+
+  \filldraw[violet, fill opacity=0.3] (o) -- (\ArcRadius,0) arc (0:\ArcAngleAlpha:\ArcRadius) -- cycle;
+  \node at (\LabelX, \LabelY) [left] {$\theta$};
+
+  \draw[dotted] (o) circle (\Radius);
+
+  \draw[-stealth, gray] (o) -- (x);
+  \draw[-stealth, gray] (o) -- (y);
+  \draw[thick, red]  (o) -- ($(\Radius*\AlphaX, 0)$) node[below, pos=0.5]{$\cos(\theta)$};
+  \draw[thick, blue] (a) -- ($(\Radius*\AlphaX, 0)$) node[right, pos=0.5]{$\sin(\theta)$};
+  \draw[thick] (o) -- (a) node[yshift=0.3cm, xshift=-0.3cm, pos=0.6]{$r=1$};
+  \filldraw[gray] (o) circle (1pt);
+\end{tikzpicturecenter}
+
+\newpage
 
 \section{Example}
 
@@ -235,8 +271,6 @@ lines.
 
 Note that the arc will be drawn from $A_1$ to $B_1$, not the other way around.
 
-\newpage
-
 We should know, at least, the distance from the center $c$ where the arc will be
 drawn inside the line $A$. This is the radius $r$ of the circumference. Perhaps
 we don't know specifically where the $A_1$ point will be, but we can calculate
@@ -261,6 +295,8 @@ it with some simple trigonometry:
   \coordinate (a1) at (\AlphaX, \AlphaY);
 \end{lstlisting}
 
+\newpage
+
 With that, we can draw our arc using the vertex as the center of the
 ``circumference'':
 
@@ -278,8 +314,6 @@ With that, we can draw our arc using the vertex as the center of the
 We are drawing a thick red arc, starting at point $A_1$, which is at 15 degrees
 in a hypotetical circumference of radius 2. The arc ends at 40 degrees relative
 to $x$.
-
-\newpage
 
 \section{Filling the arc}
 
@@ -333,6 +367,8 @@ This is the result:
   \draw[-stealth, thick] (o) -- (b) node[above]{$B$};
   \filldraw (o) circle (1pt);
 \end{tikzpicturecenter}
+
+\newpage
 
 \section{Getting the position for the labels}
 
