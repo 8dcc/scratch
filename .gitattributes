@@ -1,6 +1,6 @@
 # Ignore OpenGL libs
-/C/OpenGL/include/** linguist-detectable=false
-/C/OpenGL/glad.c linguist-detectable=false
+/C/**/opengl/include/** linguist-detectable=false
+/C/**/opengl/glad.c linguist-detectable=false
 
 # Don't detect simple-lib.asm multiple times for GitHub's language detection
-/Assembly/asmtutor/**/simple-lib.asm linguist-detectable=false
+/Assembly/**/asmtutor/**/simple-lib.asm linguist-detectable=false
