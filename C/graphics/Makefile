@@ -3,11 +3,9 @@ CC=gcc
 CXX=g++
 CFLAGS=-Wall -Wextra -ggdb3
 
-# Link with -lm
-MATH_BINS=bresenham-line.out \
-          rotation-matrix.out \
-          spinning-torus.out \
-          generate-wav.out
+SDL_BINS=sdl-bresenham-line.out
+
+RAYLIB_BINS=raylib-cube.out
 
 .PHONY: all clean
 
@@ -18,8 +16,14 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-$(MATH_BINS): %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< -lm
+x-window-overlay.out: x-window-overlay.c
+	$(CC) $(CFLAGS) -o $@ $< -lX11 -lXext -lXfixes -lm
+
+$(SDL_BINS): %.out: %.c
+	$(CC) $(CFLAGS) -o $@ $< -lm $(shell sdl2-config --cflags --libs)
+
+$(RAYLIB_BINS): %.out: %.c
+	$(CC) $(CFLAGS) -o $@ $< -lraylib
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $<
