@@ -1,13 +1,10 @@
-# Haskell
-**Stuff I made while learning haskell.**
+Scratch haskell
+---------------
 
-## Description
+As mentioned in other folders, the quality of the code depends on when it was
+created.
 
-Just like in *C* and *Assembly*, you will be able to see my progression. And
-that might include bad practises at first.
-
-## Interesting links
-
-* [Haskell gist I made](https://gist.github.com/r4v10l1/3051b68d9d133e1b2bd95cabd61b850c)
-* [cheat.sh](https://cheat.sh/haskell/:learn)
-* [learnyouahaskell](http://learnyouahaskell.com)
+Some interesting haskell resources:
+ - https://www.haskell.org/documentation/
+ - http://learnyouahaskell.com
+ - https://cheat.sh/haskell/:learn

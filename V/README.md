@@ -1,7 +1,6 @@
-# V
-**Stuff I made while learning [v](https://vlang.io).**  
+Scratch V
+---------
 
-Followed the [official documentation](https://github.com/vlang/v/blob/master/doc/docs.md#hello-world=)
-and a bit of [The book of V](https://the-book-of-v.readthedocs.io/en/latest).
-
-Check the [cheatsheets](cheatsheets) for info on specific topics.
+Followed the official documentation, and a bit of The book of V. See:
+ - https://github.com/vlang/v/blob/master/doc/docs.md#hello-world
+ - https://the-book-of-v.readthedocs.io/en/latest
