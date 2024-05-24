@@ -1,34 +1,64 @@
+
 #include <stdio.h>
 
-char* static_recursion(char* arr, int num);
+/* Fill `out' with a list of digits from 0..N; Doesn't use indexing, and returns
+ * the written digits. Caller must null-terminate the string. */
+static int normal_recursion(char* out, int num) {
+    /* Base case. */
+    if (num < 0)
+        return 0;
 
-int main() {
-    char s1[20] = { 0 };
-    char s2[20] = { 0 };
+    /* Will start filling from end to start. Asumes `out' is big enough to hold
+     * the digits. */
+    out[num] = (num % 10) + '0';
 
-    static_recursion(s1, 5);
-    static_recursion(s2, 6);
-
-    printf("s1 (5): %s\n"
-           "s2 (6): %s\n",
-           s1, s2);
-
-    return 0;
+    /* Call recursively, subtracting an index */
+    return normal_recursion(out, num - 1) + 1;
 }
 
-// Fills arr with '0' to num, using recursion
-char* static_recursion(char* arr, int num) {
-    static int ap = 0;    // arr pos
+/* Fill `out' with a list of digits from 0..N; Uses a static variable for
+ * indexing. */
+static char* static_recursion(char* out, int num) {
+    /* Position in array, saved across recursive calls */
+    static int out_pos = 0;
 
-    arr[ap] = ap + '0';
-    ap++;    // New line to fix "-Wsequence-point". This is explained in K&R (See end
-             // of 2.12)
+    /* Get digit of current position, save it in array */
+    out[out_pos] = (out_pos % 10) + '0';
 
-    // After we are done with all recursions, reset static for next call
-    if (ap > num)
-        ap = 0;
-    else
-        static_recursion(arr, num);
+    /* We need to increase in a different statement since we used `out_pos' for
+     * assigning and indexing. */
+    out_pos++;
 
-    return arr;
+    /* If we haven't assigned `num' digits, call recursively */
+    if (out_pos <= num)
+        return static_recursion(out, num);
+
+    /* We are done, terminate the `out' string */
+    out[out_pos] = '\0';
+
+    /* Also reset static variable for next recursive calls */
+    out_pos = 0;
+
+    /* Return the array */
+    return out;
+}
+
+int main() {
+    char s[20];
+    int result;
+
+    /* Non-static recursion, we must terminate the string */
+    result    = normal_recursion(s, 5);
+    s[result] = '\0';
+    printf("f1(5):  %s (result=%d)\n", s, result);
+
+    result    = normal_recursion(s, 13);
+    s[result] = '\0';
+    printf("f1(13): %s (result=%d)\n", s, result);
+
+    /* Static recursion */
+    printf("f2(5):  %s\n", static_recursion(s, 5));
+    printf("f2(13): %s\n", static_recursion(s, 6));
+
+    return 0;
 }
