@@ -5,7 +5,7 @@
 /* NOTE: Can't calculate the heap size when parsing since we would have to
  * account for the loops and that basically means running the brainfuck from
  * here. */
-#define HEAP_SZ 1024
+#define HEAP_SZ 4096
 
 /* If defined, the compiled assembly will define its own print/read/write
  * functions */
@@ -176,7 +176,7 @@ int main(void) {
      *   https://8dcc.github.io/reversing/understanding-call-stack.html#note-about-position-independent-executables
      */
     printf("xor rax, rax\n"
-           "xor rax, rax\n"
+           "xor rdi, rdi\n"
            "lea rcx, [rel heap]\n");
 
     for (int i = 0; input[i] != '\0'; i++) {
