@@ -200,7 +200,15 @@ int main(void) {
                 puts("dec rcx");
                 break;
             case '[':
-                printf(".lbl%d:\n", label_i);
+                /* Print the opening label */
+                printf(".open_%d:\n", label_i);
+
+                /* The brainfuck loops translate to a `while', not to a
+                 * `do ... while'. We need to check if the condition is zero
+                 * first. */
+                printf("cmp byte [rcx], 0\n"
+                       "jz  .close_%d\n",
+                       label_i);
 
                 /* Push the current label identifier to the stack, to indicate
                  * the nesting level increased. */
@@ -220,9 +228,13 @@ int main(void) {
                  * the label stack. */
                 label_stack_i--;
 
-                printf("cmp byte [rcx], 0\n"
-                       "jnz .lbl%d\n",
-                       label_stack[label_stack_i]);
+                /* We jump unconditionally to the `open' label. The checks will
+                 * be performed there, which uses an extra jump, but results in
+                 * cleaner and smaller ASM. */
+                printf("jmp .open_%d\n", label_stack[label_stack_i]);
+
+                /* We declare the closing label for this loop. */
+                printf(".close_%d:\n", label_stack[label_stack_i]);
 
                 break;
             case '.':
