@@ -1,9 +1,0 @@
-#+TITLE: Scratch
-#+AUTHOR: 8dcc
-#+OPTIONS: toc:2
-#+STARTUP: nofold
-
-Miscellaneous sources from different programming languages. Most folders have
-their own README.
-
-Credits for the "scratch" name: [[https://github.com/skeeto/scratch][skeeto/scratch]].

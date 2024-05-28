@@ -1,1 +1,1 @@
-Simple files for testing C features or libraries.
+Simple programs for testing C features or libraries.
