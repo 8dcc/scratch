@@ -1,0 +1,74 @@
+#+title: Sum of odd
+#+property: header-args:lisp :tangle yes :comments link
+#+auto_tangle: t
+#+author: 8dcc
+
+
+* Sum of odd
+
+*Kata: https://www.codewars.com/kata/55fd2d567d94ac3bc9000064*
+
+Sample triangle:
+
+#+begin_src
+             1
+          3     5
+       7     9    11
+   13    15    17    19
+21    23    25    27    29
+#+end_src
+
+Source:
+
+#+begin_src lisp
+(defun row-sum-odd-numbers (n)
+  (let ((center-of-row (* n n)))        ; (1)
+    (* center-of-row n)))
+
+(row-sum-odd-numbers 3)
+#+end_src
+
+#+RESULTS:
+: 27
+
+Notes:
+1. Squaring a row number gives the center number of that row (9 for row 3, 16 for
+   row 4).
+
+   We save this value in the local variable =center-of-row=.
+
+   Note: The expression =(* n n)= obviously squares the number, and its the same
+   as =(expt n 2)= (=n^2=), but I feel like it is not necessary.
+
+   Note: We can subtract the row number minus one to get the first item of the row
+   (7 for row 3, 13 for row 4), and we can add that instead to get the last
+   number of the row.
+
+   I honestly have no idea behind the math of this but feel free to make a PR if
+   you know how I did this :)
+
+2. We just need to multiply this center number by the row number to get the sum
+   of that row.
+
+   Again, I have no idea behind the math of this. Honestly I just observed and
+   tried until I got it right, but I would love to know the real math behind
+   this.
+
+After making the previous code, I obviously realized the real operation to get
+the sum: =n^3=. This kata amazed me.
+
+#+begin_src lisp
+(defun row-sum-odd-numbers (n)
+  (* n n n))
+
+;; OR
+
+(defun row-sum-odd-numbers-alt (n)
+  (expt n 3))
+
+(list (row-sum-odd-numbers 3)
+      (row-sum-odd-numbers-alt 3))
+#+end_src
+
+#+RESULTS:
+| 27 | 27 |

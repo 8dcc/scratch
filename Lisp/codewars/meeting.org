@@ -1,0 +1,67 @@
+#+title: Meeting
+#+property: header-args:lisp :tangle yes :comments link
+#+auto_tangle: t
+#+author: 8dcc
+
+* Meeting
+
+*Kata: https://www.codewars.com/kata/59df2f8f08c6cec835000012*
+
+#+begin_src lisp
+(defun split-str (string c)                                 ; (1)
+  (loop for i = 0 then (1+ j)
+        as j = (position c string :start i)
+        collect (subseq string i j)
+        while j))
+
+(defun upper-split (s)                                      ; (2)
+  (mapcar #'(lambda (sub-str)
+              (let ((sub-lst (split-str sub-str #\:)))
+                (rotatef (car sub-lst) (cadr sub-lst))
+                sub-lst))
+          (split-str (string-upcase s) #\;)))
+
+(defun meeting (s)
+  (sort (upper-split s)
+        #'(lambda (lst1 lst2)                               ; (3)
+            (if (equal (car lst1) (car lst2))               ; (4)
+                (string-lessp (cadr lst1) (cadr lst2))
+                (string-lessp (car lst1) (car lst2))))))
+
+;; Tests
+(meeting "Alexis:Wahl;John:Bell;Victoria:Schwarz;Abba:Dorny;Grace:Meta;Ann:Arno;Madison:STAN;Alex:Cornwell;Lewis:Kern;Megan:Stan;Alex:Korn")
+#+end_src
+
+#+RESULTS:
+| ARNO     | ANN      |
+| BELL     | JOHN     |
+| CORNWELL | ALEX     |
+| DORNY    | ABBA     |
+| KERN     | LEWIS    |
+| KORN     | ALEX     |
+| META     | GRACE    |
+| SCHWARZ  | VICTORIA |
+| STAN     | MADISON  |
+| STAN     | MEGAN    |
+| WAHL     | ALEXIS   |
+
+
+1. The =split-str= function takes a string and a character and splits the string
+   using =c= as delimiter. First we get a list of the names in string format:
+   =("Alexis:Wahl" "John:Bell" ...)= and then we map each of those strings to the
+   same function but using =':'= as separator.
+
+2. Gets original string and converts it to uppercase, splits it twice and
+   changes the last name order.
+
+   First, we uppercase the string and split it into sub-strings of =name:lastName=
+   format (See *1*). That list is mapped using =mapcar= to split each sub-string
+   into a =(name lastname)= format. Then we swap those 2 items of the =sub-lst= to
+   get the last name fist.
+
+   We end up getting: =((WAHL ALEXIS) (BELL JOHN) (SCHWARZ VICTORIA) ...)=
+
+3. Lambda used for deciding which name should go first (name meaning pair from
+   *1*)
+
+4. If last names match compare names. Keep in mind that last names now go first.
