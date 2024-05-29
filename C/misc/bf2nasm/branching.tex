@@ -1,0 +1,147 @@
+\documentclass{amsart}
+
+\title{bf2nasm - Smarter branching}
+\author{8dcc}
+
+% Graphs
+\usepackage{tikz}
+
+% Code highlighting
+\usepackage{listings}
+
+% Hyperlinks
+\usepackage[hidelinks]{hyperref}
+
+% Code highlighting.
+\usepackage{listings}
+\lstset{
+  % Showing spaces
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  % Indentation and breaks
+  tabsize=4,
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=flexible,
+  % Show left, right, top and bottom borders
+  frame=tblr,
+  % Misc
+  aboveskip=3mm,
+  belowskip=3mm,
+  basicstyle={\small\ttfamily},
+}
+
+% Remove author and extra info from the headers
+\pagestyle{plain}
+
+% New environment adding spacing for TikZ pictures
+\newenvironment{tikzpicturecenter}
+{\begin{center}\begin{tikzpicture}}
+    {\end{tikzpicture}\end{center}}
+
+\begin{document}
+\maketitle
+
+\section{Pretested and posttested loops}
+
+When I was reading \textit{Reversing: Secrets of Reverse Engineering}
+\cite{reversing}, I found this part specially interesting:
+
+\begin{quote}
+  The most common high-level loop construct is the pretested loop, where the
+  loop's condition is tested before the loop's body is executed. The problem
+  with this construct is that it requires an extra unconditional jump at the end
+  of the loop's body in order to jump back to the beginning of the loop (for
+  comparison, posttested loops only have a single conditional branch instruction
+  at the end of the loop, which makes them more efficient). Because of this, it
+  is common for optimizers to convert pretested loops to posttested loops. In
+  some cases, this requires the insertion of an if statement before the
+  beginning of the loop, so as to make sure the loop is not entered when its
+  condition isn't satisfied.
+\end{quote}
+
+The compiler will sometimes optimize the following pretested loop:
+
+\begin{lstlisting}[language=C]
+  while (a != b) {
+    ...
+  }
+\end{lstlisting}
+
+Into this posttested loop inside a conditional.
+
+\begin{lstlisting}[language=C]
+  if (a != b) {
+    do {
+      ...
+    } while (a != b);
+  }
+\end{lstlisting}
+
+The assembly for the first loop would be something like:
+
+\begin{lstlisting}
+  loop:
+    cmp A, B
+    je done
+    ...
+    jmp loop
+  done:
+\end{lstlisting}
+
+And the assembly for the second loop could be translated literally to something
+like:
+
+\begin{lstlisting}
+    cmp A, B
+    je done
+  loop:
+    ...
+    cmp A, B
+    jne loop
+  done:
+\end{lstlisting}
+
+As mentioned in the quote, on the first loop there is a conditional jump and an
+unconditional one, while in the second one, the first condition is tested once
+before the loop, and the loop only has one conditional jump. If the condition
+fails on the second loop, the jump will not be performed and the execution will
+continue at the \texttt{done} label.
+
+\section{Brainfuck loops}
+
+In brainfuck, loops are defined with square brackets. The code inside the loop
+will be ran as long as the value at the current cell is not zero. At first, I
+thought this was a posttested loop, but this is wrong. The loops are pretested,
+meaning that the loop will be jumped over entirely if the value at the current
+cell is not zero.
+
+When the program encounters a loop start, the following assembly is generated:
+
+\begin{lstlisting}
+    jmp .check_N
+  .loop_N:
+    ...
+  .check_N:
+    cmp byte [rcx], 0
+    jnz .loop_N
+\end{lstlisting}
+
+Where $N$ is the loop counter.
+
+That way, we even avoid the first comparison from the other example, and we jump
+directly to the ``end'' of the loop, where the condition is checked. Now we only
+make an ``extra'' unconditional jump once, for checking the condition the first
+time when entering the loop.
+
+% -------------------------------------------------------------------------------
+
+\bigskip
+
+\begin{thebibliography}{9}
+\bibitem{reversing}
+  Eldad Eilam. (2005). \textit{Reversing: Secrets of Reverse Engineering} (pp. 56-57).
+\end{thebibliography}
+
+\end{document}
