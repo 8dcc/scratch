@@ -1,5 +1,5 @@
 /*
- * XOR string with random key and print in C format.
+ * XOR string with random key and print the pair in C format.
  * Usage: ./strxor.out <str>
  */
 
