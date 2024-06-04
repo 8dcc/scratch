@@ -22,5 +22,7 @@ $(BIN): $(OBJS)
 memcpy-test.o: memcpy-test.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+# NOTE: Can't name the file `memcpy.asm' because of make's implicit rules. I
+# don't really understand it, but whatever.
 memcpy-asm.o: memcpy-asm.asm
 	$(ASM) $(ASMFLAGS) -o $@ $<
