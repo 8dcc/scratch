@@ -5,10 +5,11 @@
  * The function assumes the format of maps is always:
  * 0000DEADBEEF-0000ABADCAFE rwxp 000123AB 103:03 12345678   /path/module
  *
- * NOTE: For a good version of this, see https://github.com/8dcc/libsigscan
- *
  * NOTE: You can replace most calls to isspace() and remove the <ctype.h>
  * include by just checking if c is a space.
+ *
+ * NOTE: This can be done in a simpler way with a good scanf() format. For a
+ * good example, see https://github.com/8dcc/libsigscan
  */
 
 /* Required by get_module_bounds() */

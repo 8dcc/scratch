@@ -1,6 +1,10 @@
+/*
+ * I honestly don't remember what I needed this for, but you might like the PDF
+ * inside the '../../LaTeX/tikz_arc/' folder.
+ */
 
 #include <stdio.h>
-#include <math.h> /* cosf, sinf, M_PI */
+#include <math.h> /* cosf(), sinf(), M_PI */
 
 #define DEG2RAD(X) ((X)*M_PI / 180.0f)
 #define RAD2DEG(X) ((X)*180.0f / M_PI)

@@ -1,8 +1,9 @@
-/* 
+/*
  * Parsing /proc/self/maps to get the current module location and size in
  * memory.
  *
- * NOTE: For a good version of this, see https://github.com/8dcc/libsigscan
+ * NOTE: This can be done in a simpler way with a good scanf() format. For a
+ * good example, see https://github.com/8dcc/libsigscan
  */
 
 #include <stdint.h>

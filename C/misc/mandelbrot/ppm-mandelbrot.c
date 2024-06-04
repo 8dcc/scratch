@@ -1,4 +1,6 @@
 /*
+ * NOTE: The code in my fs-os project might be more updated.
+ *
  * Same as pgm version but with color.
  *
  * Compile with:
