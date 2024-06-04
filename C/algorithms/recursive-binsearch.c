@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #define ARR_LEN  17
-#define ROUND(f) (f + 0.5) /* Redpilled sigma male round */
+#define ROUND(f) (f + 0.5) /* You are not ready for this swag */
 #define NIL      (-1)
 
 int finder(int obj, int vec[], unsigned start, unsigned end) {
