@@ -1,0 +1,67 @@
+\documentclass{amsart}
+
+\title{Pomodoro intervals}
+\author{8dcc}
+
+% Various math utilities, like align*
+\usepackage{amsmath}
+
+% Graphs
+\usepackage{tikz}
+
+% Link sections and subsections
+\usepackage[hidelinks]{hyperref}
+\hypersetup{linktoc=all}
+
+% Remove author and extra info from the headers
+\pagestyle{plain}
+
+% New environment adding spacing for tikz pictures
+\newenvironment{tikzpicturecenter}
+{\begin{center}\begin{tikzpicture}}
+    {\end{tikzpicture}\end{center}}
+
+\begin{document}
+\maketitle
+
+\section{The Pomodoro Technique}
+
+The Pomodoro Technique is a time management method developed by Francesco
+Cirillo in the late 1980s. It uses a kitchen timer to break work into intervals
+(\textit{pomodoros}), typically 25 minutes in length, separated by short
+breaks. After 4 pomodoros are done, a bigger break is taken.
+
+For this example, these will be the specifics timings:
+
+\begin{enumerate}
+\item Work for 25 minutes.
+\item Rest for 5 minutes.
+\item Go to step one, until 4 pomodoros have passed.
+\item Once the 4 pomodoros are done, rest for 30 minutes.
+\end{enumerate}
+
+With this, we know that the first short break will start at minute 25 and end at
+minute 30, and the first big break will start at minute 115 ($30 \cdot 4 - 5$)
+and end at minute 140.
+
+\section{The problem}
+
+Given a number of minutes, how do we know if we should be resting or working
+when that time has passed?
+
+You can calculate if a minute is in a short or long break by performing a
+modulus with the end of the break, and checking if that value is greater or
+equal than the start of the break.
+
+\begin{align*}
+  \text{inShortBreak}(m) &= m \bmod 30 \geq 25 \\
+  \text{inLongBreak}(m)  &= m \bmod 140 \geq 115
+\end{align*}
+
+However, the fifth pomodoro, the one after the first long break doesn't start
+aligned to the 30 minute boundary ($140 \bmod 30 \neq 0$).
+
+At first I thought about calculating the Least Common Multiple (LCM) of 140 and
+30 (which is 420), but that won't work here.
+
+\end{document}
