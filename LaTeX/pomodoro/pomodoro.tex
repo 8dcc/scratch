@@ -1,6 +1,6 @@
 \documentclass{amsart}
 
-\title{Pomodoro intervals}
+\title{Calculating pomodoro intervals}
 \author{8dcc}
 
 % Various math utilities, like align*
@@ -52,7 +52,7 @@
 The Pomodoro Technique is a time management method developed by Francesco
 Cirillo in the late 1980s. It uses a kitchen timer to break work into intervals
 (\textit{pomodoros}), typically 25 minutes in length, separated by short
-breaks. After 4 pomodoros are done, a bigger break is taken.
+breaks. After 4 pomodoros are done, a longer break is taken.
 
 For this example, these will be the specifics timings:
 
@@ -64,48 +64,54 @@ For this example, these will be the specifics timings:
 \end{enumerate}
 
 With this, we know that the first short break will start at minute 25 and end at
-minute 30, and the first big break will start at minute 115 ($30 \cdot 4 - 5$)
-and end at minute 140.
+minute 30, and the first long break will start at minute 115 ($30 \cdot 4 - 5$)
+and end at minute 145.
 
 \section{The problem}
 
 Given a number of minutes, how do we know if we should be resting or working
 when that time has passed?
 
-You can calculate if a minute is in a short or long break by performing a
-modulus with the end of the break, and checking if that value is greater or
-equal than the start of the break.
+You can check if a minute is in a short or long break by calculating the modulus
+of that minute with the end of the first break in the cycle, and then checking
+if that value is greater or equal than the minute when that break started.
 
 \begin{align*}
   \text{inShortBreak}(m) &= m \bmod 30 \geq 25 \\
-  \text{inLongBreak}(m)  &= m \bmod 140 \geq 115
+  \text{inLongBreak}(m)  &= m \bmod 145 \geq 115
 \end{align*}
 
 However, the fifth pomodoro, the one after the first long break doesn't start
-aligned to the 30 minute boundary ($140 \bmod 30 \neq 0$).
+aligned to the 30 minute boundary ($145 \bmod 30 \neq 0$).
 
-At first I thought about calculating the Least Common Multiple (LCM) of 140 and
-30 (which is 420), but that won't work here.
+At first I thought about calculating the Least Common Multiple (LCM) of 145 and
+30 (which is 870), since that calculates the end of a pomodoro that is after a
+long break, while also being aligned with the end of a (supposed) short
+break. However, that doesn't really simplify our problem.
 
 \section{The solution}
 
 The solution was actually quite simple. You can think of the break cycle as a
-big 145-minute cycle, and calculate the minutes relative to that, just like we
-did before.
+big 145-minute cycle, and calculate the minutes relative to that with a modulus
+operation, just like we did before:
 
 \begin{align*}
   \text{inShortBreak}(m) &= \left( m \bmod 145 \right) \bmod 30 \geq 25 \\
-  \text{inLongBreak}(m)  &= \left( m \bmod 145 \right) \bmod 140 \geq 115
+  \text{inLongBreak}(m)  &= m \bmod 145 \geq 115
 \end{align*}
 
-Or, in C:
+Since the end of long breaks is already aligned with the end of the cycles, the
+\texttt{inLongBreak} function remains unchanged. The only change is calculating
+the modulus one extra time in the \texttt{inShortBreak} function.
+
+This is the C code for the previous functions:
 
 \begin{lstlisting}[language=C]
 bool inPomodoro(int minutes) {
     int minutes_in_clycle = minutes % ((25 + 5) * 3 + 25 + 30);
-    bool in_long_rest = (minutes_in_clycle % 140 >= 115);
-    bool in_short_rest = (minutes_in_clycle % 30 >= 25);
-    return !in_long_rest && !in_short_rest;
+    bool in_long_break = (minutes_in_clycle >= 115);
+    bool in_short_break = (minutes_in_clycle % 30 >= 25);
+    return !in_long_break && !in_short_break;
 }
 \end{lstlisting}
 
