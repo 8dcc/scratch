@@ -4,11 +4,47 @@
 \author{8dcc}
 \date{2024}
 
+% ------------------------------------------------------------------------------
+% Packages
+% ------------------------------------------------------------------------------
+
 % Clickable table of contents
 \usepackage[hidelinks]{hyperref}
 \hypersetup{
-    linktoc=all,     % Link sections and subsections
+  linktoc=all,     % Link sections and subsections
 }
+
+% Prevent indentation after lists
+\usepackage{noindentafter}
+\NoIndentAfterEnv{itemize}
+\NoIndentAfterEnv{enumerate}
+
+% Code highlighting.
+\usepackage{listings}
+\lstset{
+  % Showing spaces
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  % Indentation and breaks
+  tabsize=4,
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=flexible,
+  % Show left, right, top and bottom borders
+  frame=tblr,
+  % Misc
+  aboveskip=3mm,
+  belowskip=3mm,
+  basicstyle={\small\ttfamily},
+}
+
+% Different monospace font for code blocks (listings)
+\usepackage{inconsolata}
+
+% ------------------------------------------------------------------------------
+% Document start
+% ------------------------------------------------------------------------------
 
 \begin{document}
 
@@ -18,19 +54,40 @@
 \tableofcontents
 \newpage
 
+% ------------------------------------------------------------------------------
 \section{Introduction}
+% ------------------------------------------------------------------------------
 
 Simple scratch file for testing the basics of \LaTeX.
 
-\section{Text styles}
+% ------------------------------------------------------------------------------
+\section{Text formats}
+% ------------------------------------------------------------------------------
 
-You can make text \textbf{bold}, \textit{italic} and \underline{underlined}.
+Here is a list of text formats:
+
+\begin{itemize}
+  \item \textbf{Bold}
+  \item \textit{Italic}
+  \item \underline{Underlined}
+  \item \emph{Emphasized}
+  \item \textsc{Small caps}
+  \item \textrm{Roman}
+  \item \textsl{Slanted}
+  \item \texttt{Typewriter}
+\end{itemize}
+
 You can \underline{\textbf{\textit{combine}}} these effects too.
 
 To quote a \LaTeX command, you can use the \verb|verb| command. You can also use
 \verb|\begin{verbatim}| and \verb|\end{verbatim}|.
 
+This is a \href{http://github.com/8dcc}{\textbf{Link}}, thanks to the
+``hyperref'' package.
+
+% ------------------------------------------------------------------------------
 \section{Lists}
+% ------------------------------------------------------------------------------
 
 This is an unordered list:
 
@@ -46,5 +103,27 @@ This is an ordered list:
   \item I am the first item.
   \item I am the second item.
 \end{enumerate}
+
+This is some C code:
+
+\begin{lstlisting}[language=C]
+  while (a != b) {
+    // ...
+  }
+\end{lstlisting}
+
+% ------------------------------------------------------------------------------
+
+\newpage
+\begin{thebibliography}{9}
+\bibitem{wikipedia_example}
+  Wikipedia. \textit{Example Title}. Retrieved 1 Jan 2024, from
+  \url{https://en.wikipedia.org/wiki/Example}
+\bibitem{mathinsight_dotproduct}
+  Nykamp DQ. \textit{The dot product}. From Math Insight. Retrieved 23 May 2024, from
+  \url{https://mathinsight.org/dot_product}
+\bibitem{reversing}
+  Eldad Eilam. (2005). \textit{Reversing: Secrets of Reverse Engineering} (pp. 56-57).
+\end{thebibliography}
 
 \end{document}
