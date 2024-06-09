@@ -118,7 +118,7 @@ my_switch_test:
     ; Jump to that label.
     jmp     rdx
 
-switch_done:
+.switch_done:
     ; This is the code that would be executed after we `break' out of the
     ; `switch'. It's not a local label because it has to be accessed by each
     ; `case'. In this case, we can move the value in `rdi' to `rax' to return
@@ -129,27 +129,26 @@ switch_done:
     pop     rbp
     ret
 
-
 ; Cases for the user-specified values, known at compile-time. The address of
 ; these labels will be stored in the jump table.
 case_3:
     mov     rdi, 0x30
-    jmp     switch_done
+    jmp     my_switch_test.switch_done
 
 case_4:
     mov     rdi, 0x40
-    jmp     switch_done
+    jmp     my_switch_test.switch_done
 
 case_5:
     mov     rdi, 0x50
-    jmp     switch_done
+    jmp     my_switch_test.switch_done
 
 case_9:
     mov     rdi, 0x90
-    jmp     switch_done
+    jmp     my_switch_test.switch_done
 
 ; Default case, executed when the value was not specified in the `switch'.
 case_default:
     ; In this case, just assign 0x100 and break.
     mov     rdi, 0x100
-    jmp     switch_done
+    jmp     my_switch_test.switch_done
