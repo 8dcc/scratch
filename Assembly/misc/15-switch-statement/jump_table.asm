@@ -120,8 +120,7 @@ my_switch_test:
 
 .switch_done:
     ; This is the code that would be executed after we `break' out of the
-    ; `switch'. It's not a local label because it has to be accessed by each
-    ; `case'. In this case, we can move the value in `rdi' to `rax' to return
+    ; `switch'. In this case, we can move the value in `rdi' to `rax' to return
     ; it.
     mov     rax, rdi
 
