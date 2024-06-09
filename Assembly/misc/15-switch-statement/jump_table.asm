@@ -99,21 +99,18 @@ my_switch_test:
     ; 3. The first parameter is in `rdi'.
     sub     rdi, 3
 
+    ; Multiply the jump table index by the size of each element, in this case
+    ; 8. Note that multiplying by 8 is the same as shifting 3 bits to the left.
+    shr     rdi, 3
+
     ; Save the address of the jump table in the `rdx' register. For more
     ; information about why we use `lea' instead of `mov', see:
     ; https://8dcc.github.io/reversing/understanding-call-stack.html#note-about-position-independent-executables
     lea     rdx, [jump_table]
 
-    ; Multiply the jump table index by the size of each element, in this case
-    ; 8. Note that multiplying by 8 is the same as shifting 3 bits to the left.
-    shl     rdi, 3
-
-    ; Add the index of the jump table (rdi) to the base address of the jump
-    ; table (rdx).
-    add     rdx, rdi
-
-    ; Get the address of the label we should jump to from the jump table.
-    mov     rdx, [rdx]
+    ; Get the address of the label we should jump to from the jump table. Use
+    ; the byte offset in `rdi' as index.
+    mov     rdx, [rdx + rdi]
 
     ; Jump to that label.
     jmp     rdx
