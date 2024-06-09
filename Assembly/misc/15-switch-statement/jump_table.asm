@@ -1,3 +1,6 @@
+; For a more detailed explanation of this code, see:
+;   https://8dcc.github.io/programming/switch-statement.html
+;
 ;-------------------------------------------------------------------------------
 ;
 ; This code defines a `my_switch_test' function, that uses a jump table to
@@ -26,7 +29,6 @@
 ; Note how `result' isn't returned immediately from inside the `switch'
 ; statement. This is to emphasize that neither the body of each `case' nor the
 ; code after the `switch' statement are relevant to the logic of our jump table.
-;
 ;
 ;-------------------------------------------------------------------------------
 ;
