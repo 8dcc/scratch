@@ -1,29 +1,62 @@
 \documentclass{amsart}
 
-\title{Scratch - Math examples in \LaTeX}
+\title{Math notes}
 \author{8dcc}
 
-% Various math utilities, like align*
+% ------------------------------------------------------------------------------
+% Packages
+% ------------------------------------------------------------------------------
+
+% Slightly smaller margins
+\usepackage[a4paper,
+left=4cm,
+right=4cm,
+top=3cm,
+bottom=3cm,
+footskip=1cm]{geometry}
+
+% Link sections and subsections
+\usepackage[hidelinks]{hyperref}
+\hypersetup{linktoc=all}
+
+% Various math utilities
 \usepackage{amsmath}
 
 % Graphs
 \usepackage{tikz}
+% Use Calc library for coordinate calculations
+\usetikzlibrary{calc}
+% Change default arrow style
+\tikzset{>=stealth}
 
-% Change the spacing between paragraphs
-\setlength{\parskip}{\baselineskip}
+% Different monospace font for code blocks (listings)
+\usepackage{inconsolata}
 
 % Remove author and extra info from the headers
 \pagestyle{plain}
 
 % New environment adding spacing for tikz pictures
 \newenvironment{tikzpicturecenter}
-{\begin{center}\begin{tikzpicture}}
-{\end{tikzpicture}\end{center}}
+{\vspace{1em}\begin{center}\begin{tikzpicture}}
+    {\end{tikzpicture}\end{center}}
+
+% ------------------------------------------------------------------------------
+% Document start
+% ------------------------------------------------------------------------------
 
 \begin{document}
 \maketitle
 
-Simple scratch file for testing math in \LaTeX.
+\tableofcontents
+\newpage
+
+% ------------------------------------------------------------------------------
+\section{Geometry}
+% ------------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------------
+\subsection{Distance between two points}
+% ------------------------------------------------------------------------------
 
 The distance between two points is the hypotenuse of a right triangle whose two
 cathetus are the difference between the $x$ and $y$ coordinates of the two
@@ -51,6 +84,10 @@ points.
 \begin{displaymath}
   d = \sqrt{(B_x - A_x)^2 + (B_y - A_y)^2}
 \end{displaymath}
+
+% ------------------------------------------------------------------------------
+\subsection{Gravitational force}
+% ------------------------------------------------------------------------------
 
 The gravitational force of each body is calculated with the following formula.
 
