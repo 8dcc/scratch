@@ -4,11 +4,14 @@
 \title{Arcs in TikZ}
 \author{8dcc}
 
-% Tikz for graphs, Calc for coordinate calculations, and Decorations for drawing
-% the braces.
+% Graphs
 \usepackage{tikz}
+% Use Calc library for coordinate calculations
 \usetikzlibrary{calc}
+% For drawing the braces
 \usetikzlibrary{decorations.pathreplacing}
+% Change default arrow style
+\tikzset{>=stealth}
 
 % Code highlighting.
 \usepackage{listings}
@@ -93,7 +96,7 @@ $\alpha$ and ends at an angle $\beta$.
   \coordinate (b) at (\BetaX, \BetaY);
 
   % Draw horizontal line.
-  \draw[-stealth] (o) -- (2.3,0);
+  \draw[->] (o) -- (2.3,0);
   \draw[blue] (o) -- (a);
   \draw[red] (o) -- (b);
 
@@ -165,35 +168,33 @@ If you are not sure why this works, the classic $\sin$ and $\cos$ graph might
 help:
 
 \begin{tikzpicturecenter}
+  % NOTE: For a commented version, see my math.tex file
   \pgfmathsetmacro{\Radius}{2}
   \pgfmathsetmacro{\ArcRadius}{1}
+  \pgfmathsetmacro{\Angle}{40}
 
-  \pgfmathsetmacro{\ArcAngleAlpha}{40}
+  \pgfmathsetmacro{\LineEndX}{\Radius*cos(\Angle)}
+  \pgfmathsetmacro{\LineEndY}{\Radius*sin(\Angle)}
 
-  \pgfmathsetmacro{\AlphaX}{\ArcRadius*cos(\ArcAngleAlpha)}
-  \pgfmathsetmacro{\AlphaY}{\ArcRadius*sin(\ArcAngleAlpha)}
-
-  \pgfmathsetmacro{\LabelX}{\ArcRadius*cos(\ArcAngleAlpha/2)}
-  \pgfmathsetmacro{\LabelY}{\ArcRadius*sin(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\ArcLabelX}{\ArcRadius*cos(\Angle/2)}
+  \pgfmathsetmacro{\ArcLabelY}{\ArcRadius*sin(\Angle/2)}
 
   \coordinate (o) at (0,0);
-  \coordinate (ux) at (\Radius,0);
-  \coordinate (uy) at (0,\Radius);
-  \coordinate (ua) at (\AlphaX, \AlphaY);
-  \coordinate (x) at ($1.1*(ux)$);
-  \coordinate (y) at ($1.1*(uy)$);
-  \coordinate (a) at ($\Radius*(ua)$);
+  \coordinate (p) at (\LineEndX,\LineEndY);
+  \coordinate (x) at ($1.1*(\Radius,0)$);
+  \coordinate (y) at ($1.1*(0,\Radius)$);
 
-  \filldraw[violet, fill opacity=0.3] (o) -- (\ArcRadius,0) arc (0:\ArcAngleAlpha:\ArcRadius) -- cycle;
-  \node at (\LabelX, \LabelY) [left] {$\theta$};
+  \filldraw[violet, fill opacity=0.3] (o) -- (\ArcRadius,0) arc (0:\Angle:\ArcRadius) -- cycle;
+  \node at (\ArcLabelX, \ArcLabelY) [left] {$\theta$};
 
   \draw[dotted] (o) circle (\Radius);
 
-  \draw[-stealth, gray] (o) -- (x);
-  \draw[-stealth, gray] (o) -- (y);
-  \draw[thick, red]  (o) -- ($(\Radius*\AlphaX, 0)$) node[below, pos=0.5]{$\cos(\theta)$};
-  \draw[thick, blue] (a) -- ($(\Radius*\AlphaX, 0)$) node[right, pos=0.5]{$\sin(\theta)$};
-  \draw[thick] (o) -- (a) node[yshift=0.3cm, xshift=-0.3cm, pos=0.6]{$r=1$};
+  \draw[->, gray] (o) -- (x);
+  \draw[->, gray] (o) -- (y);
+  \draw[thick, red]  (o) -- ($(\LineEndX, 0)$) node[below, pos=0.5]{$\cos(\theta)$};
+  \draw[thick, blue] (p) -- ($(\LineEndX, 0)$) node[right, pos=0.5]{$\sin(\theta)$};
+  \draw[thick] (o) -- (p) node[yshift=0.3cm, xshift=-0.3cm, pos=0.6]{$r=1$};
+
   \filldraw[gray] (o) circle (1pt);
 \end{tikzpicturecenter}
 
@@ -251,11 +252,11 @@ lines.
   \draw[decorate, decoration={brace,amplitude=5pt,mirror}] (o) -- ($(o) + (\Radius, 0)$) node [midway, yshift=-0.4cm] {$r$};
 
   % Horizontal line from Origin, with the same length as the A and B lines.
-  \draw[-stealth, gray] (o) -- ($(o) + (\LineMagnitude*\Radius, 0)$) node[below, pos=0.8]{$x$};
+  \draw[->, gray] (o) -- ($(o) + (\LineMagnitude*\Radius, 0)$) node[below, pos=0.8]{$x$};
 
   % The A and B lines.
-  \draw[-stealth] (o) -- (a) node[above]{$A$};
-  \draw[-stealth] (o) -- (b) node[above]{$B$};
+  \draw[->] (o) -- (a) node[above]{$A$};
+  \draw[->] (o) -- (b) node[above]{$B$};
 
   % The Alpha and Beta arcs.
   \node at (\AlphaLabelX, \AlphaLabelY) [left, blue] {$\alpha$};
@@ -363,8 +364,8 @@ This is the result:
   \node at (\LabelX, \LabelY) [below left] {$\theta$};
 
   % Lines and dot
-  \draw[-stealth, thick] (o) -- (a) node[above]{$A$};
-  \draw[-stealth, thick] (o) -- (b) node[above]{$B$};
+  \draw[->, thick] (o) -- (a) node[above]{$A$};
+  \draw[->, thick] (o) -- (b) node[above]{$B$};
   \filldraw (o) circle (1pt);
 \end{tikzpicturecenter}
 
@@ -378,11 +379,13 @@ angle of the arc by two, and calculate the point like we did before. This is the
 code used for getting the labels of section 2:
 
 \begin{lstlisting}[language=tex]
-  \pgfmathsetmacro{\AlphaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha/2)}
-  \pgfmathsetmacro{\AlphaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha/2)}
+  \pgfmathsetmacro{\AlphaLabelX}{\OriginX + \Radius * cos(\ArcAngleAlpha / 2)}
+  \pgfmathsetmacro{\AlphaLabelY}{\OriginY + \Radius * sin(\ArcAngleAlpha / 2)}
 
-  \pgfmathsetmacro{\BetaLabelX}{\OriginX+\Radius*cos(\ArcAngleAlpha+(\ArcAngleBeta/2))}
-  \pgfmathsetmacro{\BetaLabelY}{\OriginY+\Radius*sin(\ArcAngleAlpha+(\ArcAngleBeta/2))}
+  \pgfmathsetmacro{\BetaLabelX}{
+    \OriginX + \Radius * cos(\ArcAngleAlpha + (\ArcAngleBeta / 2))}
+  \pgfmathsetmacro{\BetaLabelY}{
+    \OriginY + \Radius * sin(\ArcAngleAlpha + (\ArcAngleBeta / 2))}
 \end{lstlisting}
 
 In the following image, the dots in black represent the points for the
@@ -425,9 +428,9 @@ labels. The actual label text would be calculated relative to that.
   \filldraw (\AlphaLabelX, \AlphaLabelY) circle (1pt);
   \filldraw (\BetaLabelX, \BetaLabelY) circle (1pt);
 
-  \draw[-stealth, gray] (o) -- (a) node[above]{$A$};
-  \draw[-stealth, gray] (o) -- (b) node[below right]{$B$};
-  \draw[-stealth, gray] (o) -- ($(o) + (\LineMagnitude*\Radius, 0)$) node[below]{$x$};
+  \draw[->, gray] (o) -- (a) node[above]{$A$};
+  \draw[->, gray] (o) -- (b) node[below right]{$B$};
+  \draw[->, gray] (o) -- ($(o) + (\LineMagnitude*\Radius, 0)$) node[below]{$x$};
 \end{tikzpicturecenter}
 
 \begin{thebibliography}{9}
