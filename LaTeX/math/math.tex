@@ -8,12 +8,14 @@
 % ------------------------------------------------------------------------------
 
 % Slightly smaller margins
-\usepackage[a4paper,
+\usepackage[
+a4paper,
 left=4cm,
 right=4cm,
 top=3cm,
 bottom=3cm,
-footskip=1cm]{geometry}
+footskip=1cm
+]{geometry}
 
 % Link sections and subsections
 \usepackage[hidelinks]{hyperref}
@@ -139,6 +141,128 @@ for normalizing a vector.
 \begin{displaymath}
   \hat{u} = \frac{v}{\|v\|}
 \end{displaymath}
+
+% ------------------------------------------------------------------------------
+\subsection{Sine and cosine}
+% ------------------------------------------------------------------------------
+
+Given the following right triangle, containing the acute angle $\alpha$:
+
+\begin{tikzpicturecenter}
+  % Distance from A to B
+  \pgfmathsetmacro{\HypotLength}{2};
+
+  % Radius and angle of the arc
+  \pgfmathsetmacro{\ArcRadius}{0.75};
+  \pgfmathsetmacro{\Angle}{35};
+
+  % Position of point B
+  \pgfmathsetmacro{\BX}{\HypotLength*cos(\Angle)};
+  \pgfmathsetmacro{\BY}{\HypotLength*sin(\Angle)};
+
+  % Position for the theta label, in the middle of the angle
+  \pgfmathsetmacro{\ArcLabelX}{\ArcRadius*cos(\Angle/2)};
+  \pgfmathsetmacro{\ArcLabelY}{\ArcRadius*sin(\Angle/2)};
+
+  % Coordinates
+  \coordinate (a) at (0,0);
+  \coordinate (b) at (\BX,\BY);
+  \coordinate (c) at (\BX,0);
+
+  % Draw the arc
+  \filldraw[violet, fill opacity=0.3] (a) -- (\ArcRadius,0) arc (0:\Angle:\ArcRadius) -- cycle;
+  \node at (\ArcLabelX, \ArcLabelY) [yshift=0.05cm, xshift=0.2cm] {$\alpha$};
+
+  \draw[-, thick, red] (a) -- (b) node[above left, pos=0.6]{hypotenuse};
+  \draw[-, thick, blue] (a) -- (c) node[below, pos=0.5]{adjacent};
+  \draw[-, thick, orange] (b) -- (c) node[right, pos=0.5]{opposite};
+
+  % Draw a dot in each point
+  \filldraw (a) circle (1pt) node[left]{A};
+  \filldraw (b) circle (1pt) node[right]{B};
+  \filldraw (c) circle (1pt) node[right]{C};
+\end{tikzpicturecenter}
+
+The sine and cosine of the angle can be calculated with the following formulas:
+
+\begin{align*}
+  \sin \left( \alpha \right) &= \frac{\text{opposite}}{\text{hypotenuse}} \\
+  \cos \left( \alpha \right) &= \frac{\text{adjacent}}{\text{hypotenuse}}
+\end{align*}
+
+Alternatively, the following definition uses a \textbf{unit circle} to visualize
+the sine and cosine more clearly. A unit circle is a circle of radius one
+centered at the origin (0, 0) in the cartesian coordinate system.
+
+By tracing a line from the origin to a point in this circle, an angle $\theta$
+is formed with the positive \textsl{x} axis. The \textsl{x} and \textsl{y}
+coordinates of this point are equal to $\cos \theta$ and $\sin \theta$,
+respectively.
+
+\begin{tikzpicturecenter}
+  % Radius for the dotted circumference and the angle
+  \pgfmathsetmacro{\Radius}{2};
+  \pgfmathsetmacro{\ArcRadius}{1};
+
+  % Degrees of angle theta
+  \pgfmathsetmacro{\Angle}{40};
+
+  % Point where the black line ends
+  \pgfmathsetmacro{\LineEndX}{\Radius*cos(\Angle)};
+  \pgfmathsetmacro{\LineEndY}{\Radius*sin(\Angle)};
+
+  % Position for the theta label, in the middle of the angle
+  \pgfmathsetmacro{\ArcLabelX}{\ArcRadius*cos(\Angle/2)};
+  \pgfmathsetmacro{\ArcLabelY}{\ArcRadius*sin(\Angle/2)};
+
+  % Center of circumference, line itself, X axis and Y axis
+  \coordinate (o) at (0,0);
+  \coordinate (p) at (\LineEndX,\LineEndY);
+  \coordinate (x) at ($1.1*(\Radius,0)$);
+  \coordinate (y) at ($1.1*(0,\Radius)$);
+
+  % Draw the arc itself
+  \filldraw[violet, fill opacity=0.3] (o) -- (\ArcRadius,0) arc (0:\Angle:\ArcRadius) -- cycle;
+  \node at (\ArcLabelX, \ArcLabelY) [yshift=-0.05cm, xshift=-0.2cm] {$\theta$};
+
+  % Draw the dotted circumference
+  \draw[dotted] (o) circle (\Radius);
+
+  % Draw the two axis
+  \draw[->, gray] (o) -- (x) node[right]{\textsl{x}};
+  \draw[->, gray] (o) -- (y) node[above]{\textsl{y}};
+  \draw[-, gray] (o) -- ($-1*(x)$);
+  \draw[-, gray] (o) -- ($-1*(y)$);
+
+  % Draw the sine and cosine lines
+  \draw[thick, red]  (o) -- ($(\LineEndX, 0)$) node[below, pos=0.5]{$\cos(\theta)$};
+  \draw[thick, blue] (p) -- ($(\LineEndX, 0)$) node[right, pos=0.5]{$\sin(\theta)$};
+
+  % Draw the line from the origin to the point, and the point itself
+  \draw[thick] (o) -- (p) node[yshift=0.3cm, xshift=-0.3cm, pos=0.6]{$r=1$};
+  \filldraw (p) circle (1pt);
+
+  % And finally, the dot at the center
+  \filldraw[gray] (o) circle (1pt);
+\end{tikzpicturecenter}
+
+Since the radius of the circle (i.e. the hypotenuse of the formed right
+triangle) is one, the previous formula remains consistent:
+
+\begin{displaymath}
+  \sin \left( \alpha \right)
+    = \frac{\text{opposite}}{\text{hypotenuse}}
+    = \frac{\text{opposite}}{1}
+    = \text{opposite}
+\end{displaymath}
+
+% ------------------------------------------------------------------------------
+% TODO: Dot product
+% ------------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------------
+% TODO: Golden ratio
+% ------------------------------------------------------------------------------
 
 % ------------------------------------------------------------------------------
 \subsection{Gravitational force}
