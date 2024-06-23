@@ -44,6 +44,9 @@ footskip=1cm
 {\vspace{1em}\begin{center}\begin{tikzpicture}}
     {\end{tikzpicture}\end{center}}
 
+% Darker green color for graphs
+\definecolor{my-green}{rgb}{0.0, 0.7, 0.0}
+
 % ------------------------------------------------------------------------------
 % Document start
 % ------------------------------------------------------------------------------
@@ -176,7 +179,7 @@ Given the following right triangle, containing the acute angle $\alpha$:
 
   \draw[-, thick, red] (a) -- (b) node[above left, pos=0.6]{hypotenuse};
   \draw[-, thick, blue] (a) -- (c) node[below, pos=0.5]{adjacent};
-  \draw[-, thick, orange] (b) -- (c) node[right, pos=0.5]{opposite};
+  \draw[-, thick, my-green] (b) -- (c) node[right, pos=0.5]{opposite};
 
   % Draw a dot in each point
   \filldraw (a) circle (1pt) node[left]{A};
@@ -379,8 +382,77 @@ the opposite direction of $b$.
 \end{tikzpicturecenter}
 
 % ------------------------------------------------------------------------------
-% TODO: Golden ratio
+% TODO: Fibonacci and Lucas numbers
 % ------------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------------
+\subsection{Golden ratio}
+% ------------------------------------------------------------------------------
+
+The golden ratio is an irrational number with a value of:
+
+\begin{displaymath}
+ \varphi = \frac{1+\sqrt{5}}{2} = 1.618033988749\dots
+\end{displaymath}
+
+Two numbers $a$ and $b$ are in the golden ratio (noted $\varphi$) if their ratio
+($\frac{a}{b}$) is the same as the ratio of their sum to the larger
+number. Assuming $a > b > 0$:
+
+\begin{displaymath}
+  \frac{a}{b} = \frac{a+b}{a} = \varphi
+\end{displaymath}
+
+A \textbf{golden rectangle} is a rectangle whose adjacent sides are in the
+golden ratio, and it can be used to illustrate the previous formula.
+
+\begin{tikzpicturecenter}
+  % Approximation of the golden ratio
+  \pgfmathsetmacro{\Phi}{1.618033988};
+
+  % Length of each side of square A
+  \pgfmathsetmacro{\SideA}{2};
+
+  % Length of the final rectangle (A and B)
+  \pgfmathsetmacro{\SideSum}{\SideA*\Phi};
+
+  % Length of the smaller side of rectangle B
+  \pgfmathsetmacro{\SideB}{\SideSum-\SideA};
+
+  % Draw the blue and red rectangles
+  \fill[blue, fill opacity=0.2] (0,0) rectangle ++(\SideA,\SideA);
+  \fill[red, fill opacity=0.2] (\SideA,0) rectangle ++(\SideB, \SideA);
+
+  % Rectangle lines
+  \draw (\SideA,\SideA) -- (\SideA,0);
+  \draw[my-green, thick] (0,0) -- (0,\SideA) --
+  (\SideSum,\SideA) -- (\SideSum,0) -- cycle;
+
+  % Labels
+  \node at ($(0, \SideA*0.5)$) [left, blue] {$a$};
+  \node at ($(\SideA*0.5, \SideA)$) [above, blue] {$a$};
+  \node at ($(\SideA+\SideB*0.5, \SideA)$) [above, red] {$b$};
+
+  % Brace
+  \draw[my-green, decorate, decoration={brace,amplitude=5pt,mirror,raise=0.1cm}]
+  (0,0) -- (\SideSum,0) node [midway, yshift=-0.45cm] {$a+b$};
+\end{tikzpicturecenter}
+
+The red rectangle with short side $b$ and long side $a$ is itself a golden
+rectangle. When placed adjacent to the blue square (with sides of length $a$),
+the green rectangle is produced, with long side $a+b$ and short side $a$. This
+green rectangle is similar to the red rectangle, and therefore also a golden
+rectangle.
+
+This process of adding an adjacent square to the rectangle, and producing a
+similar rectangle reminds of the Fibonacci or Lucas sequences. If a Fibonacci
+and Lucas number is divided by its immediate predecessor in the sequence, the
+quotient approximates to $\varphi$.
+
+\begin{align*}
+  \frac{F_{16}}{F_{15}} &= \frac{987}{610} = 1.6180327\dots \\
+  \frac{L_{16}}{L_{15}} &= \frac{2207}{1364} = 1.6180351\dots \\
+\end{align*}
 
 % ------------------------------------------------------------------------------
 \newpage
