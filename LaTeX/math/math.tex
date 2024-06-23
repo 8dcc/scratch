@@ -28,6 +28,8 @@ footskip=1cm
 \usepackage{tikz}
 % Use Calc library for coordinate calculations
 \usetikzlibrary{calc}
+% Use Decorations for drawing braces
+\usetikzlibrary{decorations.pathreplacing}
 % Change default arrow style
 \tikzset{>=stealth}
 
@@ -48,11 +50,10 @@ footskip=1cm
 
 \begin{document}
 \maketitle
-
 \tableofcontents
-\newpage
 
 % ------------------------------------------------------------------------------
+\newpage
 \section{Geometry}
 % ------------------------------------------------------------------------------
 
@@ -250,18 +251,140 @@ Since the radius of the circle (i.e. the hypotenuse of the formed right
 triangle) is one, the previous formula remains consistent:
 
 \begin{displaymath}
-  \sin \left( \alpha \right)
-    = \frac{\text{opposite}}{\text{hypotenuse}}
-    = \frac{\text{opposite}}{1}
-    = \text{opposite}
+  \sin \left( \theta \right)
+  = \frac{\text{opposite}}{\text{hypotenuse}}
+  = \frac{\text{opposite}}{1}
+  = \text{opposite}
 \end{displaymath}
 
 % ------------------------------------------------------------------------------
-% TODO: Dot product
+\subsection{Dot product}
 % ------------------------------------------------------------------------------
+
+The dot product or scalar product takes two vectors and returns a scalar that
+represents the projection of one vector onto the other. In simpler terms, it's a
+way of quantifying how aligned is vector $a$ with vector $b$.
+
+The basic formula is the following:
+
+\begin{displaymath}
+  a \cdot b = a_x b_x + a_y b_y
+\end{displaymath}
+
+The dot product has a direct relationship with the angle formed by the two
+vectors. The dot product of two \textbf{unit vectors} is the cosine of the
+angle.
+
+\begin{displaymath}
+  \hat{a} \cdot \hat{b} = \cos \theta
+\end{displaymath}
+
+Therefore, if both vectors are \textbf{normalized} (i.e. they are unit vectors),
+the returned value will always be in the $[-1,1]$ range.
+
+To calculate the dot product of non-normalized vectors, this formula is used:
+
+\begin{displaymath}
+  a \cdot b = \|a\| \|b\| \cos \theta
+\end{displaymath}
+
+The dot product can be expressed as the shadow that $a$ projects over $b$.
+
+\begin{tikzpicturecenter}
+  \pgfmathsetmacro{\Radius}{2}
+  \pgfmathsetmacro{\ArcRadius}{1}
+
+  \pgfmathsetmacro{\ArcAngleBeta}{40}
+
+  \pgfmathsetmacro{\BetaX}{\ArcRadius*cos(\ArcAngleBeta)}
+  \pgfmathsetmacro{\BetaY}{\ArcRadius*sin(\ArcAngleBeta)}
+
+  \pgfmathsetmacro{\LabelX}{\ArcRadius*cos(\ArcAngleBeta/2)}
+  \pgfmathsetmacro{\LabelY}{\ArcRadius*sin(\ArcAngleBeta/2)}
+
+  \coordinate (o) at (0,0);
+  \coordinate (ub) at (\BetaX, \BetaY);
+  \coordinate (a1) at (\Radius,0);
+  \coordinate (b1) at ($\Radius*(ub)$);
+  \coordinate (a2) at ($1.7*(a1)$);
+  \coordinate (b2) at ($1.7*(b1)$);
+  \coordinate (b1shadow) at ($(\Radius*\BetaX, 0)$);
+  \coordinate (b2shadow) at ($(1.7*\Radius*\BetaX, 0)$);
+
+  % The purple arc
+  \filldraw[violet, fill opacity=0.2] (o) -- (\ArcRadius,0) arc (0:\ArcAngleBeta:\ArcRadius) -- cycle;
+  \node at (\LabelX, \LabelY) [left] {$\theta$};
+
+  % Dotted circumference
+  \draw[dotted] (o) circle (\Radius);
+
+  % Sine dashed lines ("shadows")
+  \draw[dashed, gray] (b1) -- (b1shadow);
+  \draw[dashed, gray] (b2) -- (b2shadow);
+
+  % Gray A and B lines
+  \draw[->, thick, gray] (o) -- (a2) node[right]{$\vec{a}$};
+  \draw[->, thick, gray] (o) -- (b2) node[yshift=0.2cm, xshift=0.2cm]{$\vec{b}$};
+
+  % Black UA and UB lines and dots
+  \draw[] (o) -- (a1);
+  \filldraw (a1) circle (1pt) node[above right]{$\hat{a}$};
+  \draw[] (o) -- (b1) node[yshift=0.3cm, xshift=-0.3cm, pos=0.5]{$r = 1$};
+  \filldraw (b1) circle (1pt) node[yshift=0.4cm]{$\hat{b}$};
+
+  % Brace to indicate the cosine of the normalized vectors
+  \draw[decorate, decoration={brace,amplitude=5pt,mirror}] (o) -- (b1shadow)
+  node [midway, yshift=-0.35cm] {$\hat{a} \cdot \hat{b} = \cos(\theta)$};
+
+  % Brace to indicate the cosine of the non-normalized vectors
+  \draw[decorate, decoration={brace,amplitude=5pt,mirror,raise=0.7cm}] (o) -- (b2shadow)
+  node [midway, yshift=-1.05cm] {$\vec{a} \cdot \vec{b}$};
+
+  % Center of the circumference
+  \filldraw (o) circle (1pt);
+\end{tikzpicturecenter}
+
+For a more detailed and interactive explanation of the dot product, see Math
+Insight \cite{dot_product}.
+
+With this in mind, the dot product can be used to calculate the angle itself.
+
+\begin{align*}
+  \cos \theta &= \frac{a \cdot b}{\|a\| \|b\|} \\
+  \theta &= \cos^{-1} \left( \frac{a \cdot b}{\|a\| \|b\|} \right)
+\end{align*}
+
+A lot of information can be obtained from the dot product. If the dot product is
+positive, $a$ has a component in the same direction as $b$. If the dot product
+is zero, $a$ and $b$ are perpendicular. If it's negative, $a$ has a component in
+the opposite direction of $b$.
+
+\begin{tikzpicturecenter}
+  \draw[thin, gray, dotted] (0,0) grid (13,4);
+
+  \draw[<->] (2,3) -- (1,1) -- (3,1.5);
+  \node at (2,3) [above] {$a$};
+  \node at (3,1.5) [above] {$b$};
+  \node at (2,0.5) [draw, rectangle] {$a \cdot b > 0$};
+
+  \draw[<->] (4.5,2.5) -- (6,1) -- (7.5,2.5);
+  \node at (4.5,2.5) [above] {$a$};
+  \node at (7.5,2.5) [above] {$b$};
+  \node at (6,0.5) [draw, rectangle] {$a \cdot b = 0$};
+
+  \draw[<->] (12,1) -- (10,1) -- (9,3);
+  \node at (9,3) [above] {$a$};
+  \node at (12,1) [above] {$b$};
+  \node at (10,0.5) [draw, rectangle] {$a \cdot b < 0$};
+\end{tikzpicturecenter}
 
 % ------------------------------------------------------------------------------
 % TODO: Golden ratio
+% ------------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------------
+\newpage
+\section{Physics}
 % ------------------------------------------------------------------------------
 
 % ------------------------------------------------------------------------------
@@ -323,6 +446,9 @@ with the horizontal.
 \bibitem{unit_vector}
   Wikipedia. \textit{Unit vector}. Retrieved 23 May 2024, from
   \url{https://en.wikipedia.org/wiki/Unit_vector}
+\bibitem{dot_product}
+  Nykamp DQ. \textit{The dot product}. From Math Insight. Retrieved 23 May 2024,
+  from \url{https://mathinsight.org/dot_product}
 \end{thebibliography}
 
 \end{document}
