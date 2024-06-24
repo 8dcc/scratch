@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h> /* tolower() */
 
 #define LENGTH(ARR) (sizeof(ARR) / sizeof((ARR)[0]))
 
@@ -47,15 +48,31 @@ static bool hex2bytes(uint8_t* bytes, const char* str) {
 /*----------------------------------------------------------------------------*/
 /* XOR ranking functions */
 
-/* Arbitrary function for determining how likely is a byte of being a string. */
+/* Arbitrary function for determining how likely is a byte of being a string */
 static int char_score(uint8_t byte) {
-    if ((byte >= 'a' && byte <= 'z') || (byte >= 'A' && byte <= 'Z'))
-        return 2;
+    if ((byte >= 'a' && byte <= 'z') || (byte >= 'A' && byte <= 'Z')) {
+        char c = tolower((char)byte);
+
+        /*
+         * https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html
+         */
+        if (c == 'e' || c == 'a' || c == 'r' || c == 'i' || c == 'o' ||
+            c == 't' || c == 'n' || c == 's' || c == 'l' || c == 'c')
+            return 3;
+
+        if (c == 'u' || c == 'd' || c == 'p' || c == 'm' || c == 'h' ||
+            c == 'g' || c == 'b' || c == 'f' || c == 'y' || c == 'w')
+            return 2;
+
+        if (c == 'k' || c == 'v' || c == 'x' || c == 'z' || c == 'j' ||
+            c == 'q')
+            return 1;
+    }
 
     if (byte >= '0' && byte <= '9')
-        return 1;
+        return 0;
 
-    return -1;
+    return -2;
 }
 
 static char most_likely_key(uint8_t* bytes, size_t sz) {
