@@ -28,8 +28,8 @@ def main():
     # Iterate each line of the dictionary
     with open(dict_path) as f:
         for line in f:
-            line = line.strip().lower()
-            if valid_pseudonym(input_str.lower(), line):
+            line = line.strip()
+            if valid_pseudonym(input_str.lower(), line.lower()):
                 print(line)
 
 if __name__ == '__main__':
