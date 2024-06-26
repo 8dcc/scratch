@@ -3,13 +3,15 @@ CC=gcc
 CFLAGS=-Wall -Wextra
 LDFLAGS=-fPIE
 
-ASM=nasm
-ASMFLAGS=-f elf64
+AS=nasm
+ASFLAGS=-f elf64
 
 OBJ_FILES=main.c.o callstack.asm.o
 OBJS=$(addprefix obj/, $(OBJ_FILES))
 
 BIN=callstack-test.out
+
+#-------------------------------------------------------------------------------
 
 .PHONY: all clean
 
@@ -25,8 +27,8 @@ $(BIN): $(OBJS)
 
 obj/%.c.o: %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 obj/%.asm.o: %.asm
 	@mkdir -p $(dir $@)
-	$(ASM) $(ASMFLAGS) -o $@ $<
+	$(AS) $(ASFLAGS) -o $@ $<

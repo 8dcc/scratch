@@ -3,11 +3,17 @@ CC=gcc
 CFLAGS=-Wall -Wextra
 LDFLAGS=
 
-ASM=nasm
-ASMFLAGS=-f elf64
+AS=nasm
+ASFLAGS=-f elf64
 
-OBJS=memcpy-test.o memcpy-asm.o
+OBJ_FILES=main.c.o memcpy.asm.o
+OBJS=$(addprefix obj/, $(OBJ_FILES))
+
 BIN=memcpy-test.out
+
+#-------------------------------------------------------------------------------
+
+.PHONY: all clean
 
 all: $(BIN)
 
@@ -19,10 +25,10 @@ clean:
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-memcpy-test.o: memcpy-test.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+obj/%.c.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-# NOTE: Can't name the file `memcpy.asm' because of make's implicit rules. I
-# don't really understand it, but whatever.
-memcpy-asm.o: memcpy-asm.asm
-	$(ASM) $(ASMFLAGS) -o $@ $<
+obj/%.asm.o: %.asm
+	@mkdir -p $(dir $@)
+	$(AS) $(ASFLAGS) -o $@ $<

@@ -1,30 +1,33 @@
 
 CC=gcc
 CFLAGS=-Wall -Wextra
-ASM=nasm
-ASM_FLAGS=-f elf32
+
+AS=nasm
+ASFLAGS=-f elf32
+
 LD=ld
-LD_FLAGS=-m elf_i386
+LDFLAGS=-m elf_i386
 
 BIN=stack-allocation.out
+
+#-------------------------------------------------------------------------------
 
 .PHONY: all clean
 
 all: $(BIN)
 
 clean:
-	rm -rf ./obj/*.o
-	rm -f $(BIN)
+	rm -f $(BIN) ./obj/*.o
 
 #-------------------------------------------------------------------------------
 
 %.out: obj/%.asm.o
-	$(LD) $(LD_FLAGS) $< -o $@
+	$(LD) $(LDFLAGS) -o $@ $<
 
 obj/%.c.o: %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 obj/%.asm.o: %.asm
 	@mkdir -p $(dir $@)
-	$(ASM) $(ASM_FLAGS) $< -o $@
+	$(AS) $(ASFLAGS) -o $@ $<

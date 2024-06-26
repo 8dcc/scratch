@@ -3,11 +3,17 @@ CC=gcc
 CFLAGS=-Wall -Wextra
 LDFLAGS=
 
-ASM=nasm
-ASMFLAGS=-f elf64
+AS=nasm
+ASFLAGS=-f elf64
 
-OBJS=test.o base64.o
+OBJ_FILES=main.c.o base64.asm.o
+OBJS=$(addprefix obj/, $(OBJ_FILES))
+
 BIN=base64-test.out
+
+#-------------------------------------------------------------------------------
+
+.PHONY: all clean
 
 all: $(BIN)
 
@@ -19,8 +25,10 @@ clean:
 $(BIN): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+obj/%.c.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-%.o: %.asm
-	$(ASM) $(ASMFLAGS) -o $@ $<
+obj/%.asm.o: %.asm
+	@mkdir -p $(dir $@)
+	$(AS) $(ASFLAGS) -o $@ $<

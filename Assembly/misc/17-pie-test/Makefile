@@ -1,3 +1,4 @@
+
 CC=gcc
 CFLAGS=-Wall -Wextra -Ofast
 LDFLAGS=-shared -no-pie
@@ -5,18 +6,29 @@ LDFLAGS=-shared -no-pie
 AS=nasm
 ASFLAGS=-f elf64
 
+OBJ_FILES=main.c.o test.asm.o
+OBJS=$(addprefix obj/, $(OBJ_FILES))
+
+BIN=asm-pic-test.out
+
+#-------------------------------------------------------------------------------
+
 .PHONY: all clean
 
-all: asm-pic-test.out
+all: $(BIN)
 
 clean:
-	rm -f asm-pic-test.out main.o test.o
+	rm -f $(BIN) $(OBJS)
 
-asm-pic-test.out: main.o test.o
+#-------------------------------------------------------------------------------
+
+$(BIN): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+obj/%.c.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-test.o: test.asm
+obj/%.asm.o: %.asm
+	@mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) -o $@ $<

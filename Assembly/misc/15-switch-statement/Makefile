@@ -1,28 +1,33 @@
 
 CC=gcc
 CFLAGS=-Wall -Wextra
-ASM=nasm
-ASM_FLAGS=-f elf64
+
+AS=nasm
+ASFLAGS=-f elf64
+
+OBJ_FILES=switch_test.c.o jump_table.asm.o
+OBJS=$(addprefix obj/, $(OBJ_FILES))
 
 BIN=switch_test.out
+
+#-------------------------------------------------------------------------------
 
 .PHONY: all clean
 
 all: $(BIN)
 
 clean:
-	rm -rf ./obj/
-	rm -f $(BIN)
+	rm -f $(BIN) $(OBJS)
 
 #-------------------------------------------------------------------------------
 
-$(BIN): obj/switch_test.c.o obj/jump_table.asm.o
-	$(CC) $(CFLAGS) $^ -o $@
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 obj/%.c.o: %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 obj/%.asm.o: %.asm
 	@mkdir -p $(dir $@)
-	$(ASM) $(ASM_FLAGS) $< -o $@
+	$(AS) $(ASFLAGS) -o $@ $<
