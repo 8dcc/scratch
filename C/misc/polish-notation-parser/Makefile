@@ -8,21 +8,20 @@ OBJS=$(addprefix obj/, $(OBJ_FILES))
 
 BIN=polish-notation-parser.out
 
-.PHONY: clean all
+#-------------------------------------------------------------------------------
 
-# -------------------------------------------
+.PHONY: clean all
 
 all: $(BIN)
 
 clean:
-	rm -f $(OBJS)
-	rm -f $(BIN)
+	rm -f $(BIN) $(OBJS)
 
-# -------------------------------------------
+#-------------------------------------------------------------------------------
 
 $(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 obj/%.c.o : %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -o $@ -c $<

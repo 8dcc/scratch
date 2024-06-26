@@ -4,8 +4,9 @@ CXX=g++
 CFLAGS=-Wall -Wextra -ggdb3
 
 SDL_BINS=sdl-bresenham-line.out
-
 RAYLIB_BINS=raylib-cube.out
+
+#-------------------------------------------------------------------------------
 
 .PHONY: all clean
 

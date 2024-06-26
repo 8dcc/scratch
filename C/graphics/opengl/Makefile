@@ -25,4 +25,4 @@ $(BIN): $(OBJS)
 
 obj/%.c.o : %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -o $@ -c $<

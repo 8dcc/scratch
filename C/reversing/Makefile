@@ -2,6 +2,9 @@
 CC=gcc
 CXX=g++
 CFLAGS=-Wall -Wextra -ggdb3
+LDFLAGS=
+
+#-------------------------------------------------------------------------------
 
 .PHONY: all clean
 
@@ -13,10 +16,10 @@ clean:
 #-------------------------------------------------------------------------------
 
 64bit-vars-in-32bit-pc.out: 64bit-vars-in-32bit-pc.c
-	$(CC) $(CFLAGS) -m32 -o $@ $<
+	$(CC) $(CFLAGS) -m32 -o $@ $^ $(LDFLAGS)
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $<
+	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)

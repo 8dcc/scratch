@@ -3,16 +3,16 @@ CC=gcc
 CFLAGS=-Wall -Wextra
 LDFLAGS=
 
-.PHONY: clean all
+#-------------------------------------------------------------------------------
 
-# -------------------------------------------
+.PHONY: clean all
 
 all: main.out libtest.so
 
 clean:
 	rm -f main.out libtest.so
 
-# -------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Need -rdynamic so the lib can see the extern, if not, injector will give an
 # error.

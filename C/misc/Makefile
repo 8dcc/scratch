@@ -9,6 +9,8 @@ MATH_BINS=bresenham-line.out \
           spinning-torus.out \
           generate-wav.out
 
+#-------------------------------------------------------------------------------
+
 .PHONY: all clean
 
 all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildcard ./*.cpp))

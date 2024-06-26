@@ -8,6 +8,10 @@ ASMFLAGS=-f elf64
 LD=ld
 LDFLAGS=-m elf_x86_64
 
+#-------------------------------------------------------------------------------
+
+.PHONY: all clean
+
 all: output.out
 
 clean:

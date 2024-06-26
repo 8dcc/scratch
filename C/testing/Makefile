@@ -2,6 +2,9 @@
 CC=gcc
 CXX=g++
 CFLAGS=-Wall -Wextra -ggdb3
+LDFLAGS=
+
+#-------------------------------------------------------------------------------
 
 .PHONY: all clean
 
@@ -13,13 +16,13 @@ clean:
 #-------------------------------------------------------------------------------
 
 readline.out: readline.c
-	$(CC) $(CFLAGS) -o $@ $< -lreadline
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lreadline
 
 ncurses-%.out: ncurses-%.c
-	$(CC) $(CFLAGS) -o $@ $< -lncurses
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lncurses
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $<
+	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)

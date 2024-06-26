@@ -1,6 +1,9 @@
 
 CC=gcc
 CFLAGS=-Wall -Wextra -ggdb3
+LDFLAGS=
+
+#-------------------------------------------------------------------------------
 
 .PHONY: all clean
 
@@ -12,7 +15,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 ppm-mandelbrot.out: ppm-mandelbrot.c
-	$(CC) $(CFLAGS) -o $@ $< -lm
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lm
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)

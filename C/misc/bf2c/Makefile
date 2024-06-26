@@ -2,6 +2,10 @@
 CC=gcc
 CFLAGS=-Wall -Wextra
 
+#-------------------------------------------------------------------------------
+
+.PHONY: all clean
+
 all: output.out
 
 clean:
