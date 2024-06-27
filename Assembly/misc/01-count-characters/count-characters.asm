@@ -1,52 +1,78 @@
 
 section .data
-    mainStr     db  "Testing...", 0xA                   ; String that will be counted. In this program needs to be less than 10
-    charStr     db  "Total characters: ", 0x0           ; Just for output formatting
-    charStrLen: equ $-charStr                           ; See hello-world
+    ; String that will be counted. Needs to be less than 10 characters.
+    mainStr:    db  "Testing!", 0xA, 0x0
+
+    charStr:    db  "Total characters: "    ; Just for output formatting
+    charStrLen: equ $-charStr               ; See hello-world
 
 section .text
     global _start
 
 _start:
-    mov     ebx, mainStr        ; Move address of mainStr to ebx
-    mov     eax, ebx            ; Move the same address that is in ebx to eax as well
+    ; Save the address of `mainStr' to `ebx' and `eax'
+    mov     ebx, mainStr
+    mov     eax, ebx
 
-; ---------------------------------------------------
-; Start of print
-nextchar:                       ; We define a new label that will be called after each character that eax is pointing to is not '\0'
-    cmp     byte[eax], 0        ; Compare the current byte in eax with '\0'
-    jz      finished            ; Jump to 'finished' if the previous condition was true
-    inc     eax                 ; If we are here is because we didn't jump (condition was false), so we increment eax to point to next char
-    jmp     nextchar            ; Go back to checking the changed pointer
+    ; Increment `eax' until we reach '\0'. This is not the best way of looping,
+    ; see: scratch/C/misc/bf2nasm/branching.pdf
+.loop:
+    cmp     byte [eax], 0
+    jz      .done
 
-finished:                       ; We will jump here when the character is '\0' (String ended)
-    sub     eax, ebx            ; Now eax is pointing to the last char of mainStr, but ebx is still pointing to the first char. We subtract
-                                ; the 2 pointers (pointer arithmetic) to get the number of chars we incremented (length). This subtracted
-                                ; value will be stored in eax.
-    mov     edx, eax            ; Move the current eax value to edx because it indicates the length number to the function
-    
-    mov     eax, 4              ; Now that the value has been moved to edx we can use eax normally to call sys_write
-    mov     ebx, 1              ; STDOUT
-    mov     ecx, mainStr
+    inc     eax
+    jmp     .loop
+
+.done:
+    sub     eax, ebx            ; Store address difference in `eax'
+
+    ; Preserve `eax' (the length of `mainStr')
+    push    eax
+
+    ; Print mainStr
+    mov     edx, eax            ; Number of bytes to write
+    mov     ecx, mainStr        ; The string to write
+    mov     ebx, 1              ; Output: STDOUT
+    mov     eax, 4              ; Invoke SYS_WRITE
     int     0x80
-; End of print
-; ---------------------------------------------------
 
     ; Print charStr
-    push    edx                 ; Push to stack because we need to print text first and use this register
-    mov     edx, charStrLen     ; We can use edx safely now
-    mov     ecx, charStr        ; We don't need to move eax and ebx again
-    int     0x80                ; Print "Total characters: "
-    ; -- Stops printing here -- 
+    mov     edx, charStrLen
+    mov     ecx, charStr        ; "Total characters: "
+    mov     ebx, 1
+    mov     eax, 4
+    int     0x80
 
-    pop     edx                 ; Get the value back
-    add     edx, 48             ; Convert int to char (Only 1 char so it has to be < 10)
-    push    edx                 ; Push the converted char value to stack so esp points to it
-    mov     ecx, esp            ; esp now has our "string", so use that as parameter
-    mov     edx, 1              ; edx is still on the stack, but now we use it as normal parameter
-    int     0x80                ; Print character itself
+    ; Restore the value we pushed
+    pop     eax
 
-    mov     eax, 1
+    ; Convert digit in `eax' to char (3 -> '3'). This limits the string length
+    ; to 9 characters, but it's good enough to illustrate the program.
+    add     eax, 48
+
+    ; Store a newline in `ebx', shift it 8 bits to the left so it's placed in
+    ; the second byte (bits 8..15) of `ebx'. Then OR it together with our digit
+    ; character in `eax', effectively creating a two byte string: "9\n".
+    mov     ebx, 0xA
+    shl     ebx, 8
+    or      eax, ebx
+
+    ; Push the DWORD containing the converted char value and the newline to the
+    ; stack so we can use `esp' as a pointer to our "string".
+    push    eax
+
+    ; Print the character containing the length of `mainStr'
+    mov     edx, 2              ; We are printing a newline and a character
+    mov     ecx, esp            ; `esp' points to our "string"
+    mov     ebx, 1
+    mov     eax, 4
+    int     0x80
+
+    ; Pop the value we used for printing. We could also add `sizeof(void*)' to
+    ; `esp', since we don't care about the value itself.
+    pop     eax
+
+    ; Exit the program
     mov     ebx, 0
-    int     0x80                ; Exit
-
+    mov     eax, 1
+    int     0x80
