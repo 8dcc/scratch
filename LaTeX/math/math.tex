@@ -523,10 +523,10 @@ To calculate the \textit{hue}, the following conditional formula is used.
 \begin{displaymath}
   H =
   \begin{cases}
-    0^\circ,                                                     & \Delta = 0 \\
-    60^\circ \times \left(\frac{G'-B'}{\Delta} \mod 6 \right), & C_{max} = R' \\
-    60^\circ \times \left(\frac{B'-R'}{\Delta} + 2 \right),    & C_{max} = G' \\
-    60^\circ \times \left(\frac{R'-G'}{\Delta} + 4 \right),    & C_{max} = B'
+    0^\circ,                                                    & \Delta = 0 \\
+    60^\circ \times \left(\frac{G'-B'}{\Delta} \bmod 6 \right), & C_{max} = R' \\
+    60^\circ \times \left(\frac{B'-R'}{\Delta} + 2 \right),     & C_{max} = G' \\
+    60^\circ \times \left(\frac{R'-G'}{\Delta} + 4 \right),     & C_{max} = B'
   \end{cases}
 \end{displaymath}
 
@@ -559,7 +559,7 @@ Then, the $X$ value is calculated, which will be used as a component in the
 initial RGB color below.
 \begin{gather*}
   H' = \frac{H}{60^\circ} \\
-  X = C \times \left( 1 - \left| H' \mod 2 - 1 \right| \right)
+  X = C \times \left( 1 - \left| H' \bmod 2 - 1 \right| \right)
 \end{gather*}
 
 Note that $H'$ must be an integer for the modulus operation.
