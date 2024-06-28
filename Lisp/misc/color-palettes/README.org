@@ -1,0 +1,128 @@
+#+TITLE: Color palettes
+#+AUTHOR: 8dcc
+#+OPTIONS: toc:2
+#+STARTUP: nofold
+#+PROPERTY: header-args:scheme :tangle color-palettes.scm
+
+* Introduction
+
+This was inspired by [[https://jacobwsmith.xyz/stories/color_schemes.html][Jacob Smith's great article]] about mathematically generating
+color palettes. His original python source can be found in [[https://github.com/jsmit42/color_palettes][this repository]].
+
+* Conversion functions
+
+These functions are used to convert between RGB and HSV.
+
+#+begin_src scheme
+(define (rgb2hsv rgb)
+  (let* ((r (/ (car rgb) 255))
+         (g (/ (cadr rgb) 255))
+         (b (/ (caddr rgb) 255))
+         (cmax (max r g b))
+         (cmin (min r g b))
+         (delta (- cmax cmin)))
+    (list
+     (cond ((= cmax r) (* 60 (modulo (/ (- g b) delta) 6)))
+           ((= cmax g) (* 60 (+ (/ (- b r) delta) 2)))
+           ((= cmax b) (* 60 (+ (/ (- r g) delta) 4)))
+           (#t 0))
+     (cond ((= cmax 0) 0)
+           (#t (/ delta cmax)))
+     cmax)))
+
+;; For showing output as decimal
+(map (lambda (x) (* x 1.0))
+     (rgb2hsv '(17 34 238)))
+#+end_src
+
+#+RESULTS:
+| 235.3846153846154 | 0.9285714285714286 | 0.9333333333333333 |
+
+#+begin_src scheme
+(define (hsv2rgb hsv)
+  ;; Is VALUE in the [A,B) range?
+  (define (between a value b)
+    (and (<= a value) (< value b)))
+
+  ;; Calculate X mod Y, supporting floating point. X and Y must be positive.
+  (define (fmod x y)
+    (if (< x y)
+        x
+        (fmod (- x y) y)))
+
+  (let* ((h (car hsv))
+         (s (cadr hsv))
+         (v (caddr hsv))
+         (c (* s v))
+         (hprime (/ h 60))
+         (x (* c (- 1 (abs (- (fmod hprime 2) 1)))))
+         (m (- v c))
+         (rgb (cond ((between   0 h  60) (list c x 0))
+                    ((between  60 h 120) (list x c 0))
+                    ((between 120 h 180) (list 0 c x))
+                    ((between 180 h 240) (list 0 x c))
+                    ((between 240 h 300) (list x 0 c))
+                    ((between 300 h 360) (list c 0 x))
+                    (#t                  (list 0 0 0)))))
+    (map (lambda (component)
+           (round (* 255 (+ component m))))
+         rgb)))
+
+(hsv2rgb '(235.38 0.92 0.93))
+#+end_src
+
+#+RESULTS:
+| 19.0 | 36.0 | 237.0 |
+
+* Generating palettes
+
+Given a color in HSV format, these functions return different color palettes.
+
+** Monochrome
+
+This one, for example, changes the *value* component (lightness/intensity) of the
+HSV color to generate a color palette of variable size.
+
+#+begin_src scheme
+;; Generate a color palette of N elements, scaling the lightness by STEP, having
+;; HSV color in the middle. The STEP must be in the [0..1] range.
+(define (palette-monochrome hsv size step)
+  (define (scale-lightness hsv scale)
+    (list (car hsv)
+          (cadr hsv)
+          (* (caddr hsv) (+ 1 scale))))
+
+  (cond ((<= size 1)
+         (list hsv))
+        ((= size 2)
+         (list hsv (scale-lightness hsv step)))
+        (#t
+         (let ((rounded-size (if (odd? size) (- size 1) size)))
+           (append (list (scale-lightness hsv (* step (/ rounded-size 2) -1)))
+                   (palette-monochrome hsv (- size 2) step)
+                   (list (scale-lightness hsv (* step (/ rounded-size 2)))))))))
+
+(palette-monochrome '(240 100 70) 5 0.10)
+#+end_src
+
+#+RESULTS:
+| 240 | 100 | 56.0 |
+| 240 | 100 | 63.0 |
+| 240 | 100 |   70 |
+| 240 | 100 | 77.0 |
+| 240 | 100 | 84.0 |
+
+This is the result: [[https://coolors.co/00008f-0000a1-0000b3-0000c4-0000d6][Link]].
+
+#+begin_comment
+TODO: Finish the following.
+  - Analagous Colors
+  - Complimentary Colors
+  - Triadic Colors
+  - Tetradic Colors
+  - Split Complimentary Colors
+
+TODO: Make a generalized function that takes another =modify= function and applies
+that to the color depending on the color position in the palette. The =modify=
+function should receive the position and scale it's behavior accordingly.
+#+end_comment
