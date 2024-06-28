@@ -488,6 +488,33 @@ with the horizontal.
 
 % ------------------------------------------------------------------------------
 \newpage
+\section{Modulus operation}
+% ------------------------------------------------------------------------------
+
+The modulus of two numbers is the remainder of it's integer division. The
+modulus of two numbers could be defined as follows.
+\begin{displaymath}
+  a = \lfloor a / b \rfloor \times b + a \bmod b
+\end{displaymath}
+
+If the dividend is negative, it can be converted to positive with the following
+formula, since the modulus of $a$ and $b$ is equal to the divisor minus the
+modulus of the negated dividend and the divisor.
+\begin{align*}
+  a \bmod b & \implies b - (-a \bmod b) \\
+  -a \bmod b & \implies b - a \bmod b
+\end{align*}
+
+If the divisor is negative, it can be converted to positive with the following
+formula, since the modulus of $a$ and $b$ is the same as negating the modulus of
+$-a$ and $-b$.
+\begin{align*}
+  a \bmod b  & \implies - \left(-a \bmod -b \right) \\
+  a \bmod -b & \implies - \left(-a \bmod b \right)
+\end{align*}
+
+% ------------------------------------------------------------------------------
+\newpage
 \section{Color conversion}
 % ------------------------------------------------------------------------------
 
