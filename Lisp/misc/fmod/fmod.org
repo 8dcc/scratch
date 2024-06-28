@@ -1,0 +1,76 @@
+#+TITLE: Floating point modulus in Scheme
+#+AUTHOR: 8dcc
+#+OPTIONS: toc:2
+#+STARTUP: nofold
+#+PROPERTY: header-args:scheme :tangle fmod.scm
+
+When writing [[file:../color-palettes/README.org][my color palettes code]], I noticed that Scheme doesn't support a
+floating point modulus operation, it only supports integers. I wanted to make a
+function that worked similar to =mod= in [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Arithmetic-Operations.html#index-mod][Emacs Lisp]].
+
+I started with this simple function that supports only positive values.
+
+#+begin_src scheme
+;; Calculate X mod Y, supporting floating point. X and Y must be positive.
+(define (fmod-positive x y)
+  (if (< x y)
+      x
+      (fmod-positive (- x y) y)))
+#+end_src
+
+Then, after a very non-mathematical approach, I came up with this version, that
+supports both positive and negative values. See also [[file:../../../LaTeX/math/math.pdf][my math notes]].
+
+#+begin_src scheme :results raw code
+;; Calculate X mod Y, supporting floating point
+(define (fmod x y)
+  (define (fmod-positive x y)
+    (if (< x y)
+        x
+        (fmod-positive (- x y) y)))
+
+  ;; If X is negative: X mod Y = Y - (|X| mod Y)
+  (define (fmod-y-positive x y)
+    (if (< x 0)
+        (- y (fmod-positive (- x) y))
+        (fmod-positive x y)))
+
+  ;; If X is negative: X mod Y = -(-X mod -Y)
+  (if (< y 0)
+      (- (fmod-y-positive (- x) (- y)))
+      (fmod-y-positive x y)))
+#+end_src
+
+Some examples using my Scheme function:
+
+#+begin_src scheme :results verbatim
+(list
+ (fmod 9 4)
+ (fmod -9 4)
+ (fmod 9 -4)
+ (fmod -9 -4)
+ (fmod 9.5 2.5)
+ (fmod -9.5 2.5)
+ (fmod 9.5 -2.5)
+ (fmod -9.5 -2.5))
+#+end_src
+
+#+RESULTS:
+: (1 3 -3 -1 2.0 0.5 -0.5 -2.0)
+
+Those same examples using =mod= in Emacs Lisp:
+
+#+begin_src emacs-lisp :results verbatim
+(list
+ (mod 9 4)
+ (mod -9 4)
+ (mod 9 -4)
+ (mod -9 -4)
+ (mod 9.5 2.5)
+ (mod -9.5 2.5)
+ (mod 9.5 -2.5)
+ (mod -9.5 -2.5))
+#+end_src
+
+#+RESULTS:
+: (1 3 -3 -1 2.0 0.5 -0.5 -2.0)
