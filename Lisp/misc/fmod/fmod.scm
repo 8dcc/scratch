@@ -7,6 +7,7 @@
 
 ;; Calculate remainder of X by Y, supporting floating point and negative values.
 (define (fmod x y)
+  ;; Calculate remainder of X by Y, as long as they are both positive.
   (define (fmod-positive x y)
     (if (< x y)
         x
@@ -42,12 +43,30 @@
         (+ result y)
         result)))
 
+;; Calculate remainder of X by Y, supporting floating point and negative values.
+(define (fmod x y)
+  ;; Calculate remainder of X by Y, as long as they are both positive.
+  (define (fmod-positive x y)
+    (if (< x y)
+        x
+        (fmod-positive (- x y) y)))
+
+  (let ((abs-result (fmod-positive (abs x) (abs y))))
+    (cond ((and (positive? x) (positive? y))
+           abs-result)
+          ((and (positive? x) (negative? y))
+           (+ y abs-result))
+          ((and (negative? x) (positive? y))
+           (- y abs-result))
+          ((and (negative? x) (negative? y))
+           (- abs-result)))))
+
 (list
  (fmod 9 4)
- (fmod -9 4)
  (fmod 9 -4)
+ (fmod -9 4)
  (fmod -9 -4)
  (fmod 9.5 2.5)
- (fmod -9.5 2.5)
  (fmod 9.5 -2.5)
+ (fmod -9.5 2.5)
  (fmod -9.5 -2.5))

@@ -30,6 +30,7 @@ supports both positive and negative values. See also [[file:../../../LaTeX/math/
 #+begin_src scheme
 ;; Calculate remainder of X by Y, supporting floating point and negative values.
 (define (fmod x y)
+  ;; Calculate remainder of X by Y, as long as they are both positive.
   (define (fmod-positive x y)
     (if (< x y)
         x
@@ -48,9 +49,8 @@ supports both positive and negative values. See also [[file:../../../LaTeX/math/
 #+end_src
 
 However, after reading the Emacs source code, I came up with this
-not-so-different version.
-
-To understand =c-fmod=, see [[*The iterative C version][the iterative C version]].
+not-so-different version that does some unnecessary calculations but uses the
+Emacs way. To understand =c-fmod=, see [[*The iterative C version][the iterative C version]].
 
 #+begin_src scheme
 ;; Calculate remainder of X by Y, supporting floating point and negative values.
@@ -73,39 +73,81 @@ To understand =c-fmod=, see [[*The iterative C version][the iterative C version]
         result)))
 #+end_src
 
-Some examples using my Scheme function:
+Then, after observing the outputs a bit more, I came up with an even better
+version.
+
+| X    | Y    | Result |
+|------+------+--------|
+| 9.5  | 2.5  | 2.0    |
+| 9.5  | -2.5 | -0.5   |
+| -9.5 | 2.5  | 0.5    |
+| -9.5 | -2.5 | -2.0   |
+
+We can see that the output changes depending on the input signs. Here, ~AbsMod~
+represents the modulus of $|x|$ and $|y|$.
+
+| X        | Y        | Result          |
+|----------+----------+-----------------|
+| Positive | Positive | ~AbsMod(a,b)~     |
+| Positive | Negative | ~AbsMod(a,b) + b~ |
+| Negative | Positive | ~b - AbsMod(a,b)~ |
+| Negative | Negative | ~-AbsMod(a,b)~    |
+
+With this in mind, an even better version can be written.
+
+#+begin_src scheme
+;; Calculate remainder of X by Y, supporting floating point and negative values.
+(define (fmod x y)
+  ;; Calculate remainder of X by Y, as long as they are both positive.
+  (define (fmod-positive x y)
+    (if (< x y)
+        x
+        (fmod-positive (- x y) y)))
+
+  (let ((abs-result (fmod-positive (abs x) (abs y))))
+    (cond ((and (positive? x) (positive? y))
+           abs-result)
+          ((and (positive? x) (negative? y))
+           (+ y abs-result))
+          ((and (negative? x) (positive? y))
+           (- y abs-result))
+          ((and (negative? x) (negative? y))
+           (- abs-result)))))
+#+end_src
+
+Some examples using any of my Scheme functions:
 
 #+begin_src scheme :results verbatim
 (list
  (fmod 9 4)
- (fmod -9 4)
  (fmod 9 -4)
+ (fmod -9 4)
  (fmod -9 -4)
  (fmod 9.5 2.5)
- (fmod -9.5 2.5)
  (fmod 9.5 -2.5)
+ (fmod -9.5 2.5)
  (fmod -9.5 -2.5))
 #+end_src
 
 #+RESULTS:
-: (1 3 -3 -1 2.0 0.5 -0.5 -2.0)
+: (1 -3 3 -1 2.0 -0.5 0.5 -2.0)
 
 Those same examples using =mod= in Emacs Lisp:
 
 #+begin_src emacs-lisp :results verbatim
 (list
  (mod 9 4)
- (mod -9 4)
  (mod 9 -4)
+ (mod -9 4)
  (mod -9 -4)
  (mod 9.5 2.5)
- (mod -9.5 2.5)
  (mod 9.5 -2.5)
+ (mod -9.5 2.5)
  (mod -9.5 -2.5))
 #+end_src
 
 #+RESULTS:
-: (1 3 -3 -1 2.0 0.5 -0.5 -2.0)
+: (1 -3 3 -1 2.0 -0.5 0.5 -2.0)
 
 * The iterative C version
 
@@ -115,16 +157,16 @@ from Emacs' =mod=.
 #+begin_src C :main no
 #include <math.h>
 
-double my_fmod(double a, double b) {
-    int bNegativeResult = a < 0;
+double my_fmod(double x, double y) {
+    int bNegativeResult = x < 0;
 
-    a = fabs(a);
-    b = fabs(b);
+    x = fabs(x);
+    y = fabs(y);
 
-    while (a >= b)
-        a -= b;
+    while (x >= y)
+        x -= y;
 
-    return bNegativeResult ? -a : a;
+    return bNegativeResult ? -x : x;
 }
 #+end_src
 
@@ -132,14 +174,37 @@ This next function does behave like Emacs' =mod= by adding a simple conditional 
 the previous function. Credits for this very smart method: [[https://github.com/emacs-mirror/emacs/blob/2119cd52cdb58221a850360bf65c91cf3bf4b47e/src/floatfns.c#L569-L582][emacs source code]].
 
 #+begin_src C :main no
-double my_emacs_fmod(double a, double b) {
-    a = my_fmod(a, b);
+double my_emacs_fmod(double x, double y) {
+    x = my_fmod(x, y);
 
     /* If the "remainder" comes out with the wrong sign, fix it. */
-    if (b < 0 ? a > 0 : a < 0)
-        a += b;
+    if (y < 0 ? x > 0 : x < 0)
+        x += y;
 
-    return a;
+    return x;
+}
+#+end_src
+
+We can make a third optimized version similar to the one I wrote in Scheme.
+
+#+begin_src C :main no
+double my_emacs_fmod2(double x, double y) {
+    double abs_x = fabs(x);
+    double abs_y = fabs(y);
+
+    /* Calculate fmod(fabs(x), fabs(y)) */
+    double abs_result = abs_x;
+    while (abs_result >= abs_y)
+        abs_result -= abs_y;
+
+    if (x >= 0 && y >= 0)
+        return abs_result;
+    if (x >= 0 && y < 0)
+        return y + abs_result;
+    if (x < 0 && y >= 0)
+        return y - abs_result;
+    if (x < 0 && y < 0)
+        return -abs_result;
 }
 #+end_src
 
@@ -157,7 +222,7 @@ int main(void) {
     printf("my_fmod(-9.5 2.5)  -> %.2f\n", my_fmod(-9.5, 2.5));
     printf("my_fmod(9.5 -2.5)  -> %.2f\n", my_fmod(9.5, -2.5));
     printf("my_fmod(-9.5 -2.5) -> %.2f\n", my_fmod(-9.5, -2.5));
-
+    putchar('\n');
     printf("fmod(9 4)       -> %.2f\n", fmod(9, 4));
     printf("fmod(-9 4)      -> %.2f\n", fmod(-9, 4));
     printf("fmod(9 -4)      -> %.2f\n", fmod(9, -4));
@@ -166,7 +231,7 @@ int main(void) {
     printf("fmod(-9.5 2.5)  -> %.2f\n", fmod(-9.5, 2.5));
     printf("fmod(9.5 -2.5)  -> %.2f\n", fmod(9.5, -2.5));
     printf("fmod(-9.5 -2.5) -> %.2f\n", fmod(-9.5, -2.5));
-
+    putchar('\n');
     printf("my_emacs_fmod(9 4)       -> %.2f\n", my_emacs_fmod(9, 4));
     printf("my_emacs_fmod(-9 4)      -> %.2f\n", my_emacs_fmod(-9, 4));
     printf("my_emacs_fmod(9 -4)      -> %.2f\n", my_emacs_fmod(9, -4));
@@ -175,6 +240,15 @@ int main(void) {
     printf("my_emacs_fmod(-9.5 2.5)  -> %.2f\n", my_emacs_fmod(-9.5, 2.5));
     printf("my_emacs_fmod(9.5 -2.5)  -> %.2f\n", my_emacs_fmod(9.5, -2.5));
     printf("my_emacs_fmod(-9.5 -2.5) -> %.2f\n", my_emacs_fmod(-9.5, -2.5));
+    putchar('\n');
+    printf("my_emacs_fmod2(9 4)       -> %.2f\n", my_emacs_fmod2(9, 4));
+    printf("my_emacs_fmod2(-9 4)      -> %.2f\n", my_emacs_fmod2(-9, 4));
+    printf("my_emacs_fmod2(9 -4)      -> %.2f\n", my_emacs_fmod2(9, -4));
+    printf("my_emacs_fmod2(-9 -4)     -> %.2f\n", my_emacs_fmod2(-9, -4));
+    printf("my_emacs_fmod2(9.5 2.5)   -> %.2f\n", my_emacs_fmod2(9.5, 2.5));
+    printf("my_emacs_fmod2(-9.5 2.5)  -> %.2f\n", my_emacs_fmod2(-9.5, 2.5));
+    printf("my_emacs_fmod2(9.5 -2.5)  -> %.2f\n", my_emacs_fmod2(9.5, -2.5));
+    printf("my_emacs_fmod2(-9.5 -2.5) -> %.2f\n", my_emacs_fmod2(-9.5, -2.5));
 
     return 0;
 }
