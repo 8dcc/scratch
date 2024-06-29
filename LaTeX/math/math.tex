@@ -497,21 +497,60 @@ modulus of two numbers could be defined as follows.
   a = \lfloor a / b \rfloor \times b + a \bmod b
 \end{displaymath}
 
-If the dividend is negative, it can be converted to positive with the following
-formula, since the modulus of $a$ and $b$ is equal to the divisor minus the
-modulus of the negated dividend and the divisor.
+Where $\lfloor a / b \rfloor$ indicates the integer division of $a$ and $b$.
+
+% ------------------------------------------------------------------------------
+\subsection{Equivalences}
+% ------------------------------------------------------------------------------
+
+These equivalences might be useful when dealing with modulus operators that only
+support positive values, for example.
+
+\bigskip
+
+Given the following function, that returns the modulus of two positive values,
+\begin{displaymath}
+  \text{AbsMod}(a, b) = |a| \bmod |b|
+\end{displaymath}
+the following conditional formula can be used for determining the modulus of any
+positive and negative combination.
+\begin{displaymath}
+  a \bmod b =
+  \begin{cases}
+    \text{AbsMod}(a, b),     & a \geq 0 \land b \geq 0 \\
+    b + \text{AbsMod}(a, b), & a \geq 0 \land b < 0 \\
+    b - \text{AbsMod}(a, b), & a < 0 \land b \geq 0 \\
+    -\text{AbsMod}(a, b),    & a < 0 \land b < 0
+  \end{cases}
+\end{displaymath}
+
+\bigskip
+
+The modulus of $a$ and $b$ is equal to the negation of the modulus of $-a$ and
+$-b$.
+\begin{displaymath}
+  a \bmod  b \iff - \left( -a \bmod -b \right)
+\end{displaymath}
+
+This can be used for converting the divisor and dividend to negative, if needed.
 \begin{align*}
-  a \bmod b & \implies b - (-a \bmod b) \\
-  -a \bmod b & \implies b - a \bmod b
+   a \bmod -b & \iff - \left( -a \bmod  b \right) \\
+  -a \bmod  b & \iff - \left(  a \bmod -b \right) \\
+  -a \bmod -b & \iff - \left(  a \bmod  b \right)
 \end{align*}
 
-If the divisor is negative, it can be converted to positive with the following
-formula, since the modulus of $a$ and $b$ is the same as negating the modulus of
-$-a$ and $-b$.
-\begin{align*}
-  a \bmod b  & \implies - \left(-a \bmod -b \right) \\
-  a \bmod -b & \implies - \left(-a \bmod b \right)
-\end{align*}
+\bigskip
+
+The modulus of $a$ and $b$ is equal to the divisor ($b$) minus the modulus of
+the negated dividend and the unchanged divisor.
+\begin{displaymath}
+  a \bmod b \iff b - (-a \bmod b)
+\end{displaymath}
+
+This can be used for converting the dividend to positive, if needed.
+\begin{displaymath}
+  -a \bmod b \iff b - a \bmod b
+\end{displaymath}
 
 % ------------------------------------------------------------------------------
 \newpage
