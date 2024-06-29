@@ -67,9 +67,9 @@ footskip=1cm
 The magnitude of a vector is the length of the vector, and it's denoted as
 $\|v\|$. The formula for calculating the magnitude of a two-dimensional vector
 is the following.
-\begin{displaymath}
+\begin{equation*}
   \|v\| = \sqrt{v_x^2 + v_y^2}
-\end{displaymath}
+\end{equation*}
 
 % NOTE: Environment defined above
 \begin{tikzpicturecenter}
@@ -128,9 +128,9 @@ points.
   \filldraw (b) circle (1pt) node[above right]{B};
 \end{tikzpicturecenter}
 
-\begin{displaymath}
+\begin{equation*}
   d = \sqrt{(B_x - A_x)^2 + (B_y - A_y)^2}
-\end{displaymath}
+\end{equation*}
 
 % ------------------------------------------------------------------------------
 \subsection{Unit vector}
@@ -140,9 +140,9 @@ A unit vector is a vector of length 1, and it's usually denoted as $u$ or
 $\hat{u}$. The normalized or unitary vector $\hat{u}$ of a vector $v$ is a
 vector of length 1 with the direction of $v$. The following formula can be used
 for normalizing a vector.
-\begin{displaymath}
+\begin{equation*}
   \hat{u} = \frac{v}{\|v\|}
-\end{displaymath}
+\end{equation*}
 
 % ------------------------------------------------------------------------------
 \subsection{Sine and cosine}
@@ -249,12 +249,12 @@ respectively.
 
 Since the radius of the circle (i.e. the hypotenuse of the formed right
 triangle) is one, the previous formula remains consistent:
-\begin{displaymath}
+\begin{equation*}
   \sin \left( \theta \right)
   = \frac{\text{opposite}}{\text{hypotenuse}}
   = \frac{\text{opposite}}{1}
   = \text{opposite}
-\end{displaymath}
+\end{equation*}
 
 % ------------------------------------------------------------------------------
 \subsection{Dot product}
@@ -265,24 +265,24 @@ represents the projection of one vector onto the other. In simpler terms, it's a
 way of quantifying how aligned is vector $a$ with vector $b$.
 
 The basic formula is the following:
-\begin{displaymath}
+\begin{equation*}
   a \cdot b = a_x b_x + a_y b_y
-\end{displaymath}
+\end{equation*}
 
 The dot product has a direct relationship with the angle formed by the two
 vectors. The dot product of two \textbf{unit vectors} is the cosine of the
 angle.
-\begin{displaymath}
+\begin{equation*}
   \hat{a} \cdot \hat{b} = \cos \theta
-\end{displaymath}
+\end{equation*}
 
 Therefore, if both vectors are \textbf{normalized} (i.e. they are unit vectors),
 the returned value will always be in the $[-1,1]$ range.
 
 To calculate the dot product of non-normalized vectors, this formula is used:
-\begin{displaymath}
+\begin{equation*}
   a \cdot b = \|a\| \|b\| \cos \theta
-\end{displaymath}
+\end{equation*}
 
 The dot product can be expressed as the shadow that $a$ projects over $b$.
 
@@ -382,16 +382,16 @@ the opposite direction of $b$.
 % ------------------------------------------------------------------------------
 
 The golden ratio is an irrational number with a value of:
-\begin{displaymath}
+\begin{equation*}
  \varphi = \frac{1+\sqrt{5}}{2} = 1.618033988749\dots
-\end{displaymath}
+\end{equation*}
 
 Two numbers $a$ and $b$ are in the golden ratio (noted $\varphi$) if their ratio
 ($\frac{a}{b}$) is the same as the ratio of their sum to the larger
 number. Assuming $a > b > 0$:
-\begin{displaymath}
+\begin{equation*}
   \frac{a}{b} = \frac{a+b}{a} = \varphi
-\end{displaymath}
+\end{equation*}
 
 A \textbf{golden rectangle} is a rectangle whose adjacent sides are in the
 golden ratio, and it can be used to illustrate the previous formula.
@@ -454,25 +454,25 @@ quotient approximates to $\varphi$.
 % TODO: Update with improvements in 8dcc/orbit
 
 The gravitational force of each body is calculated with the following formula.
-\begin{displaymath}
+\begin{equation*}
   F = G \frac{m_1m_2}{r^2}
-\end{displaymath}
+\end{equation*}
 
 Where $G$ is the gravitational constant, $m_1$ and $m_2$ are the mass of
 each body, and $r$ is the distance between the objects.
 
 The effect of a force is to accelerate the body. The relationship is the
 following.
-\begin{displaymath}
+\begin{equation*}
   F = m a
-\end{displaymath}
+\end{equation*}
 
 Where $F$ is the force, $m$ is the mass and $a$ is the acceleration of
 the body. Therefore, the acceleration can be calculated from the force with the
 following formula.
-\begin{displaymath}
+\begin{equation*}
   a = \frac{F}{m}
-\end{displaymath}
+\end{equation*}
 
 The force has a direction. It acts towards the direction of the line joining
 the centres of the two bodies. We can get the X and Y coordinates of the
@@ -493,9 +493,9 @@ with the horizontal.
 
 The modulus of two numbers is the remainder of it's integer division. The
 modulus of two numbers could be defined as follows.
-\begin{displaymath}
+\begin{equation*}
   a = \lfloor a / b \rfloor \times b + a \bmod b
-\end{displaymath}
+\end{equation*}
 
 Where $\lfloor a / b \rfloor$ indicates the integer division of $a$ and $b$.
 
@@ -509,12 +509,12 @@ support positive values, for example.
 \bigskip
 
 Given the following function, that returns the modulus of two positive values,
-\begin{displaymath}
+\begin{equation*}
   \text{AbsMod}(a, b) = |a| \bmod |b|
-\end{displaymath}
+\end{equation*}
 the following conditional formula can be used for determining the modulus of any
 positive and negative combination.
-\begin{displaymath}
+\begin{equation*}
   a \bmod b =
   \begin{cases}
     \text{AbsMod}(a, b),     & a \geq 0 \land b \geq 0 \\
@@ -522,15 +522,15 @@ positive and negative combination.
     b - \text{AbsMod}(a, b), & a < 0 \land b \geq 0 \\
     -\text{AbsMod}(a, b),    & a < 0 \land b < 0
   \end{cases}
-\end{displaymath}
+\end{equation*}
 
 \bigskip
 
 The modulus of $a$ and $b$ is equal to the negation of the modulus of $-a$ and
 $-b$.
-\begin{displaymath}
+\begin{equation*}
   a \bmod  b \iff - \left( -a \bmod -b \right)
-\end{displaymath}
+\end{equation*}
 
 This can be used for converting the divisor and dividend to negative, if needed.
 \begin{align*}
@@ -543,14 +543,14 @@ This can be used for converting the divisor and dividend to negative, if needed.
 
 The modulus of $a$ and $b$ is equal to the divisor ($b$) minus the modulus of
 the negated dividend and the unchanged divisor.
-\begin{displaymath}
+\begin{equation*}
   a \bmod b \iff b - (-a \bmod b)
-\end{displaymath}
+\end{equation*}
 
 This can be used for converting the dividend to positive, if needed.
-\begin{displaymath}
+\begin{equation*}
   -a \bmod b \iff b - a \bmod b
-\end{displaymath}
+\end{equation*}
 
 % ------------------------------------------------------------------------------
 \newpage
@@ -586,7 +586,7 @@ difference.
 \end{align*}
 
 To calculate the \textit{hue}, the following conditional formula is used.
-\begin{displaymath}
+\begin{equation*}
   H =
   \begin{cases}
     0^\circ,                                                    & \Delta = 0 \\
@@ -594,22 +594,22 @@ To calculate the \textit{hue}, the following conditional formula is used.
     60^\circ \times \left(\frac{B'-R'}{\Delta} + 2 \right),     & C_{max} = G' \\
     60^\circ \times \left(\frac{R'-G'}{\Delta} + 4 \right),     & C_{max} = B'
   \end{cases}
-\end{displaymath}
+\end{equation*}
 
 To calculate the \textit{saturation}, the following formula is used.
-\begin{displaymath}
+\begin{equation*}
   S =
   \begin{cases}
     0,                      & C_{max} = 0 \\
     \frac{\Delta}{C_{max}}, & C_{max} \neq 0 \\
   \end{cases}
-\end{displaymath}
+\end{equation*}
 
 Finally, since $C_{max}$ is already normalized, it can be used directly as the
 \textit{value} component.
-\begin{displaymath}
+\begin{equation*}
   V = C_{max}
-\end{displaymath}
+\end{equation*}
 
 % ------------------------------------------------------------------------------
 \subsection{HSV to RGB}
@@ -617,9 +617,9 @@ Finally, since $C_{max}$ is already normalized, it can be used directly as the
 
 Calculate the \textit{chroma} by multiplying the \textit{saturation} and the
 \textit{value}.
-\begin{displaymath}
+\begin{equation*}
   C = S \times V
-\end{displaymath}
+\end{equation*}
 
 Then, the $X$ value is calculated, which will be used as a component in the
 initial RGB color below.
@@ -632,7 +632,7 @@ Note that $H'$ must be an integer for the modulus operation.
 
 The \textit{chroma} and $X$ values will be used for the initial RGB values
 depending on the \textit{hue} with this conditional formula.
-\begin{displaymath}
+\begin{equation*}
   \left( R', G', B' \right) =
   \begin{cases}
     (C, X, 0), & 0^\circ \leq H < 60^\circ \\
@@ -642,7 +642,7 @@ depending on the \textit{hue} with this conditional formula.
     (X, 0, C), & 240^\circ \leq H < 300^\circ \\
     (C, 0, X), & 300^\circ \leq H < 360^\circ
   \end{cases}
-\end{displaymath}
+\end{equation*}
 
 The value of $H'$ can be used in the conditions instead of the \textit{hue}, but
 I consider this form more visual.
