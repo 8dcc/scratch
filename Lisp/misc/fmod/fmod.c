@@ -31,54 +31,59 @@ double my_emacs_fmod2(double x, double y) {
     while (abs_result >= abs_y)
         abs_result -= abs_y;
 
-    if (x >= 0 && y >= 0)
-        return abs_result;
-    if (x >= 0 && y < 0)
-        return y + abs_result;
-    if (x < 0 && y >= 0)
-        return y - abs_result;
-    if (x < 0 && y < 0)
-        return -abs_result;
+    /*
+     * if (x >= 0 && y >= 0)
+     *     return abs_result;
+     * if (x >= 0 && y < 0)
+     *     return y + abs_result;
+     * if (x < 0 && y >= 0)
+     *     return y - abs_result;
+     * if (x < 0 && y < 0)
+     *     return -abs_result;
+     */
+
+    return (x >= 0) ? ((y >= 0) ? abs_result : y + abs_result)
+                    : ((y >= 0) ? y - abs_result : -abs_result);
 }
 
 #include <stdio.h>
 
 int main(void) {
-    printf("my_fmod(9 4)       -> %.2f\n", my_fmod(9, 4));
-    printf("my_fmod(-9 4)      -> %.2f\n", my_fmod(-9, 4));
-    printf("my_fmod(9 -4)      -> %.2f\n", my_fmod(9, -4));
-    printf("my_fmod(-9 -4)     -> %.2f\n", my_fmod(-9, -4));
-    printf("my_fmod(9.5 2.5)   -> %.2f\n", my_fmod(9.5, 2.5));
-    printf("my_fmod(-9.5 2.5)  -> %.2f\n", my_fmod(-9.5, 2.5));
-    printf("my_fmod(9.5 -2.5)  -> %.2f\n", my_fmod(9.5, -2.5));
-    printf("my_fmod(-9.5 -2.5) -> %.2f\n", my_fmod(-9.5, -2.5));
+    printf("my_fmod(9, 4)       -> %.2f\n", my_fmod(9, 4));
+    printf("my_fmod(9, -4)      -> %.2f\n", my_fmod(9, -4));
+    printf("my_fmod(-9, 4)      -> %.2f\n", my_fmod(-9, 4));
+    printf("my_fmod(-9, -4)     -> %.2f\n", my_fmod(-9, -4));
+    printf("my_fmod(9.5, 2.5)   -> %.2f\n", my_fmod(9.5, 2.5));
+    printf("my_fmod(9.5, -2.5)  -> %.2f\n", my_fmod(9.5, -2.5));
+    printf("my_fmod(-9.5, 2.5)  -> %.2f\n", my_fmod(-9.5, 2.5));
+    printf("my_fmod(-9.5, -2.5) -> %.2f\n", my_fmod(-9.5, -2.5));
     putchar('\n');
-    printf("fmod(9 4)       -> %.2f\n", fmod(9, 4));
-    printf("fmod(-9 4)      -> %.2f\n", fmod(-9, 4));
-    printf("fmod(9 -4)      -> %.2f\n", fmod(9, -4));
-    printf("fmod(-9 -4)     -> %.2f\n", fmod(-9, -4));
-    printf("fmod(9.5 2.5)   -> %.2f\n", fmod(9.5, 2.5));
-    printf("fmod(-9.5 2.5)  -> %.2f\n", fmod(-9.5, 2.5));
-    printf("fmod(9.5 -2.5)  -> %.2f\n", fmod(9.5, -2.5));
-    printf("fmod(-9.5 -2.5) -> %.2f\n", fmod(-9.5, -2.5));
+    printf("fmod(9, 4)       -> %.2f\n", fmod(9, 4));
+    printf("fmod(9, -4)      -> %.2f\n", fmod(9, -4));
+    printf("fmod(-9, 4)      -> %.2f\n", fmod(-9, 4));
+    printf("fmod(-9, -4)     -> %.2f\n", fmod(-9, -4));
+    printf("fmod(9.5, 2.5)   -> %.2f\n", fmod(9.5, 2.5));
+    printf("fmod(9.5, -2.5)  -> %.2f\n", fmod(9.5, -2.5));
+    printf("fmod(-9.5, 2.5)  -> %.2f\n", fmod(-9.5, 2.5));
+    printf("fmod(-9.5, -2.5) -> %.2f\n", fmod(-9.5, -2.5));
     putchar('\n');
-    printf("my_emacs_fmod(9 4)       -> %.2f\n", my_emacs_fmod(9, 4));
-    printf("my_emacs_fmod(-9 4)      -> %.2f\n", my_emacs_fmod(-9, 4));
-    printf("my_emacs_fmod(9 -4)      -> %.2f\n", my_emacs_fmod(9, -4));
-    printf("my_emacs_fmod(-9 -4)     -> %.2f\n", my_emacs_fmod(-9, -4));
-    printf("my_emacs_fmod(9.5 2.5)   -> %.2f\n", my_emacs_fmod(9.5, 2.5));
-    printf("my_emacs_fmod(-9.5 2.5)  -> %.2f\n", my_emacs_fmod(-9.5, 2.5));
-    printf("my_emacs_fmod(9.5 -2.5)  -> %.2f\n", my_emacs_fmod(9.5, -2.5));
-    printf("my_emacs_fmod(-9.5 -2.5) -> %.2f\n", my_emacs_fmod(-9.5, -2.5));
+    printf("my_emacs_fmod(9, 4)       -> %.2f\n", my_emacs_fmod(9, 4));
+    printf("my_emacs_fmod(9, -4)      -> %.2f\n", my_emacs_fmod(9, -4));
+    printf("my_emacs_fmod(-9, 4)      -> %.2f\n", my_emacs_fmod(-9, 4));
+    printf("my_emacs_fmod(-9, -4)     -> %.2f\n", my_emacs_fmod(-9, -4));
+    printf("my_emacs_fmod(9.5, 2.5)   -> %.2f\n", my_emacs_fmod(9.5, 2.5));
+    printf("my_emacs_fmod(9.5, -2.5)  -> %.2f\n", my_emacs_fmod(9.5, -2.5));
+    printf("my_emacs_fmod(-9.5, 2.5)  -> %.2f\n", my_emacs_fmod(-9.5, 2.5));
+    printf("my_emacs_fmod(-9.5, -2.5) -> %.2f\n", my_emacs_fmod(-9.5, -2.5));
     putchar('\n');
-    printf("my_emacs_fmod2(9 4)       -> %.2f\n", my_emacs_fmod2(9, 4));
-    printf("my_emacs_fmod2(-9 4)      -> %.2f\n", my_emacs_fmod2(-9, 4));
-    printf("my_emacs_fmod2(9 -4)      -> %.2f\n", my_emacs_fmod2(9, -4));
-    printf("my_emacs_fmod2(-9 -4)     -> %.2f\n", my_emacs_fmod2(-9, -4));
-    printf("my_emacs_fmod2(9.5 2.5)   -> %.2f\n", my_emacs_fmod2(9.5, 2.5));
-    printf("my_emacs_fmod2(-9.5 2.5)  -> %.2f\n", my_emacs_fmod2(-9.5, 2.5));
-    printf("my_emacs_fmod2(9.5 -2.5)  -> %.2f\n", my_emacs_fmod2(9.5, -2.5));
-    printf("my_emacs_fmod2(-9.5 -2.5) -> %.2f\n", my_emacs_fmod2(-9.5, -2.5));
+    printf("my_emacs_fmod2(9, 4)       -> %.2f\n", my_emacs_fmod2(9, 4));
+    printf("my_emacs_fmod2(9, -4)      -> %.2f\n", my_emacs_fmod2(9, -4));
+    printf("my_emacs_fmod2(-9, 4)      -> %.2f\n", my_emacs_fmod2(-9, 4));
+    printf("my_emacs_fmod2(-9, -4)     -> %.2f\n", my_emacs_fmod2(-9, -4));
+    printf("my_emacs_fmod2(9.5, 2.5)   -> %.2f\n", my_emacs_fmod2(9.5, 2.5));
+    printf("my_emacs_fmod2(9.5, -2.5)  -> %.2f\n", my_emacs_fmod2(9.5, -2.5));
+    printf("my_emacs_fmod2(-9.5, 2.5)  -> %.2f\n", my_emacs_fmod2(-9.5, 2.5));
+    printf("my_emacs_fmod2(-9.5, -2.5) -> %.2f\n", my_emacs_fmod2(-9.5, -2.5));
 
     return 0;
 }
