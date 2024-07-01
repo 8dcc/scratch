@@ -383,7 +383,7 @@ the opposite direction of $b$.
 
 The golden ratio is an irrational number with a value of:
 \begin{equation*}
- \varphi = \frac{1+\sqrt{5}}{2} = 1.618033988749\dots
+  \varphi = \frac{1+\sqrt{5}}{2} = 1.618033988749\dots
 \end{equation*}
 
 Two numbers $a$ and $b$ are in the golden ratio (noted $\varphi$) if their ratio
@@ -534,7 +534,7 @@ $-b$.
 
 This can be used for converting the divisor and dividend to negative, if needed.
 \begin{align*}
-   a \bmod -b & \iff - \left( -a \bmod  b \right) \\
+  a  \bmod -b & \iff - \left( -a \bmod  b \right) \\
   -a \bmod  b & \iff - \left(  a \bmod -b \right) \\
   -a \bmod -b & \iff - \left(  a \bmod  b \right)
 \end{align*}
@@ -655,25 +655,71 @@ HSV \textit{value}.
 \end{gather*}
 
 % ------------------------------------------------------------------------------
+\newpage
+\section{Formal logic}
+% ------------------------------------------------------------------------------
+
+Formal logic uses a formal (i.e. abstract) approach to study reasoning. It
+replaces concrete expressions with abstract symbols to examine the logical form
+of arguments independent of their concrete content.
+
+For a good resource on formal logic, see \textit{Applied Discrete Structures}
+\cite{ads}.
+
+% ------------------------------------------------------------------------------
+\subsection{Notation and priority}
+% ------------------------------------------------------------------------------
+
+The following table shows the notation used for some logical operations. It is
+ordered from higher to lower operator precedence.
+
+\bigskip
+\begin{center}
+  \begin{tabular}{| c | c | c |}
+    \hline
+    Notation & Operation name & English form \\
+    \hline
+    $\neg p$              & Logical negation        & Not $p$ \\
+    $p \land q$           & Logical conjunction     & $p$ and $q$ \\
+    $p \lor q$            & Logical disjunction     & $p$ or $q$ \\
+    $p \to q$             & Conditional operation   & If $p$, then $q$ \\
+    $p \leftrightarrow q$ & Biconditional operation & $p$ if and only if $q$ \\
+    \hline
+  \end{tabular}
+\end{center}
+\bigskip
+
+The \textit{Venn diagrams} might help understand some of these operators,
+specially the biconditional.
+
+% ------------------------------------------------------------------------------
+% TODO
+% \subsection{Equivalences}
+% ------------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------------
 % Bibliography
 % ------------------------------------------------------------------------------
 
 \newpage
 \begin{thebibliography}{9}
 \bibitem{vector_introduction}
-  Frank D and Nykamp DQ. \textit{An introduction to vectors}. From Math
+  Frank D and Nykamp DQ. \emph{An introduction to vectors}. Math
   Insight. Retrieved 23 May 2024, from
   \url{http://mathinsight.org/vector_introduction}
 \bibitem{magnitude_vector}
-  Nykamp DQ. \textit{Magnitude of a vector definition}. From Math
+  Nykamp DQ. \emph{Magnitude of a vector definition}. Math
   Insight. Retrieved 17 Jun 2024, from
   \url{https://mathinsight.org/definition/magnitude_vector}
 \bibitem{unit_vector}
-  Wikipedia. \textit{Unit vector}. Retrieved 23 May 2024, from
+  Wikipedia. \emph{Unit vector}. Retrieved 23 May 2024, from
   \url{https://en.wikipedia.org/wiki/Unit_vector}
 \bibitem{dot_product}
-  Nykamp DQ. \textit{The dot product}. From Math Insight. Retrieved 23 May 2024,
+  Nykamp DQ. \emph{The dot product}. Math Insight. Retrieved 23 May 2024,
   from \url{https://mathinsight.org/dot_product}
+\bibitem{ads}
+  Al Doerr and Ken Levasseur. \emph{Applied Discrete Structures}.
+  3rd ed. pp. 39-72.
 \end{thebibliography}
 
 \end{document}
