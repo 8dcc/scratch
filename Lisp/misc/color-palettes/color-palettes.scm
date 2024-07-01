@@ -40,3 +40,27 @@
                            (cadr hsv)
                            (* (caddr hsv)
                               (+ 1 (* relative-idx scale-step))))))
+
+(define (add-degrees hsv degrees)
+  (define (fmod x y)
+    (if (< x y)
+        x
+        (fmod (- x y) y)))
+
+  (list (fmod (+ (car hsv) degrees)
+              360.0)
+        (cadr hsv)
+        (caddr hsv)))
+
+(palette-generator '(240 100 100) 5
+                   (lambda (hsv relative-idx)
+                     (define degree-difference 30.0)
+                     (add-degrees hsv (* relative-idx degree-difference))))
+
+(map (lambda (hsv)
+       (palette-monochrome hsv 3 0.10))
+     '((180 100 100)
+       (210 100 100)
+       (240 100 100)
+       (270 100 100)
+       (300 100 100)))

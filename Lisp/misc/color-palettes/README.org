@@ -15,9 +15,9 @@ See also my [[file:../color-conversion/README.org][color conversion]] functions 
 
 Given a color in HSV format, these functions return different color palettes.
 
-** Monochrome
+** Initial monochrome approach
 
-This one, for example, changes the *value* component (lightness/intensity) of the
+This first function, changes the *value* component (lightness/intensity) of the
 HSV color to generate a color palette of variable size.
 
 #+begin_src scheme
@@ -45,18 +45,21 @@ HSV color to generate a color palette of variable size.
 #+RESULTS:
 | 240 | 100 | 56.0 |
 | 240 | 100 | 63.0 |
-| 240 | 100 |   70 |
+| 240 | 100 | 70.0 |
 | 240 | 100 | 77.0 |
 | 240 | 100 | 84.0 |
 
 This is the result: [[https://coolors.co/00008f-0000a1-0000b3-0000c4-0000d6][Link]].
 
+00e6e6-001a1a-001c1c
+https://coolors.co/
+
 ** Higher order function
 
-The following function takes another function, =func=, and generates a palette by
-calling it with the relative position of each color.
-
-In this example, it generates a monochrome palette.
+After writing the first function, however, I realized that this could be done in
+a more functional way, so I wrote this other [[https://en.wikipedia.org/wiki/Higher-order_function][higher-order function]]. It takes
+another function, =func=, and generates a palette by calling it with the index of
+each color relative to the center of the palette.
 
 #+begin_src scheme
 ;; Generate a color palette of N elements, having HSV color in the middle. For
@@ -73,7 +76,15 @@ In this example, it generates a monochrome palette.
            (append (list (func hsv (* -1 (/ rounded-size 2))))
                    (palette-generator hsv (- size 2) func)
                    (list (func hsv (/ rounded-size 2))))))))
+#+end_src
 
+The passed function, in this case a =lambda=, will receive the original HSV color
+and the index relative to the middle of the palette. The index 0 will be the
+original color in the middle, the index -1 will be the
+
+In this example, it generates the same monochrome palette as before.
+
+#+begin_src scheme
 (palette-generator '(240 100 70) 5
                    (lambda (hsv relative-idx)
                      (define scale-step 0.10)
@@ -90,10 +101,65 @@ In this example, it generates a monochrome palette.
 | 240 | 100 | 77.0 |
 | 240 | 100 | 84.0 |
 
+** Analagous Colors
+
+First, this =add-degrees= function is needed to make sure we don't overflow the
+360 hue degrees. For more information on =fmod=, see [[file:../fmod/README.org][the folder in this repo]] and
+my [[https://8dcc.github.io/programming/fmod.html][blog article]].
+
+#+begin_src scheme
+(define (add-degrees hsv degrees)
+  (define (fmod x y)
+    (if (< x y)
+        x
+        (fmod (- x y) y)))
+
+  (list (fmod (+ (car hsv) degrees)
+              360.0)
+        (cadr hsv)
+        (caddr hsv)))
+#+end_src
+
+We use the =palette-generator= function from [[*Higher order function][before]], and we pass the lambda that
+will actually generate the analagous colors (by calling the =add-degrees= function
+we declared just now).
+
+#+begin_src scheme
+(palette-generator '(240 100 100) 5
+                   (lambda (hsv relative-idx)
+                     (define degree-difference 30.0)
+                     (add-degrees hsv (* relative-idx degree-difference))))
+#+end_src
+
+#+RESULTS:
+| 180.0 | 100 | 100 |
+| 210.0 | 100 | 100 |
+| 240.0 | 100 | 100 |
+| 270.0 | 100 | 100 |
+| 300.0 | 100 | 100 |
+
+We could map this output to our previous monochrome function to generate
+different shades of these colors.
+
+#+begin_src scheme
+(map (lambda (hsv)
+       (palette-monochrome hsv 3 0.10))
+     '((180 100 100)
+       (210 100 100)
+       (240 100 100)
+       (270 100 100)
+       (300 100 100)))
+#+end_src
+
+#+RESULTS:
+| (180 100 90.0) | (180 100 100) | (180 100 110) |
+| (210 100 90.0) | (210 100 100) | (210 100 110) |
+| (240 100 90.0) | (240 100 100) | (240 100 110) |
+| (270 100 90.0) | (270 100 100) | (270 100 110) |
+| (300 100 90.0) | (300 100 100) | (300 100 110) |
 
 #+begin_comment
 TODO: Finish the following.
-  - Analagous Colors
   - Complimentary Colors
   - Triadic Colors
   - Tetradic Colors
