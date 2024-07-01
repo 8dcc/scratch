@@ -2,6 +2,7 @@
 
 \title{Math notes}
 \author{8dcc}
+\date{}
 
 % ------------------------------------------------------------------------------
 % Packages
@@ -667,7 +668,20 @@ For a good resource on formal logic, see \textit{Applied Discrete Structures}
 \cite{ads}.
 
 % ------------------------------------------------------------------------------
-\subsection{Notation and priority}
+\subsection{Small glossary}
+% ------------------------------------------------------------------------------
+
+These are some of the terms that will be used throughout this section.
+
+\begin{itemize}
+  \item \textbf{Proposition.} Sentence to which one and only one of the terms
+    \textit{true} or \textit{false} can be meaningfully applied.
+  \item \textbf{Condition.} First proposition of a conditional.
+  \item \textbf{Conclusion.} Second proposition of a conditional.
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+\subsection{Operation notation and priority}
 % ------------------------------------------------------------------------------
 
 The following table shows the notation used for some logical operations. It is
@@ -689,8 +703,79 @@ ordered from higher to lower operator precedence.
 \end{center}
 \bigskip
 
-The \textit{Venn diagrams} might help understand some of these operators,
-specially the biconditional.
+The \textit{Venn diagrams} might help understand some of these operators.
+
+% ------------------------------------------------------------------------------
+\subsection{Conditional vs. biconditional}
+% ------------------------------------------------------------------------------
+
+A simple conditional can be expressed with the structure ``If
+\textit{Condition}, then \textit{Conclusion}''. A conditional statement is meant
+to be interpreted as a guarantee; if the condition is true, then the conclusion
+is expected to be true. It says no more and no less.
+
+The biconditional, however, indicates that the two propositions depend on each
+other. If one is true, the other must be true.
+
+This slightly modified example from \textit{Applied Discrete Structures}
+(pp. 41-42) might help illustrate the difference between the conditional and
+biconditional operations.
+
+Assume your instructor told you ``If you receive a grade of 95 or better in the
+final examination, then you will receive an A in this course''. This is a simple
+condition, and this is its truth table.
+
+\bigskip
+\begin{center}
+  \begin{tabular}{| c | c | c |}
+    \hline
+    $\text{Grade} \geq 95$ & $\text{Course} = \text{A}$ & $p \to q$ \\
+    \hline
+    0 & 0 & 1 \\
+    0 & 1 & 1 \\
+    1 & 0 & 0 \\
+    1 & 1 & 1 \\
+    \hline
+  \end{tabular}
+\end{center}
+\bigskip
+
+Where, in order to keep the table simple, $p$ and $q$ represent the two
+propositions respectively.
+
+Note that the last column essentially indicates if the instructor told the
+truth. Since the condition was simple, and not biconditional, the only case in
+which he would have lied is if we had a score greater or equal to 95, but we
+didn't get the A. If we didn't reach the score of 95, we \textit{can} still get
+an A on this course, since he didn't make a promise related to us getting a
+grade below 95.
+
+However, assume the instructor told you ``You will receive an A in this course
+\textit{if and only if} you receive a grade of 95 or better in the final
+examination''. In this case, it's a biconditional promise, since he is also
+implying that if you don't receive a grade of at least 95 in the final
+examination, you will not be able to get the A in this course. This is the truth
+table for this new promise.
+
+\bigskip
+\begin{center}
+  \begin{tabular}{| c | c | c |}
+    \hline
+    $\text{Grade} \geq 95$ & $\text{Course} = \text{A}$ & $p \leftrightarrow q$ \\
+    \hline
+    0 & 0 & 1 \\
+    0 & 1 & 0 \\
+    1 & 0 & 0 \\
+    1 & 1 & 1 \\
+    \hline
+  \end{tabular}
+\end{center}
+\bigskip
+
+Again, the last column just indicates if the instructor told the truth. If your
+grade was below 95, and you didn't receive the A in this course, the instructor
+would have told the truth. However, if one of these propositions did not match
+the other, the instructor would have lied.
 
 % ------------------------------------------------------------------------------
 % TODO
