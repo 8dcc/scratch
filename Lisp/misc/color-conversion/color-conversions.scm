@@ -1,21 +1,3 @@
-#+TITLE: Color conversions
-#+AUTHOR: 8dcc
-#+OPTIONS: toc:2
-#+STARTUP: nofold
-#+PROPERTY: header-args:scheme :tangle color-conversions.scm
-
-* Introduction
-
-When writing my [[file:../color-palettes/README.org][color palettes]] code, I decided to write functions for converting
-between RGB and HSV color formats.
-
-I also wrote about the conversion formulas in my [[file:../../../LaTeX/math/math.pdf][math notes]].
-
-* RGB to HSV
-
-This function converts a color in RGB format into HSV format.
-
-#+begin_src scheme
 (define (rgb2hsv rgb)
   (let* ((r (/ (car rgb) 255))
          (g (/ (cadr rgb) 255))
@@ -31,24 +13,11 @@ This function converts a color in RGB format into HSV format.
      (cond ((= cmax 0) 0)
            (#t (/ delta cmax)))
      cmax)))
-#+end_src
 
-This example converts the RGB color =#1122EE= to =HSV(235, 0.92, 0.93)=
-
-#+begin_src scheme
 ;; The map is used for showing output as decimal instead of fractions
 (map (lambda (x) (* x 1.0))
      (rgb2hsv '(17 34 238)))
-#+end_src
 
-#+RESULTS:
-| 235.3846153846154 | 0.9285714285714286 | 0.9333333333333333 |
-
-* HSV to RGB
-
-This function converts a color in HSV format into RGB format.
-
-#+begin_src scheme
 (define (hsv2rgb hsv)
   ;; Is VALUE in the [A,B) range?
   (define (between a value b)
@@ -77,34 +46,14 @@ This function converts a color in HSV format into RGB format.
     (map (lambda (component)
            (round (* 255 (+ component m))))
          rgb)))
-#+end_src
 
-This example converts the color =HSV(235, 0.92, 0.93)= back to =#1122EE=. The
-decimal precision is important when converting back to RGB.
-
-#+begin_src scheme
 (hsv2rgb '(235.3846 0.9285 0.9333))
-#+end_src
 
-#+RESULTS:
-| 17.0 | 34.0 | 238.0 |
-
-* Printing colors as hex
-
-The following function takes an RGB color and returns a string representing it
-in hex format.
-
-#+begin_src scheme
 (define (rgb2hex rgb)
   (define (num2hex n)
     (format #f "~2,'0x" (inexact->exact (truncate n))))
 
   (apply string-append (map num2hex rgb)))
-#+end_src
 
-It can be used to map a list of RGB colors.
-
-#+begin_src scheme
 (define (color-list-to-hex rgb-list)
   (map rgb2hex rgb-list))
-#+end_src
