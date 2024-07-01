@@ -51,6 +51,46 @@ HSV color to generate a color palette of variable size.
 
 This is the result: [[https://coolors.co/00008f-0000a1-0000b3-0000c4-0000d6][Link]].
 
+** Higher order function
+
+The following function takes another function, =func=, and generates a palette by
+calling it with the relative position of each color.
+
+In this example, it generates a monochrome palette.
+
+#+begin_src scheme
+;; Generate a color palette of N elements, having HSV color in the middle. For
+;; each color in the palette, the base color along with an index relative to the
+;; center of the palette will be passed to the provided FUNC.
+(define (palette-generator hsv size func)
+  (cond ((<= size 1)
+         (list (func hsv 0)))
+        ((= size 2)
+         (list (func hsv 0)
+               (func hsv 1)))
+        (#t
+         (let* ((rounded-size (if (odd? size) (- size 1) size)))
+           (append (list (func hsv (* -1 (/ rounded-size 2))))
+                   (palette-generator hsv (- size 2) func)
+                   (list (func hsv (/ rounded-size 2))))))))
+
+(palette-generator '(240 100 70) 5
+                   (lambda (hsv relative-idx)
+                     (define scale-step 0.10)
+                     (list (car hsv)
+                           (cadr hsv)
+                           (* (caddr hsv)
+                              (+ 1 (* relative-idx scale-step))))))
+#+end_src
+
+#+RESULTS:
+| 240 | 100 | 56.0 |
+| 240 | 100 | 63.0 |
+| 240 | 100 | 70.0 |
+| 240 | 100 | 77.0 |
+| 240 | 100 | 84.0 |
+
+
 #+begin_comment
 TODO: Finish the following.
   - Analagous Colors
