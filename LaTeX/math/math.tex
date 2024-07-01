@@ -1,4 +1,4 @@
-\documentclass{amsart}
+\documentclass{article}
 
 \title{Math notes}
 \author{8dcc}
@@ -55,9 +55,9 @@ footskip=1cm
 \begin{document}
 \maketitle
 \tableofcontents
+\clearpage
 
 % ------------------------------------------------------------------------------
-\newpage
 \section{Geometry}
 % ------------------------------------------------------------------------------
 
@@ -445,7 +445,6 @@ quotient approximates to $\varphi$.
 \end{align*}
 
 % ------------------------------------------------------------------------------
-\newpage
 \section{Physics}
 % ------------------------------------------------------------------------------
 
@@ -488,7 +487,6 @@ acceleration, and $\theta$ is the angle that the line joining the centers make
 with the horizontal.
 
 % ------------------------------------------------------------------------------
-\newpage
 \section{Modulus operation}
 % ------------------------------------------------------------------------------
 
@@ -554,7 +552,6 @@ This can be used for converting the dividend to positive, if needed.
 \end{equation*}
 
 % ------------------------------------------------------------------------------
-\newpage
 \section{Color conversion}
 % ------------------------------------------------------------------------------
 
@@ -656,7 +653,6 @@ HSV \textit{value}.
 \end{gather*}
 
 % ------------------------------------------------------------------------------
-\newpage
 \section{Formal logic}
 % ------------------------------------------------------------------------------
 
@@ -786,7 +782,10 @@ the other, the instructor would have lied.
 % Bibliography
 % ------------------------------------------------------------------------------
 
-\newpage
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{References}
+
 \begin{thebibliography}{9}
 \bibitem{vector_introduction}
   Frank D and Nykamp DQ. \emph{An introduction to vectors}. Math
