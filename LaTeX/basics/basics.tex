@@ -2,7 +2,7 @@
 
 \title{Scratch - Basics of \LaTeX}
 \author{8dcc}
-\date{2024}
+\date{}
 
 % ------------------------------------------------------------------------------
 % Packages
@@ -10,9 +10,7 @@
 
 % Clickable table of contents
 \usepackage[hidelinks]{hyperref}
-\hypersetup{
-  linktoc=all,     % Link sections and subsections
-}
+\hypersetup{linktoc=all}
 
 % Prevent indentation after lists, tables, etc.
 \usepackage{noindentafter}
@@ -48,12 +46,9 @@
 % ------------------------------------------------------------------------------
 
 \begin{document}
-
 \maketitle
-\newpage
-
 \tableofcontents
-\newpage
+\clearpage
 
 % ------------------------------------------------------------------------------
 \section{Introduction}
@@ -122,7 +117,7 @@ This is some C code:
 
 These are the different units that can be used in \LaTeX.
 
-\vspace{1em}
+\bigskip
 \begin{tabular}{| p{0.1\textwidth} | p{0.75\textwidth} |}
   \hline
   Unit & Description \\
@@ -143,12 +138,12 @@ These are the different units that can be used in \LaTeX.
        65536sp=1pt \\
   \hline
 \end{tabular}
-\vspace{1em}
+\bigskip
 
-\noindent{}
+\noindent{} % Needed after \bigskip
 These are the most common lengths that can be used in \LaTeX.
 
-\vspace{1em}
+\bigskip
 \begin{tabular}{| p{0.25\textwidth} | p{0.6\textwidth} |}
   \hline
   Length & Description \\
@@ -172,11 +167,15 @@ These are the most common lengths that can be used in \LaTeX.
   \verb|\topmargin|      & Length of the top margin \\
   \hline
 \end{tabular}
+\bigskip
 
 % ------------------------------------------------------------------------------
 % Bibliography example
 
-\newpage
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{References}
+
 \begin{thebibliography}{9}
 \bibitem{wikipedia_example}
   Wikipedia. \emph{Example Reference}. Retrieved 1 Jan 2024, from
