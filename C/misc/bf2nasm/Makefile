@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-Wall -Wextra -DLINUX_SYSCALLS
+CFLAGS=-std=c99 -Wall -Wextra -Wpedantic -DLINUX_SYSCALLS
 
 ASM=nasm
 ASMFLAGS=-f elf64

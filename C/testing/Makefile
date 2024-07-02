@@ -1,7 +1,10 @@
 
 CC=gcc
+CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
+
 CXX=g++
-CFLAGS=-Wall -Wextra -ggdb3
+CXXFLAGS=-std=gnu++20 -Wall -Wextra -Wpedantic
+
 LDFLAGS=
 
 #-------------------------------------------------------------------------------
@@ -16,13 +19,13 @@ clean:
 #-------------------------------------------------------------------------------
 
 readline.out: readline.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lreadline
+	$(CC) $(CFLAGS) -o $@ $< -lreadline
 
 ncurses-%.out: ncurses-%.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lncurses
+	$(CC) $(CFLAGS) -o $@ $< -lncurses
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)

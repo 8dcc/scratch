@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-Wall -Wextra
+CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
 LDFLAGS=-lreadline
 
 OBJ_FILES=main.c.o parser.c.o calc.c.o

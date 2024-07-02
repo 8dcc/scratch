@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-Wall -Wextra -ggdb3
+CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
 LDFLAGS=
 
 #-------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 ppm-mandelbrot.out: ppm-mandelbrot.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lm
+	$(CC) $(CFLAGS) -o $@ $< -lm
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)

@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-Wall -Wextra
+CFLAGS=-std=c99 -Wall -Wextra
 LDFLAGS=-lglfw
 
 OBJ_FILES=main.c.o glad.c.o
@@ -21,7 +21,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 $(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 obj/%.c.o : %.c
 	@mkdir -p $(dir $@)

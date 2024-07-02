@@ -1,6 +1,7 @@
 
 CC=gcc
-CFLAGS=-Wall -Wextra -Wpedantic -ggdb3
+CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
+LDFLAGS=
 
 #-------------------------------------------------------------------------------
 
@@ -14,7 +15,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $<
+	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)

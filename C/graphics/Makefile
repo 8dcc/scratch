@@ -2,6 +2,7 @@
 CC=gcc
 CXX=g++
 CFLAGS=-std=gnu99 -Wall -Wextra -Wpedantic -ggdb3
+LDFLAGS=
 
 SDL_BINS=sdl-bresenham-line.out \
          plot.out
@@ -29,7 +30,7 @@ $(RAYLIB_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< -lraylib
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $<
+	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)

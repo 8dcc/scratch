@@ -1,7 +1,8 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-Wall -Wextra -ggdb3
+CFLAGS=-std=gnu99 -Wall -Wextra -ggdb3
+LDFLAGS=
 
 # Link with -lm
 MATH_BINS=bresenham-line.out \
@@ -24,7 +25,7 @@ $(MATH_BINS): %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< -lm
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $<
+	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)
