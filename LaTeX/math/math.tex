@@ -487,172 +487,6 @@ acceleration, and $\theta$ is the angle that the line joining the centers make
 with the horizontal.
 
 % ------------------------------------------------------------------------------
-\section{Modulus operation}
-% ------------------------------------------------------------------------------
-
-The modulus of two numbers is the remainder of it's integer division. The
-modulus of two numbers could be defined as follows.
-\begin{equation*}
-  \lfloor a / b \rfloor \times b + a \bmod b = a
-\end{equation*}
-
-Where $\lfloor a / b \rfloor$ indicates the integer division of $a$ and $b$.
-
-% ------------------------------------------------------------------------------
-\subsection{Equivalences}
-% ------------------------------------------------------------------------------
-
-These equivalences might be useful when dealing with modulus operators that only
-support positive values, for example.
-
-\bigskip
-
-Given the following function, that returns the modulus of two positive values,
-\begin{equation*}
-  \text{AbsMod}(a, b) = |a| \bmod |b|
-\end{equation*}
-the following conditional formula can be used for determining the modulus of any
-positive and negative combination.
-\begin{equation*}
-  a \bmod b =
-  \begin{cases}
-    \text{AbsMod}(a, b),     & a \geq 0 \land b \geq 0 \\
-    b + \text{AbsMod}(a, b), & a \geq 0 \land b < 0 \\
-    b - \text{AbsMod}(a, b), & a < 0 \land b \geq 0 \\
-    -\text{AbsMod}(a, b),    & a < 0 \land b < 0
-  \end{cases}
-\end{equation*}
-
-\bigskip
-
-The modulus of $a$ and $b$ is equal to the negation of the modulus of $-a$ and
-$-b$.
-\begin{equation*}
-  a \bmod  b \iff - \left( -a \bmod -b \right)
-\end{equation*}
-
-This can be used for converting the divisor and dividend to negative, if needed.
-\begin{align*}
-  a  \bmod -b & \iff - \left( -a \bmod  b \right) \\
-  -a \bmod  b & \iff - \left(  a \bmod -b \right) \\
-  -a \bmod -b & \iff - \left(  a \bmod  b \right)
-\end{align*}
-
-\bigskip
-
-The modulus of $a$ and $b$ is equal to the divisor ($b$) minus the modulus of
-the negated dividend and the unchanged divisor.
-\begin{equation*}
-  a \bmod b \iff b - (-a \bmod b)
-\end{equation*}
-
-This can be used for converting the dividend to positive, if needed.
-\begin{equation*}
-  -a \bmod b \iff b - a \bmod b
-\end{equation*}
-
-% ------------------------------------------------------------------------------
-\section{Color conversion}
-% ------------------------------------------------------------------------------
-
-% ------------------------------------------------------------------------------
-\subsection{Value ranges}
-% ------------------------------------------------------------------------------
-
-An RGB color has values in the $[0..255]$ range, while in an HSV color the
-\textit{hue} is in the $[0..360]$ range and the \textit{saturation} and
-\textit{value} are in the $[0..1]$ range, although they might be represented as
-percentages.
-
-% ------------------------------------------------------------------------------
-\subsection{RGB to HSV}
-% ------------------------------------------------------------------------------
-
-First, the RGB values need to be normalized to the $[0..1]$ range.
-\begin{align*}
-  R' &= \frac{R}{255} \\
-  G' &= \frac{G}{255} \\
-  B' &= \frac{B}{255}
-\end{align*}
-
-Then, the maximum and minimum RGB values are calculated, along with its
-difference.
-\begin{align*}
-  C_{max} &= \max(R', G', B') \\
-  C_{min} &= \min(R', G', B') \\
-  \Delta  &= C_{max} - C_{min}
-\end{align*}
-
-To calculate the \textit{hue}, the following conditional formula is used.
-\begin{equation*}
-  H =
-  \begin{cases}
-    0^\circ,                                                    & \Delta = 0 \\
-    60^\circ \times \left(\frac{G'-B'}{\Delta} \bmod 6 \right), & C_{max} = R' \\
-    60^\circ \times \left(\frac{B'-R'}{\Delta} + 2 \right),     & C_{max} = G' \\
-    60^\circ \times \left(\frac{R'-G'}{\Delta} + 4 \right),     & C_{max} = B'
-  \end{cases}
-\end{equation*}
-
-To calculate the \textit{saturation}, the following formula is used.
-\begin{equation*}
-  S =
-  \begin{cases}
-    0,                      & C_{max} = 0 \\
-    \frac{\Delta}{C_{max}}, & C_{max} \neq 0 \\
-  \end{cases}
-\end{equation*}
-
-Finally, since $C_{max}$ is already normalized, it can be used directly as the
-\textit{value} component.
-\begin{equation*}
-  V = C_{max}
-\end{equation*}
-
-% ------------------------------------------------------------------------------
-\subsection{HSV to RGB}
-% ------------------------------------------------------------------------------
-
-Calculate the \textit{chroma} by multiplying the \textit{saturation} and the
-\textit{value}.
-\begin{equation*}
-  C = S \times V
-\end{equation*}
-
-Then, the $X$ value is calculated, which will be used as a component in the
-initial RGB color below.
-\begin{gather*}
-  H' = \frac{H}{60^\circ} \\
-  X = C \times \left( 1 - \left| H' \bmod 2 - 1 \right| \right)
-\end{gather*}
-
-Note that $H'$ must be an integer for the modulus operation.
-
-The \textit{chroma} and $X$ values will be used for the initial RGB values
-depending on the \textit{hue} with this conditional formula.
-\begin{equation*}
-  \left( R', G', B' \right) =
-  \begin{cases}
-    (C, X, 0), & 0^\circ \leq H < 60^\circ \\
-    (X, C, 0), & 60^\circ \leq H < 120^\circ \\
-    (0, C, X), & 120^\circ \leq H < 180^\circ \\
-    (0, X, C), & 180^\circ \leq H < 240^\circ \\
-    (X, 0, C), & 240^\circ \leq H < 300^\circ \\
-    (C, 0, X), & 300^\circ \leq H < 360^\circ
-  \end{cases}
-\end{equation*}
-
-The value of $H'$ can be used in the conditions instead of the \textit{hue}, but
-I consider this form more visual.
-
-To find the real RGB values, $m$ has to be added to each component to match the
-HSV \textit{value}.
-\begin{gather*}
-  m = V - C \\
-  (R, G, B) = (R' + m, G' + m, B' + m)
-\end{gather*}
-
-% ------------------------------------------------------------------------------
 \section{Formal logic}
 % ------------------------------------------------------------------------------
 
@@ -833,6 +667,172 @@ propositions that could be expressed with an alternate form.
   \item $\neg (p \land q) \ \iff \ \neg p \lor \neg q$
   \item $(p \land q) \lor (\neg p \land q) \ \iff \ q$
 \end{itemize}
+
+% ------------------------------------------------------------------------------
+\section{Modulus operation}
+% ------------------------------------------------------------------------------
+
+The modulus of two numbers is the remainder of it's integer division. The
+modulus of two numbers could be defined as follows.
+\begin{equation*}
+  \lfloor a / b \rfloor \times b + a \bmod b = a
+\end{equation*}
+
+Where $\lfloor a / b \rfloor$ indicates the integer division of $a$ and $b$.
+
+% ------------------------------------------------------------------------------
+\subsection{Equivalences}
+% ------------------------------------------------------------------------------
+
+These equivalences might be useful when dealing with modulus operators that only
+support positive values, for example.
+
+\bigskip
+
+Given the following function, that returns the modulus of two positive values,
+\begin{equation*}
+  \text{AbsMod}(a, b) = |a| \bmod |b|
+\end{equation*}
+the following conditional formula can be used for determining the modulus of any
+positive and negative combination.
+\begin{equation*}
+  a \bmod b =
+  \begin{cases}
+    \text{AbsMod}(a, b),     & a \geq 0 \land b \geq 0 \\
+    b + \text{AbsMod}(a, b), & a \geq 0 \land b < 0 \\
+    b - \text{AbsMod}(a, b), & a < 0 \land b \geq 0 \\
+    -\text{AbsMod}(a, b),    & a < 0 \land b < 0
+  \end{cases}
+\end{equation*}
+
+\bigskip
+
+The modulus of $a$ and $b$ is equal to the negation of the modulus of $-a$ and
+$-b$.
+\begin{equation*}
+  a \bmod  b \iff - \left( -a \bmod -b \right)
+\end{equation*}
+
+This can be used for converting the divisor and dividend to negative, if needed.
+\begin{align*}
+  a  \bmod -b & \iff - \left( -a \bmod  b \right) \\
+  -a \bmod  b & \iff - \left(  a \bmod -b \right) \\
+  -a \bmod -b & \iff - \left(  a \bmod  b \right)
+\end{align*}
+
+\bigskip
+
+The modulus of $a$ and $b$ is equal to the divisor ($b$) minus the modulus of
+the negated dividend and the unchanged divisor.
+\begin{equation*}
+  a \bmod b \iff b - (-a \bmod b)
+\end{equation*}
+
+This can be used for converting the dividend to positive, if needed.
+\begin{equation*}
+  -a \bmod b \iff b - a \bmod b
+\end{equation*}
+
+% ------------------------------------------------------------------------------
+\section{Color conversion}
+% ------------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------------
+\subsection{Value ranges}
+% ------------------------------------------------------------------------------
+
+An RGB color has values in the $[0..255]$ range, while in an HSV color the
+\textit{hue} is in the $[0..360]$ range and the \textit{saturation} and
+\textit{value} are in the $[0..1]$ range, although they might be represented as
+percentages.
+
+% ------------------------------------------------------------------------------
+\subsection{RGB to HSV}
+% ------------------------------------------------------------------------------
+
+First, the RGB values need to be normalized to the $[0..1]$ range.
+\begin{align*}
+  R' &= \frac{R}{255} \\
+  G' &= \frac{G}{255} \\
+  B' &= \frac{B}{255}
+\end{align*}
+
+Then, the maximum and minimum RGB values are calculated, along with its
+difference.
+\begin{align*}
+  C_{max} &= \max(R', G', B') \\
+  C_{min} &= \min(R', G', B') \\
+  \Delta  &= C_{max} - C_{min}
+\end{align*}
+
+To calculate the \textit{hue}, the following conditional formula is used.
+\begin{equation*}
+  H =
+  \begin{cases}
+    0^\circ,                                                    & \Delta = 0 \\
+    60^\circ \times \left(\frac{G'-B'}{\Delta} \bmod 6 \right), & C_{max} = R' \\
+    60^\circ \times \left(\frac{B'-R'}{\Delta} + 2 \right),     & C_{max} = G' \\
+    60^\circ \times \left(\frac{R'-G'}{\Delta} + 4 \right),     & C_{max} = B'
+  \end{cases}
+\end{equation*}
+
+To calculate the \textit{saturation}, the following formula is used.
+\begin{equation*}
+  S =
+  \begin{cases}
+    0,                      & C_{max} = 0 \\
+    \frac{\Delta}{C_{max}}, & C_{max} \neq 0 \\
+  \end{cases}
+\end{equation*}
+
+Finally, since $C_{max}$ is already normalized, it can be used directly as the
+\textit{value} component.
+\begin{equation*}
+  V = C_{max}
+\end{equation*}
+
+% ------------------------------------------------------------------------------
+\subsection{HSV to RGB}
+% ------------------------------------------------------------------------------
+
+Calculate the \textit{chroma} by multiplying the \textit{saturation} and the
+\textit{value}.
+\begin{equation*}
+  C = S \times V
+\end{equation*}
+
+Then, the $X$ value is calculated, which will be used as a component in the
+initial RGB color below.
+\begin{gather*}
+  H' = \frac{H}{60^\circ} \\
+  X = C \times \left( 1 - \left| H' \bmod 2 - 1 \right| \right)
+\end{gather*}
+
+Note that $H'$ must be an integer for the modulus operation.
+
+The \textit{chroma} and $X$ values will be used for the initial RGB values
+depending on the \textit{hue} with this conditional formula.
+\begin{equation*}
+  \left( R', G', B' \right) =
+  \begin{cases}
+    (C, X, 0), & 0^\circ \leq H < 60^\circ \\
+    (X, C, 0), & 60^\circ \leq H < 120^\circ \\
+    (0, C, X), & 120^\circ \leq H < 180^\circ \\
+    (0, X, C), & 180^\circ \leq H < 240^\circ \\
+    (X, 0, C), & 240^\circ \leq H < 300^\circ \\
+    (C, 0, X), & 300^\circ \leq H < 360^\circ
+  \end{cases}
+\end{equation*}
+
+The value of $H'$ can be used in the conditions instead of the \textit{hue}, but
+I consider this form more visual.
+
+To find the real RGB values, $m$ has to be added to each component to match the
+HSV \textit{value}.
+\begin{gather*}
+  m = V - C \\
+  (R, G, B) = (R' + m, G' + m, B' + m)
+\end{gather*}
 
 % ------------------------------------------------------------------------------
 % Bibliography
