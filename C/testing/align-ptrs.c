@@ -6,11 +6,11 @@
 
 /* If the data pointer is not aligned to the macro's parameter, align it */
 #define ALIGN(ptr, align)                                \
-    {                                                    \
+    do {                                                 \
         const size_t data_align = (uint64_t)ptr % align; \
         if (data_align != 0)                             \
-            ptr += align - data_align;                   \
-    }
+            ptr = (uint8_t*)(ptr) + align - data_align;  \
+    } while (0)
 
 int main() {
     void* test_ptr = (void*)0xAB5; /* 2741 */

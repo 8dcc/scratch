@@ -15,9 +15,11 @@ int main(void) {
      * argv[0]. Has to be NULL-terminated, see also exec(3) */
     char* const argv[] = { "./strxor.out", "Foo", NULL };
 
+#if 0
     /* NOTE: We could also declare our own enviroment variables. NULL-terminated
      * like argv[]. */
     char* const envp[] = { "FOO=bar", NULL };
+#endif
 
     pid_t pid;
     if (posix_spawn(&pid, "./strxor.out", NULL, NULL, argv, environ) != 0) {

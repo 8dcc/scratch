@@ -4,6 +4,8 @@
 int main(void) {
     char c = getchar();
 
+    /* NOTE: Switch ranges are not standard and will give a warning when
+     * compiling with -Wpedantic */
     switch (c) {
         case 'a' ... 'z': {
             puts("Lowercase.");
