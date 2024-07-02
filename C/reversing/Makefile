@@ -15,8 +15,7 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-64bit-vars-in-32bit-pc.out: 64bit-vars-in-32bit-pc.c
-	$(CC) $(CFLAGS) -m32 -o $@ $^ $(LDFLAGS)
+64bit-vars-in-32bit-pc.out: CFLAGS+=-m32
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)

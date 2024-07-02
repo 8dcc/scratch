@@ -18,11 +18,8 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-readline.out: readline.c
-	$(CC) $(CFLAGS) -o $@ $< -lreadline
-
-ncurses-%.out: ncurses-%.c
-	$(CC) $(CFLAGS) -o $@ $< -lncurses
+readline.out: LDFLAGS+=-lreadline
+ncurses-%.out: LDFLAGS+=-lncurses
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)

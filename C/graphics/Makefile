@@ -20,14 +20,9 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-x-window-overlay.out: x-window-overlay.c
-	$(CC) $(CFLAGS) -o $@ $< -lX11 -lXext -lXfixes -lm
-
-$(SDL_BINS): %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< -lm $(shell sdl2-config --cflags --libs)
-
-$(RAYLIB_BINS): %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< -lraylib
+x-window-overlay.out: LDFLAGS+=-lX11 -lXext -lXfixes -lm
+$(SDL_BINS): LDFLAGS+=-lm $(shell sdl2-config --cflags --libs)
+$(RAYLIB_BINS): LDFLAGS+=-lraylib
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)

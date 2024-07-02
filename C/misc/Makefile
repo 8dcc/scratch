@@ -21,8 +21,7 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-$(MATH_BINS): %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< -lm
+$(MATH_BINS): LDFLAGS+=-lm
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)

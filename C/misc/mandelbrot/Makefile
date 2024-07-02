@@ -14,8 +14,7 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-ppm-mandelbrot.out: ppm-mandelbrot.c
-	$(CC) $(CFLAGS) -o $@ $< -lm
+ppm-mandelbrot.out:  LDFLAGS+=-lm
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
