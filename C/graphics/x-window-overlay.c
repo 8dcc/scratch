@@ -5,13 +5,14 @@
  * See also: https://github.com/8dcc/cs-source-external
  *
  * Compile with:
- *  gcc -Wall -Wextra -o x-window-overlay.out x-window-overlay.c -lX11 -lXext -lXfixes -lm
+ *  gcc -o x-window-overlay.out x-window-overlay.c -lX11 -lXext -lXfixes -lm
  */
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <unistd.h>
 
 #include <X11/Xos.h>
 #include <X11/Xlib.h>
@@ -199,7 +200,7 @@ void list_fonts() {
         fprintf(stderr, "> %s\n", fontlist[i]);
 }
 
-int main() {
+int main(void) {
     displayInit();
     windowInit();
 
