@@ -669,12 +669,22 @@ For a good resource on formal logic, see \textit{Applied Discrete Structures}
 
 These are some of the terms that will be used throughout this section.
 
-\begin{itemize}
-  \item \textbf{Proposition.} Sentence to which one and only one of the terms
-    \textit{true} or \textit{false} can be meaningfully applied.
-  \item \textbf{Condition.} First proposition of a conditional.
-  \item \textbf{Conclusion.} Second proposition of a conditional.
-\end{itemize}
+\begin{description}
+  \item[Proposition] Sentence to which one and only one of the terms
+    \textit{true} or \textit{false} can be meaningfully applied. The most
+    commonly used letters to represent propositions are $p$, $q$ and $r$.
+  \item[Condition] First proposition of a conditional.
+  \item[Conclusion] Second proposition of a conditional.
+  \item[Tautology] An expression involving logical variables that is true in all
+    cases. The number 1 is used to symbolize a tautology.
+  \item[Contradiction] An expression involving logical variables that is false
+    in all cases. The number 0 is used to symbolize a contradiction.
+  \item[Equivalence] Two propositions $p$ and $q$ are equivalent if and only if
+    $p \leftrightarrow q$ is a tautology. See Table \ref{tbl:logic_op} and Table
+    \ref{tbl:logic_osym}.
+  \item[Implication] A proposition $p$ implies $q$ if $p \to q$ is a
+    tautology. See Table \ref{tbl:logic_op} and Table \ref{tbl:logic_osym}.
+\end{description}
 
 % ------------------------------------------------------------------------------
 \subsection{Operation notation and priority}
@@ -683,23 +693,42 @@ These are some of the terms that will be used throughout this section.
 The following table shows the notation used for some logical operations. It is
 ordered from higher to lower operator precedence.
 
-\bigskip
-\begin{center}
-  \begin{tabular}{| c | c | c |}
-    \hline
-    Notation & Operation name & English form \\
-    \hline
-    $\neg p$              & Logical negation        & Not $p$ \\
-    $p \land q$           & Logical conjunction     & $p$ and $q$ \\
-    $p \lor q$            & Logical disjunction     & $p$ or $q$ \\
-    $p \to q$             & Conditional operation   & If $p$, then $q$ \\
-    $p \leftrightarrow q$ & Biconditional operation & $p$ if and only if $q$ \\
-    \hline
-  \end{tabular}
-\end{center}
-\bigskip
+\begin{table}[h]
+  \caption{\label{tbl:logic_op}Logical operators}
+  \begin{center}
+    \begin{tabular}{| c | c | c |}
+      \hline
+      Notation & Operation name & English form \\
+      \hline
+      $\neg p$              & Logical negation        & Not $p$ \\
+      $p \land q$           & Logical conjunction     & $p$ and $q$ \\
+      $p \lor q$            & Logical disjunction     & $p$ or $q$ \\
+      $p \to q$             & Conditional operation   & If $p$, then $q$ \\
+      $p \leftrightarrow q$ & Biconditional operation & $p$ if and only if $q$ \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
 
 The \textit{Venn diagrams} might help understand some of these operators.
+
+\medskip
+
+The following table shows the symbols for other terms in this section.
+
+\begin{table}[h]
+  \caption{\label{tbl:logic_osym}Other symbols}
+  \begin{center}
+    \begin{tabular}{| c | c | c |}
+      \hline
+      Notation & Operation name & English form \\
+      \hline
+      $p \iff q$     & Equivalence & $p$ is equivalent to $q$ \\
+      $p \implies q$ & Implication & $p$ implies $q$ \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
 
 % ------------------------------------------------------------------------------
 \subsection{Conditional vs. biconditional}
@@ -721,7 +750,7 @@ Assume your instructor told you ``If you receive a grade of 95 or better in the
 final examination, then you will receive an A in this course''. This is a simple
 condition, and this is its truth table.
 
-\bigskip
+\medskip
 \begin{center}
   \begin{tabular}{| c | c | c |}
     \hline
@@ -734,7 +763,7 @@ condition, and this is its truth table.
     \hline
   \end{tabular}
 \end{center}
-\bigskip
+\medskip
 
 Where, in order to keep the table simple, $p$ and $q$ represent the two
 propositions respectively.
@@ -753,7 +782,7 @@ implying that if you don't receive a grade of at least 95 in the final
 examination, you will not be able to get the A in this course. This is the truth
 table for this new promise.
 
-\bigskip
+\medskip
 \begin{center}
   \begin{tabular}{| c | c | c |}
     \hline
@@ -766,7 +795,7 @@ table for this new promise.
     \hline
   \end{tabular}
 \end{center}
-\bigskip
+\medskip
 
 Again, the last column just indicates if the instructor told the truth. If your
 grade was below 95, and you didn't receive the A in this course, the instructor
@@ -774,9 +803,36 @@ would have told the truth. However, if one of these propositions did not match
 the other, the instructor would have lied.
 
 % ------------------------------------------------------------------------------
-% TODO
-% \subsection{Equivalences}
+\subsection{Tautologies, contradictions and equivalences}
 % ------------------------------------------------------------------------------
+
+The following list presents some tautologies (i.e. propositions that are always
+true). These propositions should usually be avoided because they provide no
+information.
+
+\begin{itemize}
+  \item $p \lor \neg p$
+  \item $p \land q \to p$
+  \item $p \to p \lor q$
+\end{itemize}
+
+The following list presents some contradictions (i.e. propositions that are
+always false). Just like with tautologies, these propositions should usually be
+avoided.
+
+\begin{itemize}
+  \item $p \land \neg p$
+\end{itemize}
+
+The following list presents some groups of propositions that share the same
+meaning. These become tautologies when using a biconditional operator, but I
+decided to separate them from the previous list because they serve as a list of
+propositions that could be expressed with an alternate form.
+
+\begin{itemize}
+  \item $\neg (p \land q) \ \iff \ \neg p \lor \neg q$
+  \item $(p \land q) \lor (\neg p \land q) \ \iff \ q$
+\end{itemize}
 
 % ------------------------------------------------------------------------------
 % Bibliography
