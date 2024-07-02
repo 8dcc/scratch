@@ -1,9 +1,11 @@
 
 CC=gcc
 CXX=g++
-CFLAGS=-Wall -Wextra -ggdb3
+CFLAGS=-std=gnu99 -Wall -Wextra -Wpedantic -ggdb3
 
-SDL_BINS=sdl-bresenham-line.out
+SDL_BINS=sdl-bresenham-line.out \
+         plot.out
+
 RAYLIB_BINS=raylib-cube.out
 
 #-------------------------------------------------------------------------------
