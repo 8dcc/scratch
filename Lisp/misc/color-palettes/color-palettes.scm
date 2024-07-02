@@ -1,22 +1,23 @@
 ;; Generate a color palette of N elements, scaling the lightness by STEP, having
 ;; HSV color in the middle. The STEP must be in the [0..1] range.
 (define (palette-monochrome hsv size step)
-  (define (scale-lightness hsv scale)
+  (define (add-lightness hsv difference)
     (list (car hsv)
           (cadr hsv)
-          (* (caddr hsv) (+ 1 scale))))
+          (+ (caddr hsv) difference)))
 
   (cond ((<= size 1)
          (list hsv))
         ((= size 2)
-         (list hsv (scale-lightness hsv step)))
+         (list hsv (add-lightness hsv step)))
         (#t
-         (let ((rounded-size (if (odd? size) (- size 1) size)))
-           (append (list (scale-lightness hsv (* step (/ rounded-size 2) -1)))
+         (let* ((rounded-size (if (odd? size) (- size 1) size))
+                (lightness-difference (* step (/ rounded-size 2))))
+           (append (list (add-lightness hsv (* -1 lightness-difference)))
                    (palette-monochrome hsv (- size 2) step)
-                   (list (scale-lightness hsv (* step (/ rounded-size 2)))))))))
+                   (list (add-lightness hsv lightness-difference)))))))
 
-(palette-monochrome '(240 100 70) 5 0.10)
+(palette-monochrome '(240 1 0.70) 5 0.10)
 
 ;; Generate a color palette of N elements, having HSV color in the middle. For
 ;; each color in the palette, the base color along with an index relative to the
@@ -33,13 +34,13 @@
                    (palette-generator hsv (- size 2) func)
                    (list (func hsv (/ rounded-size 2))))))))
 
-(palette-generator '(240 100 70) 5
+(palette-generator '(240 1 0.70) 5
                    (lambda (hsv relative-idx)
-                     (define scale-step 0.10)
+                     (define lightness-step 0.10)
                      (list (car hsv)
                            (cadr hsv)
-                           (* (caddr hsv)
-                              (+ 1 (* relative-idx scale-step))))))
+                           (+ (caddr hsv)
+                              (* relative-idx lightness-step)))))
 
 (define (add-degrees hsv degrees)
   (define (fmod x y)
@@ -52,15 +53,15 @@
         (cadr hsv)
         (caddr hsv)))
 
-(palette-generator '(240 100 100) 5
+(palette-generator '(240 1 0.9) 5
                    (lambda (hsv relative-idx)
                      (define degree-difference 30.0)
                      (add-degrees hsv (* relative-idx degree-difference))))
 
 (map (lambda (hsv)
        (palette-monochrome hsv 3 0.10))
-     '((180 100 100)
-       (210 100 100)
-       (240 100 100)
-       (270 100 100)
-       (300 100 100)))
+     '((180 1 0.9)
+       (210 1 0.9)
+       (240 1 0.9)
+       (270 1 0.9)
+       (300 1 0.9)))
