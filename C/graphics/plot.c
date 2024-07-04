@@ -30,7 +30,7 @@ static bool g_draw_grid = true;
 /* The actual plot function. Takes X and returns Y. */
 
 static double plotted_func(double x) {
-    return pow(x, 2);
+    return sin(x) * 2;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -104,45 +104,24 @@ static void plot_func(PlotFuncPtr func) {
 
     const int half_w = win_w / 2;
     const int half_h = win_h / 2;
-    int prev_y       = half_h;
+    int prev_y       = 0;
 
-    /* Virtual space between each pixel we are rendering */
-    const double virtual_step = 1.0 / GRAPH_STEP;
+    /* Iterate each screen pixel in the horizontal */
+    for (int x = -half_w; x < half_w; x++) {
+        /* The X coordinate in our virtual space. Will be used when calling
+         * the plot function. */
+        const double virtual_x = (double)x / GRAPH_STEP;
 
-    /* Iterate each virtual unit (represented by each line of the grid) */
-    for (int x = 0; x < half_w; x++) {
-        /* Render each pixel between the virtual units */
-        for (int i = 0; i < GRAPH_STEP; i++) {
-            /* The X coordinate in our virtual space. Will be used when calling
-             * the function. */
-            const double virtual_x = x + (i * virtual_step);
+        /* The real X and Y coordinates in our screen */
+        const int render_x = half_w + x;
+        const int render_y = half_h - func(virtual_x) * GRAPH_STEP;
 
-            /* The real X and Y coordinates in our screen, converted from the
-             * virtual ones. */
-            const int render_x = half_w + (x * GRAPH_STEP) + i;
-            const int render_y = half_h - func(virtual_x) * GRAPH_STEP;
+        /* Draw the line from the previous point to the current one */
+        SDL_RenderDrawLine(g_renderer, render_x - 1, prev_y, render_x,
+                           render_y);
 
-            /* Draw the line from the previous point to the current one */
-            SDL_RenderDrawLine(g_renderer, render_x - 1, prev_y, render_x,
-                               render_y);
-
-            /* Save the previous Y coordinate */
-            prev_y = render_y;
-        }
-    }
-
-    /* Do the same for the negative X axis. This could be placed into the
-     * previous loop, but I want to keep the code as clean as possible. */
-    prev_y = half_h;
-    for (int x = 0; x < half_w; x++) {
-        for (int i = 0; i < GRAPH_STEP; i++) {
-            const double virtual_x = -(x + (i * virtual_step));
-            const int render_x     = half_w - (x * GRAPH_STEP) - i;
-            const int render_y     = half_h - func(virtual_x) * GRAPH_STEP;
-            SDL_RenderDrawLine(g_renderer, render_x + 1, prev_y, render_x,
-                               render_y);
-            prev_y = render_y;
-        }
+        /* Save the Y coordinate for the next iteration */
+        prev_y = render_y;
     }
 }
 
