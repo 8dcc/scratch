@@ -1,0 +1,110 @@
+#+TITLE: Sum Square Difference
+#+AUTHOR: 8dcc
+#+OPTIONS: toc:2
+#+STARTUP: nofold
+#+PROPERTY: header-args:C      :tangle sum-square-difference.c :flags -std=c99 -Wall -Wextra -Wpedantic
+#+PROPERTY: header-args:scheme :tangle sum-square-difference.scm
+
+* Problem
+
+Problem link: [[https://projecteuler.net/problem=6][Click me]].
+
+The sum of the squares of the first ten natural numbers is,
+\begin{equation*}
+1^2 + 2^2 + ... + 10^2 = 385
+\end{equation*}
+
+The square of the sum of the first ten natural numbers is,
+\begin{equation*}
+(1 + 2 + ... + 10)^2 = 55^2 = 3025
+\end{equation*}
+
+Hence the difference between the sum of the squares of the first ten natural
+numbers and the square of the sum is $3025 - 385 = 2640$.
+
+Find the difference between the sum of the squares of the first one hundred
+natural numbers and the square of the sum.
+
+* C code
+
+#+begin_src C :libs -lm
+#include <stdio.h>
+#include <math.h>
+
+int sum_squares(int limit) {
+    int result = 0;
+    for (int i = 0; i <= limit; i++)
+        result += pow(i, 2);
+    return result;
+}
+
+int square_sum(int limit) {
+    int result = 0;
+    for (int i = 0; i <= limit; i++)
+        result += i;
+    return pow(result, 2);
+}
+
+int main(void) {
+    const int limit = 100;
+
+    const int sum1 = sum_squares(limit);
+    const int sum2 = square_sum(limit);
+    printf("Sum1: %d\n", sum1);
+    printf("Sum2: %d\n", sum2);
+
+    const int result = sum2 - sum1;
+    printf("Result: %d\n", result);
+
+    return 0;
+}
+#+end_src
+
+#+RESULTS:
+| Sum1:   |   338350 |
+| Sum2:   | 25502500 |
+| Result: | 25164150 |
+
+* Scheme version
+
+#+begin_src scheme
+(define (sum-squares limit)
+  (if (zero? limit)
+      0
+      (+ (expt limit 2)
+         (sum-squares (- limit 1)))))
+
+(define (square-sum limit)
+  (define (sum n)
+    (if (zero? n)
+        0
+        (+ n (sum (- n 1)))))
+  (expt (sum limit) 2))
+
+(define (calculate-difference limit)
+  (- (square-sum limit)
+     (sum-squares limit)))
+
+(calculate-difference 100)
+#+end_src
+
+#+RESULTS:
+: 25164150
+
+* Improved C version
+
+I got this formula from [[https://www.wolframalpha.com][WolframAlpha]], and it can be used to improve the
+=sum_squares= function.
+
+\begin{equation*}
+\sum_{i=1}^{n} k^2 = \frac{1}{6} n (n + 1) (2 n + 1)
+\end{equation*}
+
+I have no idea how this formula could have been calculated, but please feel free
+to make a PR with more information.
+
+#+begin_src C :tangle no
+int sum_squares(int limit) {
+    return 1.0 / 6.0 * limit * (limit + 1) * (2 * limit + 1);
+}
+#+end_src
