@@ -11,7 +11,6 @@
 
 #define COLOR_GRID 0x111111
 #define COLOR_AXIS 0x555555
-#define COLOR_FUNC 0xFF0000
 
 /* How many pixels on the screen represent each unit in our graph */
 #define GRAPH_STEP 20
@@ -27,10 +26,20 @@ static SDL_Renderer* g_renderer = NULL;
 static bool g_draw_grid = true;
 
 /*----------------------------------------------------------------------------*/
-/* The actual plot function. Takes X and returns Y. */
+/* The actual plot functions. Takes X and returns Y. */
 
-static double plotted_func(double x) {
+#define FUNC_NUM 3
+
+static double plotted0(double x) {
     return sin(x) * 2;
+}
+
+static double plotted1(double x) {
+    return cos(x) * 2;
+}
+
+static double plotted2(double x) {
+    return pow(x, 2);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -98,30 +107,34 @@ static void draw_axis(void) {
     SDL_RenderDrawLine(g_renderer, 0, center_y, win_w, center_y);
 }
 
-static void plot_func(PlotFuncPtr func) {
+static void plot_func(PlotFuncPtr funcs[FUNC_NUM], uint32_t colors[FUNC_NUM]) {
     int win_w, win_h;
     SDL_GetWindowSize(g_window, &win_w, &win_h);
 
     const int half_w = win_w / 2;
     const int half_h = win_h / 2;
-    int prev_y       = 0;
 
-    /* Iterate each screen pixel in the horizontal */
-    for (int x = -half_w; x < half_w; x++) {
-        /* The X coordinate in our virtual space. Will be used when calling
-         * the plot function. */
-        const double virtual_x = (double)x / GRAPH_STEP;
+    for (int i = 0; i < FUNC_NUM; i++) {
+        set_render_color(g_renderer, colors[i]);
 
-        /* The real X and Y coordinates in our screen */
-        const int render_x = half_w + x;
-        const int render_y = half_h - func(virtual_x) * GRAPH_STEP;
+        /* Iterate each screen pixel in the horizontal */
+        int prev_y = 0;
+        for (int x = -half_w; x < half_w; x++) {
+            /* The X coordinate in our virtual space. Will be used when calling
+             * the plot function. */
+            const double virtual_x = (double)x / GRAPH_STEP;
 
-        /* Draw the line from the previous point to the current one */
-        SDL_RenderDrawLine(g_renderer, render_x - 1, prev_y, render_x,
-                           render_y);
+            /* The real X and Y coordinates in our screen */
+            const int render_x = half_w + x;
+            const int render_y = half_h - funcs[i](virtual_x) * GRAPH_STEP;
 
-        /* Save the Y coordinate for the next iteration */
-        prev_y = render_y;
+            /* Draw the line from the previous point to the current one */
+            SDL_RenderDrawLine(g_renderer, render_x - 1, prev_y, render_x,
+                               render_y);
+
+            /* Save the Y coordinate for the next iteration */
+            prev_y = render_y;
+        }
     }
 }
 
@@ -200,9 +213,10 @@ int main(void) {
         set_render_color(g_renderer, COLOR_GRID);
         draw_grid();
 
-        /* Plot the actual function graph */
-        set_render_color(g_renderer, COLOR_FUNC);
-        plot_func(plotted_func);
+        /* Plot the actual functions */
+        PlotFuncPtr funcs[FUNC_NUM] = { plotted0, plotted1, plotted2 };
+        uint32_t colors[FUNC_NUM]   = { 0xFF0000, 0x0000FF, 0x00FF00 };
+        plot_func(funcs, colors);
 
         /* Draw the axis on top of the graph */
         set_render_color(g_renderer, COLOR_AXIS);
