@@ -32,6 +32,8 @@
 ; always bigger than INT_MAX.
 ; ==============================================================================
 
+; NOTE: You can assemble in 64-bits by modifying the Makefile, but remember
+; that, acording to the ABI, the parameter will be in `rdi', not in the stack.
 bits 32
 
 section .text
