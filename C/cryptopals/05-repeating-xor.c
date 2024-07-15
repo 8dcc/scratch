@@ -44,7 +44,7 @@ static uint8_t* repeating_xor(const char* key, const char* input,
     /* NOTE: I am not sure if doing a modulo is cheaper than resetting a
      * `key_pos' variable, but I think it looks cleaner this way. */
     for (size_t i = 0; i < input_sz; i++)
-        result[i] = input[i] ^ key[(i % key_sz)];
+        result[i] = input[i] ^ key[i % key_sz];
 
     return result;
 }
