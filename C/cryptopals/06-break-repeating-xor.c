@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h> /* tolower() */
 
 #define KEYSIZE_MIN 2
 #define KEYSIZE_MAX 40
@@ -17,7 +18,7 @@
 
 static void print_bytes(uint8_t* bytes, size_t sz) {
     while (sz-- > 0)
-        printf("%02X", *bytes++);
+        printf("%02X ", *bytes++);
     putchar('\n');
 }
 
@@ -129,7 +130,7 @@ static size_t base64_decode(uint8_t* dst, const char* src) {
 }
 
 /*----------------------------------------------------------------------------*/
-/* Crypto functions */
+/* Key size guessing functions */
 
 /* For a more complete example, see C/algorithms/hamming-distance.c */
 static uint32_t hamming_distance(const uint8_t* a, const uint8_t* b,
@@ -155,18 +156,18 @@ static uint32_t hamming_distance(const uint8_t* a, const uint8_t* b,
     return result;
 }
 
-static int guess_keysize(uint8_t* bytes, size_t bytes_sz) {
-    int result = -1;
+static size_t guess_keysize(uint8_t* data, size_t data_sz) {
+    size_t result = 0;
 
     /* Calculate the most likely keysize based on the hamming distance */
     uint32_t min_distance = 0;
     for (size_t keysize = KEYSIZE_MIN;
-         keysize <= KEYSIZE_MAX && (keysize * 2) <= bytes_sz; keysize++) {
+         keysize <= KEYSIZE_MAX && (keysize * 2) <= data_sz; keysize++) {
         const uint32_t distance =
-          hamming_distance(&bytes[0], &bytes[keysize], keysize);
+          hamming_distance(&data[0], &data[keysize], keysize);
         const uint32_t normalized = distance / keysize;
 
-        if (result == -1 || normalized < min_distance) {
+        if (result == 0 || normalized < min_distance) {
             min_distance = normalized;
             result       = keysize;
         }
@@ -175,18 +176,131 @@ static int guess_keysize(uint8_t* bytes, size_t bytes_sz) {
     return result;
 }
 
-static uint8_t* repeating_xor(const char* key, const char* input,
-                              size_t input_sz) {
-    const size_t key_sz = strlen(key);
+/*----------------------------------------------------------------------------*/
+/* XOR and key ranking functions */
 
-    uint8_t* result = malloc(input_sz);
+/* Arbitrary function for determining how likely is a byte of being a string */
+static int char_score(uint8_t byte) {
+    if ((byte >= 'a' && byte <= 'z') || (byte >= 'A' && byte <= 'Z')) {
+        char c = tolower((char)byte);
 
-    /* NOTE: I am not sure if doing a modulo is cheaper than resetting a
-     * `key_pos' variable, but I think it looks cleaner this way. */
-    for (size_t i = 0; i < input_sz; i++)
-        result[i] = input[i] ^ key[(i % key_sz)];
+        /*
+         * https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html
+         */
+        if (c == 'e' || c == 'a' || c == 'r' || c == 'i' || c == 'o' ||
+            c == 't' || c == 'n' || c == 's' || c == 'l' || c == 'c')
+            return 3;
+
+        if (c == 'u' || c == 'd' || c == 'p' || c == 'm' || c == 'h' ||
+            c == 'g' || c == 'b' || c == 'f' || c == 'y' || c == 'w')
+            return 2;
+
+        if (c == 'k' || c == 'v' || c == 'x' || c == 'z' || c == 'j' ||
+            c == 'q')
+            return 1;
+    }
+
+    if (byte >= '0' && byte <= '9')
+        return 0;
+
+    return -2;
+}
+
+static uint8_t guess_byte_xor(uint8_t* bytes, size_t sz) {
+    static const char possible_keys[] =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    int best_score = 0;
+    uint8_t result = 0;
+
+    for (size_t i = 0; i < sizeof(possible_keys); i++) {
+        /* Overall "score" of the current key for the entire input */
+        int cur_key_score = 0;
+
+        /* XOR each character of the input with the current key, and accumulate
+         * the "character score". */
+        for (size_t j = 0; j < sz; j++) {
+            const char xor = bytes[j] ^ possible_keys[i];
+            cur_key_score += char_score(xor);
+        }
+
+        /* If the score for the current key is better than the one we had, save
+         * the current key as the best one for now. */
+        if (cur_key_score > best_score) {
+            best_score = cur_key_score;
+            result     = possible_keys[i];
+        }
+    }
 
     return result;
+}
+
+static uint8_t* guess_key(const uint8_t* data, size_t data_sz, size_t keysize) {
+    /*
+     * Let's assume this is the decoded data we received.
+     *
+     *   0123456789abcdef
+     *
+     * If we know that the keysize is 5, since a repeating-key XOR cypher has
+     * been used, we know that the same key has been re-used for each group of 5
+     * bytes.
+     *
+     *   01234
+     *   56789
+     *   abcde
+     *   f....
+     *
+     * We can also tell that, for each position in each group, the same
+     * byte of the key has been used when performing the bit-wise XOR.
+     *
+     *   | k0 | k1 | k2 | k3 | k4 |
+     *   |----+----+----+----+----|
+     *   | 0  | 1  | 2  | 3  | 4  |
+     *   | 5  | 6  | 7  | 8  | 9  |
+     *   | a  | b  | c  | d  | e  |
+     *   | f  | .  | .  | .  | .  |
+     *
+     * Where k0..k4 represents each byte of the key. With this in mind, we can
+     * treat each column as a single-byte XOR'd string, and use the same code
+     * from Challenge 3.
+     *
+     * First, calculate the number of data chunks (table rows).
+     */
+    const bool has_partial_row = data_sz % keysize != 0;
+    size_t rows                = data_sz / keysize;
+    if (has_partial_row)
+        rows++;
+
+    /* Transpose the each block of `keysize' bytes. In other words, save each
+     * table column in an array. */
+    uint8_t** columns = (uint8_t**)malloc(keysize * sizeof(uint8_t*));
+    for (size_t i = 0; i < keysize; i++) {
+        columns[i] = (uint8_t*)malloc(rows);
+
+        for (size_t j = 0; j < rows; j++) {
+            columns[i][j] = data[keysize * i + j];
+        }
+    }
+
+    /* Try to guess the byte used for XOR'ing each column of the table. */
+    uint8_t* result_key = malloc(keysize);
+    for (size_t i = 0; i < keysize; i++) {
+        size_t column_size = rows;
+
+        /* If the data in this column doesn't reach the last row, ignore the
+         * last value. For example, in the table above, k0 has 4 bytes but k1
+         * has only 3. */
+        if (has_partial_row && i + 1 > data_sz % keysize)
+            column_size--;
+
+        result_key[i] = guess_byte_xor(columns[i], column_size);
+    }
+
+    /* Free each column and the columns array itself */
+    for (size_t i = 0; i < keysize; i++)
+        free(columns[i]);
+    free(columns);
+
+    return result_key;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -215,20 +329,25 @@ int main(int argc, char** argv) {
     uint8_t* decoded_bytes = malloc(base64_byte_count(strlen(base64_chars)));
     const size_t decoded_bytes_sz = base64_decode(decoded_bytes, base64_chars);
     free(base64_chars);
-
     printf("Number of decoded base64 bytes: %ld\n", decoded_bytes_sz);
 
     /* Guess the keysize based on the hamming distance */
-    const int keysize = guess_keysize(decoded_bytes, decoded_bytes_sz);
-    if (keysize == -1) {
+    const size_t keysize = guess_keysize(decoded_bytes, decoded_bytes_sz);
+    if (keysize == 0) {
         fprintf(stderr, "Error guessing keysize.\n");
         return 1;
     }
+    printf("Most likely keysize: %ld\n", keysize);
 
-    printf("Most likely keysize: %d\n", keysize);
+    uint8_t* key = guess_key(decoded_bytes, decoded_bytes_sz, keysize);
+    printf("Guessed key (bytes): ");
+    print_bytes(key, keysize);
 
-    /* TODO: Separate into keysize blocks, transpose into other blocks */
+    printf("Decrypted: ");
+    for (size_t i = 0; i < decoded_bytes_sz; i++)
+        printf("%c", decoded_bytes[i] ^ key[i % keysize]);
 
     free(decoded_bytes);
+    free(key);
     return 0;
 }
