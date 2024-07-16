@@ -160,16 +160,41 @@ static size_t guess_keysize(uint8_t* data, size_t data_sz) {
     size_t result = 0;
 
     /* Calculate the most likely keysize based on the hamming distance */
-    uint32_t min_distance = 0;
+    double best_distance = 0;
     for (size_t keysize = KEYSIZE_MIN;
          keysize <= KEYSIZE_MAX && (keysize * 2) <= data_sz; keysize++) {
-        const uint32_t distance =
-          hamming_distance(&data[0], &data[keysize], keysize);
-        const uint32_t normalized = distance / keysize;
+        /* Used for calculating the average (normalized) hamming distance
+         * between all adjacent pairs of chunks. */
+        double accumulated_distance = 0;
+        int num_accumulated         = 0;
 
-        if (result == 0 || normalized < min_distance) {
-            min_distance = normalized;
-            result       = keysize;
+        /* Iterate all the possible key-sized chunks of data, and calculate
+         * their normalized hamming distance. */
+        for (size_t chunk = 0; (chunk + keysize * 2) < data_sz;
+             chunk += keysize * 2) {
+            /* Calculate the hamming distance between the current chunk and the
+             * adjacent one. */
+            const double distance =
+              hamming_distance(&data[chunk], &data[chunk + keysize], keysize);
+
+            /* Normalize it based on the keysize */
+            const double normalized = (double)distance / keysize;
+
+            /* Accumulate the distance and count for calculating the average
+             * later. */
+            accumulated_distance += normalized;
+            num_accumulated++;
+        }
+
+        /* Calculate the average distance */
+        const double average_distance = accumulated_distance / num_accumulated;
+
+        /* Check if the average distance for this keysize is better (smaller)
+         * than the one we had stored. If so, store this keysize as the best
+         * one. */
+        if (result == 0 || average_distance < best_distance) {
+            best_distance = average_distance;
+            result        = keysize;
         }
     }
 
@@ -346,6 +371,7 @@ int main(int argc, char** argv) {
     printf("Decrypted: ");
     for (size_t i = 0; i < decoded_bytes_sz; i++)
         printf("%c", decoded_bytes[i] ^ key[i % keysize]);
+    putchar('\n');
 
     free(decoded_bytes);
     free(key);
