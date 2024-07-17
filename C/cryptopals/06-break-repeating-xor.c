@@ -228,12 +228,18 @@ static int char_score(uint8_t byte) {
     if (byte >= '0' && byte <= '9')
         return 0;
 
+    if (byte == ' ')
+        return 1;
+
     return -2;
 }
 
 static uint8_t guess_byte_xor(uint8_t* bytes, size_t sz) {
-    static const char possible_keys[] =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    static const char possible_keys[] = "abcdefghijklmnopqrstuvwxyz"
+                                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                        "0123456789"
+                                        " !\"\'#$%&().,/\\:;";
+
     int best_score = 0;
     uint8_t result = 0;
 
@@ -302,7 +308,7 @@ static uint8_t* guess_key(const uint8_t* data, size_t data_sz, size_t keysize) {
         columns[i] = (uint8_t*)malloc(rows);
 
         for (size_t j = 0; j < rows; j++) {
-            columns[i][j] = data[keysize * i + j];
+            columns[i][j] = data[keysize * j + i];
         }
     }
 
@@ -367,8 +373,13 @@ int main(int argc, char** argv) {
     uint8_t* key = guess_key(decoded_bytes, decoded_bytes_sz, keysize);
     printf("Guessed key (bytes): ");
     print_bytes(key, keysize);
+    printf("Guessed key (chars): ");
+    for (size_t i = 0; i < keysize; i++)
+        printf("%c", key[i]);
+    printf("\n\n");
 
-    printf("Decrypted: ");
+    printf("Decrypted:\n"
+           "==========\n");
     for (size_t i = 0; i < decoded_bytes_sz; i++)
         printf("%c", decoded_bytes[i] ^ key[i % keysize]);
     putchar('\n');
