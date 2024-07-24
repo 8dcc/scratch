@@ -14,6 +14,9 @@ clean:
 
 #-------------------------------------------------------------------------------
 
+# Link with math library
+shannon-entropy.out: LDFLAGS+=-lm
+
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 

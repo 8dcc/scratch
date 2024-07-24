@@ -27,9 +27,12 @@ double entropy(void* data, size_t data_sz) {
         /* Probablity of encountering this byte on the input */
         const double probability = (double)occurrences[byte] / data_sz;
 
-        /* TODO: Improve explanation of what the log2() multiplication
-         * accomplishes. */
-        /* Since the log2 of [0..1] is always negative, we subtract from the
+        /* The log2() multiplication is used to make sure that we get 0
+         * "surprise" when the probability of the event is 1. For more
+         * information, see my article about entropy:
+         *   https://8dcc.github.io/programming/understanding-entropy.html
+         *
+         * Since the log2 of [0..1] is always negative, we subtract from the
          * total to increase its value. */
         result -= probability * log2(probability);
     }
