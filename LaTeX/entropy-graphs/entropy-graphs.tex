@@ -1,0 +1,19 @@
+\documentclass[border=10pt]{standalone}
+
+\usepackage{pgfplots}
+
+\begin{document}
+
+\begin{tikzpicture}
+  \begin{axis} [axis lines=center, ymajorgrids=true, grid style=dashed,
+    ytick={0,1,...,6},
+    xmin=0, xmax=1, ymin=0, ymax=6]
+
+    \addplot[domain=0:1, samples=100, smooth, thick, red] { 1/x };
+    \addlegendentry{$\frac{1}{x}$};
+    \addplot[domain=0:1, samples=100, smooth, thick, blue] { log2(1/x) };
+    \addlegendentry{$\log_2 \left( \frac{1}{x} \right)$};
+  \end{axis}
+\end{tikzpicture}
+
+\end{document}
