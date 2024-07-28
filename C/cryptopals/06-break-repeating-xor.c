@@ -7,6 +7,8 @@
 #include <string.h>
 #include <ctype.h> /* tolower() */
 
+#include "base64.h" /* ByteArray, base64* */
+
 #define KEYSIZE_MIN 2
 #define KEYSIZE_MAX 40
 
@@ -16,117 +18,25 @@
 /*----------------------------------------------------------------------------*/
 /* Misc util functions */
 
+static char* read_file(FILE* fp) {
+    fseek(fp, 0L, SEEK_END);
+    const size_t file_sz = ftell(fp);
+    fseek(fp, 0L, SEEK_SET);
+
+    char* content = malloc(file_sz + 1);
+
+    size_t i;
+    for (i = 0; i < file_sz; i++)
+        content[i] = fgetc(fp);
+    content[i] = '\0';
+
+    return content;
+}
+
 static void print_bytes(uint8_t* bytes, size_t sz) {
     while (sz-- > 0)
         printf("%02X ", *bytes++);
     putchar('\n');
-}
-
-/*----------------------------------------------------------------------------*/
-/* Base64 functions */
-
-static bool base64_valid_char(char c) {
-    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-           (c >= '0' && c <= '9') || c == '+' || c == '/' || c == '=';
-}
-
-static char* base64_read_file(FILE* fp) {
-    size_t content_sz = 100;
-    char* content     = malloc(content_sz);
-
-    int c;
-    size_t i = 0;
-    while ((c = fgetc(fp)) != EOF) {
-        if (!base64_valid_char(c))
-            continue;
-
-        if (i >= content_sz) {
-            content_sz += 100;
-            content = realloc(content, content_sz);
-        }
-
-        content[i++] = c;
-    }
-
-    if (i >= content_sz)
-        content = realloc(content, content_sz + 1);
-
-    content[i] = '\0';
-    return content;
-}
-
-static size_t base64_byte_count(size_t num_chars) {
-    /* Each 4 characters in base64 represent 3 bytes */
-    return num_chars / 4 * 3;
-}
-
-/* Return the 6 bits represented by the specified base64 character */
-static uint8_t base64_char2bits(char c) {
-    if (c >= 'A' && c <= 'Z')
-        return c - 'A';
-
-    if (c >= 'a' && c <= 'z')
-        return c - 'a' + 26;
-
-    if (c >= '0' && c <= '9')
-        return c - '0' + 52;
-
-    if (c == '+')
-        return 62;
-
-    if (c == '/')
-        return 63;
-
-    fprintf(stderr, "%s: Invalid base64 character: '%c'\n", __func__, c);
-    exit(1);
-}
-
-/* Decodes the null-terminated base64 `src' string into the `dst' byte array.
- * Returns the number of written bytes.
- *
- * The `dst' array must be allocated and freed by the caller, and must be big
- * enough to hold the bytes. To get the size, use `base64_byte_count'. */
-static size_t base64_decode(uint8_t* dst, const char* src) {
-    uint8_t bits;
-
-    /* Assumes the length of `src' is a multiple of 4, which should be always
-     * true because of base64 padding. */
-    size_t i = 0;
-    while (*src != '\0') {
-        /* Bits 2..8 of first byte */
-        bits   = base64_char2bits(*src++);
-        dst[i] = bits << 2;
-
-        /* Bits 0..2 of first byte */
-        bits = base64_char2bits(*src);
-        dst[i++] |= bits >> 4;
-
-        /* The third base64 char might be padding */
-        src++;
-        if (*src == '=')
-            break;
-
-        /* Bits 4..8 of second byte */
-        dst[i] = (bits & 0xF) << 4;
-
-        /* Bits 0..3 of second byte */
-        bits = base64_char2bits(*src);
-        dst[i++] |= bits >> 2;
-
-        /* Bits 7..8 of third byte */
-        dst[i] = (bits & 0x3) << 6;
-
-        /* The fourth base64 char might be padding */
-        src++;
-        if (*src == '=')
-            break;
-
-        /* Bits 0..6 of fourth byte */
-        bits = base64_char2bits(*src++);
-        dst[i++] |= bits;
-    }
-
-    return i;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -156,13 +66,13 @@ static uint32_t hamming_distance(const uint8_t* a, const uint8_t* b,
     return result;
 }
 
-static size_t guess_keysize(uint8_t* data, size_t data_sz) {
+static size_t guess_keysize(ByteArray bytes) {
     size_t result = 0;
 
     /* Calculate the most likely keysize based on the hamming distance */
     double best_distance = 0;
     for (size_t keysize = KEYSIZE_MIN;
-         keysize <= KEYSIZE_MAX && (keysize * 2) <= data_sz; keysize++) {
+         keysize <= KEYSIZE_MAX && (keysize * 2) <= bytes.size; keysize++) {
         /* Used for calculating the average (normalized) hamming distance
          * between all adjacent pairs of chunks. */
         double accumulated_distance = 0;
@@ -170,12 +80,13 @@ static size_t guess_keysize(uint8_t* data, size_t data_sz) {
 
         /* Iterate all the possible key-sized chunks of data, and calculate
          * their normalized hamming distance. */
-        for (size_t chunk = 0; (chunk + keysize * 2) < data_sz;
+        for (size_t chunk = 0; (chunk + keysize * 2) < bytes.size;
              chunk += keysize * 2) {
             /* Calculate the hamming distance between the current chunk and the
              * adjacent one. */
             const double distance =
-              hamming_distance(&data[chunk], &data[chunk + keysize], keysize);
+              hamming_distance(&bytes.data[chunk], &bytes.data[chunk + keysize],
+                               keysize);
 
             /* Normalize it based on the keysize */
             const double normalized = (double)distance / keysize;
@@ -265,7 +176,7 @@ static uint8_t guess_byte_xor(uint8_t* bytes, size_t sz) {
     return result;
 }
 
-static uint8_t* guess_key(const uint8_t* data, size_t data_sz, size_t keysize) {
+static uint8_t* guess_key(ByteArray bytes, size_t keysize) {
     /*
      * Let's assume this is the decoded data we received.
      *
@@ -296,8 +207,8 @@ static uint8_t* guess_key(const uint8_t* data, size_t data_sz, size_t keysize) {
      *
      * First, calculate the number of data chunks (table rows).
      */
-    const bool has_partial_row = data_sz % keysize != 0;
-    size_t rows                = data_sz / keysize;
+    const bool has_partial_row = bytes.size % keysize != 0;
+    size_t rows                = bytes.size / keysize;
     if (has_partial_row)
         rows++;
 
@@ -308,7 +219,7 @@ static uint8_t* guess_key(const uint8_t* data, size_t data_sz, size_t keysize) {
         columns[i] = (uint8_t*)malloc(rows);
 
         for (size_t j = 0; j < rows; j++) {
-            columns[i][j] = data[keysize * j + i];
+            columns[i][j] = bytes.data[keysize * j + i];
         }
     }
 
@@ -320,7 +231,7 @@ static uint8_t* guess_key(const uint8_t* data, size_t data_sz, size_t keysize) {
         /* If the data in this column doesn't reach the last row, ignore the
          * last value. For example, in the table above, k0 has 4 bytes but k1
          * has only 3. */
-        if (has_partial_row && i + 1 > data_sz % keysize)
+        if (has_partial_row && i + 1 > bytes.size % keysize)
             column_size--;
 
         result_key[i] = guess_byte_xor(columns[i], column_size);
@@ -352,25 +263,25 @@ int main(int argc, char** argv) {
     }
 
     /* Read the base64 characters from the file */
-    char* base64_chars = base64_read_file(fp);
+    char* file_content = read_file(fp);
     fclose(fp);
 
-    /* NOTE: Call to `strlen' could be avoided by returning the bytes from
-     * `base64_read_file', but I think it would be more confusing. */
-    uint8_t* decoded_bytes = malloc(base64_byte_count(strlen(base64_chars)));
-    const size_t decoded_bytes_sz = base64_decode(decoded_bytes, base64_chars);
-    free(base64_chars);
-    printf("Number of decoded base64 bytes: %ld\n", decoded_bytes_sz);
+    /* Decode the file contents into an array of bytes. This is defined in the
+     * `base64.h' header. */
+    ByteArray decoded_bytes = base64_decode(file_content);
+    free(file_content);
+    printf("Number of decoded base64 bytes: %ld\n", decoded_bytes.size);
 
     /* Guess the keysize based on the hamming distance */
-    const size_t keysize = guess_keysize(decoded_bytes, decoded_bytes_sz);
+    const size_t keysize = guess_keysize(decoded_bytes);
     if (keysize == 0) {
         fprintf(stderr, "Error guessing keysize.\n");
         return 1;
     }
     printf("Most likely keysize: %ld\n", keysize);
 
-    uint8_t* key = guess_key(decoded_bytes, decoded_bytes_sz, keysize);
+    /* Guess the key itself. See comment in `guess_key' for more information. */
+    uint8_t* key = guess_key(decoded_bytes, keysize);
     printf("Guessed key (bytes): ");
     print_bytes(key, keysize);
     printf("Guessed key (chars): ");
@@ -380,11 +291,11 @@ int main(int argc, char** argv) {
 
     printf("Decrypted:\n"
            "==========\n");
-    for (size_t i = 0; i < decoded_bytes_sz; i++)
-        printf("%c", decoded_bytes[i] ^ key[i % keysize]);
+    for (size_t i = 0; i < decoded_bytes.size; i++)
+        printf("%c", decoded_bytes.data[i] ^ key[i % keysize]);
     putchar('\n');
 
-    free(decoded_bytes);
+    free(decoded_bytes.data);
     free(key);
     return 0;
 }

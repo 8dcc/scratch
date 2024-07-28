@@ -22,7 +22,15 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h> /* Error messages */
 #include <stdlib.h>
+
+typedef struct ByteArray {
+    uint8_t* data;
+    size_t size;
+} ByteArray;
+
+/*----------------------------------------------------------------------------*/
 
 /*
  * Return the number of base64 characters that would be used to represent the
@@ -56,11 +64,35 @@ size_t base64_chars2bytes(size_t num_chars) {
 }
 
 /* Return true if a character is a valid base64 input, including the padding
- * character. */
+ * character and the null-terminator. */
 bool base64_valid_char(char c) {
     return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
-           (c >= '0' && c <= '9') || c == '+' || c == '/' || c == '=';
+           (c >= '0' && c <= '9') || c == '+' || c == '/' || c == '=' ||
+           c == '\0';
 }
+
+/* Return the 6 bits represented by the specified base64 character */
+uint8_t base64_char2bits(char c) {
+    if (c >= 'A' && c <= 'Z')
+        return c - 'A';
+
+    if (c >= 'a' && c <= 'z')
+        return c - 'a' + 26;
+
+    if (c >= '0' && c <= '9')
+        return c - '0' + 52;
+
+    if (c == '+')
+        return 62;
+
+    if (c == '/')
+        return 63;
+
+    fprintf(stderr, "%s: Invalid base64 character: '%c'\n", __func__, c);
+    abort();
+}
+
+/*----------------------------------------------------------------------------*/
 
 /* Encode the specified bytes into an allocated buffer that must be freed by the
  * caller. */
@@ -131,6 +163,83 @@ char* base64_encode(const void* src, size_t sz) {
     return encoded;
 }
 
-/* TODO: Improve and add `decode' function from 06-break-repeating-xor.c */
+/* Decode the null-terminated base64 string */
+ByteArray base64_decode(const char* str) {
+    ByteArray decoded;
+    decoded.size = 100;
+    decoded.data = malloc(decoded.size);
+
+    /* Will be used to store each base64 character */
+    uint8_t bits;
+
+    /* Before we start decoding, make sure we are on the first base64 char */
+    while (!base64_valid_char(*str))
+        str++;
+
+    size_t i = 0;
+    while (*str != '\0') {
+        /* First, make sure there is enough space on the destination array for
+         * the next 3 bytes. */
+        if (i + 2 >= decoded.size) {
+            decoded.size += 100;
+            decoded.data = realloc(decoded.data, decoded.size);
+        }
+
+        /* Bits 2..8 of first byte */
+        bits            = base64_char2bits(*str);
+        decoded.data[i] = bits << 2;
+
+        /* Move to second base64 char */
+        do {
+            str++;
+        } while (!base64_valid_char(*str));
+
+        if (*str == '\0')
+            break;
+
+        /* Bits 0..2 of first byte */
+        bits = base64_char2bits(*str);
+        decoded.data[i++] |= bits >> 4;
+
+        /* Move to third base64 char. Might be padding. */
+        do {
+            str++;
+        } while (!base64_valid_char(*str));
+
+        if (*str == '\0' || *str == '=')
+            break;
+
+        /* Bits 4..8 of second byte */
+        decoded.data[i] = (bits & 0xF) << 4;
+
+        /* Bits 0..3 of second byte */
+        bits = base64_char2bits(*str);
+        decoded.data[i++] |= bits >> 2;
+
+        /* Move to fourth base64 char. Might be padding. */
+        do {
+            str++;
+        } while (!base64_valid_char(*str));
+
+        if (*str == '\0' || *str == '=')
+            break;
+
+        /* Bits 7..8 of third byte */
+        decoded.data[i] = (bits & 0x3) << 6;
+
+        /* Bits 0..6 of fourth byte */
+        bits = base64_char2bits(*str);
+        decoded.data[i++] |= bits;
+
+        /* Move to first base64 char of next four-char group */
+        do {
+            str++;
+        } while (!base64_valid_char(*str));
+    }
+
+    /* Actual data size, not what we re-allocated */
+    decoded.size = i;
+    return decoded;
+}
 
 #endif /* BASE64_H_ */
