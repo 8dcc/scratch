@@ -5,7 +5,7 @@ CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
 CXX=g++
 CXXFLAGS=-std=gnu++20 -Wall -Wextra -Wpedantic
 
-LDFLAGS=
+LDLIBS=
 
 #-------------------------------------------------------------------------------
 
@@ -18,11 +18,11 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-readline.out: LDFLAGS+=-lreadline
-ncurses-%.out: LDFLAGS+=-lncurses
+readline.out: LDLIBS+=-lreadline
+ncurses-%.out: LDLIBS+=-lncurses
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
 
 %.out: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDLIBS)

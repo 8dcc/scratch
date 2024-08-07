@@ -1,7 +1,7 @@
 
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
-LDFLAGS=
+LDLIBS=
 
 #-------------------------------------------------------------------------------
 
@@ -15,10 +15,10 @@ clean:
 #-------------------------------------------------------------------------------
 
 # Link with math library
-shannon-entropy.out: LDFLAGS+=-lm
+shannon-entropy.out: LDLIBS+=-lm
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CXX) $(CFLAGS) -o $@ $< $(LDLIBS)

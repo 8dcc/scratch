@@ -2,7 +2,7 @@
 CC=gcc
 CXX=g++
 CFLAGS=-std=gnu99 -Wall -Wextra -Wpedantic -ggdb3
-LDFLAGS=
+LDLIBS=
 
 SDL_BINS=sdl-bresenham-line.out \
          plot.out
@@ -20,12 +20,12 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-x-window-overlay.out: LDFLAGS+=-lX11 -lXext -lXfixes -lm
-$(SDL_BINS): LDFLAGS+=-lm $(shell sdl2-config --cflags --libs)
-$(RAYLIB_BINS): LDFLAGS+=-lraylib
+x-window-overlay.out: LDLIBS+=-lX11 -lXext -lXfixes -lm
+$(SDL_BINS): LDLIBS+=-lm $(shell sdl2-config --cflags --libs)
+$(RAYLIB_BINS): LDLIBS+=-lraylib
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CXX) $(CFLAGS) -o $@ $< $(LDLIBS)

@@ -1,7 +1,6 @@
 
 CC=gcc
 CFLAGS=-Wall -Wextra
-LDFLAGS=
 
 AS=nasm
 ASFLAGS=-f elf64
@@ -23,7 +22,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 $(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 obj/%.c.o: %.c
 	@mkdir -p $(dir $@)

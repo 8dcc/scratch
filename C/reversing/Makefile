@@ -2,7 +2,7 @@
 CC=gcc
 CXX=g++
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
-LDFLAGS=
+LDLIBS=
 
 #-------------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ clean:
 64bit-vars-in-32bit-pc.out: CFLAGS+=-m32
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
 
 %.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CXX) $(CFLAGS) -o $@ $< $(LDLIBS)

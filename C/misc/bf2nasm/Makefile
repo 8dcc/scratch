@@ -21,7 +21,7 @@ clean:
 
 # NOTE: Change depending if LINUX_SYSCALLS was defined or not
 output.out: output.o
-#	$(CC) -o $@ $^
+#	$(CC) $(CFLAGS) -o $@ $^
 	$(LD) $(LDFLAGS) -o $@ $^
 
 output.o: output.asm

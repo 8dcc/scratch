@@ -1,7 +1,6 @@
 
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
-LDFLAGS=
 
 #-------------------------------------------------------------------------------
 
@@ -21,4 +20,4 @@ output.c: bf2c.out input.bf
 	./bf2c.out < input.bf > output.c
 
 bf2c.out: bf2c.c
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^

@@ -1,8 +1,8 @@
 
 # Using -no-pie because rip-relative addressing is not supported in 32-bits
 CC=gcc
-CFLAGS=-std=c99 -Wall -Wextra -Wpedantic -m32 -no-pie
-LDFLAGS=
+CFLAGS=-std=c99 -Wall -Wextra -Wpedantic -m32
+LDFLAGS=-no-pie
 
 AS=nasm
 ASFLAGS=-f elf32
@@ -24,7 +24,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 %.out: $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 obj/%.c.o: %.c
 	@mkdir -p $(dir $@)

@@ -1,7 +1,6 @@
 
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic -m32
-LDFLAGS=
 
 AS=nasm
 ASFLAGS=-f elf32
@@ -23,7 +22,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 $(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 obj/%.c.o: %.c
 	@mkdir -p $(dir $@)

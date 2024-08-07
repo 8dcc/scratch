@@ -1,7 +1,7 @@
 
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
-LDFLAGS=
+LDLIBS=
 
 #-------------------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ clean:
 
 #-------------------------------------------------------------------------------
 
-ppm-mandelbrot.out:  LDFLAGS+=-lm
+ppm-mandelbrot.out:  LDLIBS+=-lm
 
 %.out: %.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)

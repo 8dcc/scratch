@@ -1,7 +1,6 @@
 
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
-LDFLAGS=
 
 OBJ_FILES=main.c.o util.c.o liblog.c.o
 OBJS=$(addprefix obj/, $(OBJ_FILES))
@@ -20,7 +19,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 $(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 obj/%.c.o : %.c
 	@mkdir -p $(dir $@)

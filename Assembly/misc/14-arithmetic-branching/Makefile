@@ -1,7 +1,6 @@
 
 CC=gcc
 CFLAGS=-Wall -Wextra -m32 -no-pie
-LDFLAGS=
 
 AS=nasm
 ASFLAGS=-g -f elf32
@@ -20,7 +19,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 %.out: obj/%.asm.o
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $<
 
 obj/%.c.o: %.c
 	@mkdir -p $(dir $@)
