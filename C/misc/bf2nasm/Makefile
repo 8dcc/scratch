@@ -2,8 +2,8 @@
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic -DLINUX_SYSCALLS
 
-ASM=nasm
-ASMFLAGS=-f elf64
+AS=nasm
+ASFLAGS=-f elf64
 
 LD=ld
 LDFLAGS=-m elf_x86_64
@@ -25,7 +25,7 @@ output.out: output.o
 	$(LD) $(LDFLAGS) -o $@ $^
 
 output.o: output.asm
-	$(ASM) $(ASMFLAGS) -o $@ $^
+	$(AS) $(ASFLAGS) -o $@ $^
 
 output.asm: bf2nasm.out input.bf
 	./bf2nasm.out < input.bf > output.asm
