@@ -37,7 +37,7 @@
 /* #define LOG_DATE */
 #define LOG_TIME
 #define LOG_TAG
-#define LOG_FUNC
+/* #define LOG_FUNC */
 
 /*----------------------------------------------------------------------------*/
 /* Enums */
