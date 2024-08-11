@@ -10,14 +10,16 @@
 Problem link: [[https://projecteuler.net/problem=6][Click me]].
 
 The sum of the squares of the first ten natural numbers is,
-\begin{equation*}
+
+$$
 1^2 + 2^2 + ... + 10^2 = 385
-\end{equation*}
+$$
 
 The square of the sum of the first ten natural numbers is,
-\begin{equation*}
+
+$$
 (1 + 2 + ... + 10)^2 = 55^2 = 3025
-\end{equation*}
+$$
 
 Hence the difference between the sum of the squares of the first ten natural
 numbers and the square of the sum is $3025 - 385 = 2640$.
@@ -96,12 +98,12 @@ int main(void) {
 I got this formula from [[https://www.wolframalpha.com][WolframAlpha]], and it can be used to improve the
 =sum_squares= function.
 
-\begin{equation*}
+$$
 \sum_{i=1}^{n} k^2 = \frac{1}{6} n (n + 1) (2 n + 1)
-\end{equation*}
+$$
 
-I have no idea how this formula could have been calculated, but please feel free
-to make a PR with more information.
+I honestly have no idea how this formula could have been calculated, but please
+feel free to make a PR with more information.
 
 #+begin_src C :tangle no
 int sum_squares(int limit) {
