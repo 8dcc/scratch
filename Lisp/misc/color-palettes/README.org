@@ -162,8 +162,4 @@ TODO: Finish the following.
   - Triadic Colors
   - Tetradic Colors
   - Split Complimentary Colors
-
-TODO: Make a generalized function that takes another =modify= function and applies
-that to the color depending on the color position in the palette. The =modify=
-function should receive the position and scale it's behavior accordingly.
 #+end_comment
