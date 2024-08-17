@@ -6,7 +6,7 @@
 static void print_graph(int* data, int data_sz) {
     /* Number of spaces between each value in the X axis. Needed since character
      * graphs are not squares. */
-    const int x_spacing = 3;
+    const int x_spacing = 2;
 
     /* Get max and min values */
     int min, max;
