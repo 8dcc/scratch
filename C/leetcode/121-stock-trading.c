@@ -1,14 +1,10 @@
+/* https://leetcode.com/problems/best-time-to-buy-and-sell-stock/ */
 
 #include <stdio.h>
 
 /*
- * Sliding Window.
- * ===============
- *
- * Problem.
- * ----------------------------------------------------------------------------
- *
- * https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/
+ * 121. Best Time to Buy and Sell Stock.
+ * ============================================================================
  *
  * You are given an array `prices' where `prices[i]' is the price of a given
  * stock on the i-th day.
