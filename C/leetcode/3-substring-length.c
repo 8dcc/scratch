@@ -1,11 +1,10 @@
-/*
- * https://leetcode.com/problems/longest-substring-without-repeating-characters/
- */
 
 #include <stdbool.h>
 #include <stdio.h>
 
 /*
+ * https://leetcode.com/problems/longest-substring-without-repeating-characters/
+ *
  * 3. Longest Substring Without Repeating Characters.
  * ============================================================================
  *

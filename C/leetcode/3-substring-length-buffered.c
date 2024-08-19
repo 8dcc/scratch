@@ -1,9 +1,10 @@
-/*
- * NOTE: For the original code and comments, see: 3-substring-length.c
- */
 
 #include <stdbool.h>
 #include <stdio.h>
+
+/*
+ * NOTE: For the original code and comments, see: 3-substring-length.c
+ */
 
 int lengthOfLongestSubstring(char* s) {
     int result = 0;
