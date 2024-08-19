@@ -6,7 +6,13 @@
 
 * Emacs lisp
 
-Function that calculates \(\sum_{i=a}^{b}f(i)\) with a given =a=, =b= and =f()=.
+Function that calculates
+
+$$
+\sum_{i=a}^{b} f(i)
+$$
+
+With a given =a=, =b= and =f=.
 
 Note that because emacs lisp uses different namespaces for variables and
 functions, we can't just use =(f a)=. We need to call the function with
