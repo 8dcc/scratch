@@ -23,6 +23,12 @@
  * - Output: [7,0,8]
  * - Explanation: 342 + 465 = 807.
  *
+ * Initial solution
+ * ----------------
+ *
+ * My initial solution did not use a dummy node. See the previous commit or:
+ * https://leetcode.com/problems/add-two-numbers/solutions/5666309/simple-o-n-solution-in-c/
+ *
  */
 
 struct ListNode {
@@ -31,47 +37,45 @@ struct ListNode {
 };
 
 struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
-    struct ListNode* result  = NULL;
-    struct ListNode* current = NULL;
+    /* Dummy node declared on the stack for a avoiding conditional inside the
+     * loop. */
+    struct ListNode dummy;
+
+    /* Actual value to be returned */
+    dummy.next = NULL;
+
+    struct ListNode* current = &dummy;
 
     /* Carry from the previous operation */
     int carry = 0;
 
     while (l1 != NULL || l2 != NULL || carry != 0) {
-        /* First, allocate the first/next node in the result linked list */
-        if (result == NULL) {
-            result  = malloc(sizeof(struct ListNode));
-            current = result;
-        } else {
-            current->next = malloc(sizeof(struct ListNode));
-            current       = current->next;
-        }
-
-        int n1 = 0;
-        int n2 = 0;
+        /* Initialize the sum as the carry from the last iteration */
+        int sum = carry;
 
         /* If a pointer is valid, save the value and move to the next one for
          * the next iteration. Otherwise, the value is a leading zero. */
         if (l1 != NULL) {
-            n1 = l1->val;
+            sum += l1->val;
             l1 = l1->next;
         }
 
         if (l2 != NULL) {
-            n2 = l2->val;
+            sum += l2->val;
             l2 = l2->next;
         }
 
-        /* Add the two digits, and the carry from the last iteration */
-        int sum = n1 + n2 + carry;
+        /* Allocate the next node in the result linked list */
+        current->next = malloc(sizeof(struct ListNode));
+        current       = current->next;
+        current->next = NULL;
 
         /* Save right-most digit of result, and carry */
         current->val = sum % 10;
         carry        = sum / 10;
     }
 
-    current->next = NULL;
-    return result;
+    return dummy.next;
 }
 
 int main(void) {
