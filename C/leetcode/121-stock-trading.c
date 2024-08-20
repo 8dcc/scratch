@@ -4,8 +4,8 @@
 /*
  * https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
  *
- * 121. Best Time to Buy and Sell Stock.
- * ============================================================================
+ * 121. Best Time to Buy and Sell Stock
+ * ====================================
  *
  * You are given an array `prices' where `prices[i]' is the price of a given
  * stock on the i-th day.
@@ -16,8 +16,17 @@
  * Return the maximum profit you can achieve from this transaction. If you
  * cannot achieve any profit, return 0.
  *
- * Examples.
- * ----------------------------------------------------------------------------
+ * Example
+ * -------
+ *
+ * - Input: prices = [7,1,5,3,6,4]
+ * - Output: 5
+ * - Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6),
+ *   profit = 6-1 = 5. Note that buying on day 2 and selling on day 1 is not
+ *   allowed because you must buy before you sell.
+ *
+ * Notes
+ * -----
  *
  * This is the graph for the first test case: [7,1,5,3,6,4]
  *
@@ -33,9 +42,6 @@
  *    0 |
  *      +------------------ (Day)
  *        0  1  2  3  4  5
- *
- * Notes.
- * ----------------------------------------------------------------------------
  *
  * - You obviously need to buy prior to selling.
  * - In order to make profit, the stock when buying has to be lower than when
