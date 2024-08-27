@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
+CFLAGS=-std=c99 -Wall -Wextra -Wpedantic -ggdb3 -fsanitize=address
 LDLIBS=
 
 #-------------------------------------------------------------------------------
