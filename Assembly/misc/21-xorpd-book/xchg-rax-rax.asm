@@ -18,8 +18,15 @@ section .text
 
 global main
 main:
-    mov rax, qword [target_page]
-    jmp rax
+    mov rax, 0
+    mov rbx, 0
+    mov rcx, 0
+    mov rdx, 0
+    mov rsi, 0
+    mov rdi, 0
+    mov rbp, 0
+
+    jmp qword [target_page]
 
 .unreachable:
     jmp .unreachable
