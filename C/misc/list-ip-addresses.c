@@ -17,7 +17,7 @@
 int main(void) {
     struct ifaddrs* ifaddr;
     if (getifaddrs(&ifaddr) == -1) {
-        perror("getifaddrs");
+        fprintf(stderr, "Call to `getifaddrs' failed.");
         exit(1);
     }
 
