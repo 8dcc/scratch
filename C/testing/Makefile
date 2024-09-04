@@ -1,6 +1,6 @@
 
 CC=gcc
-CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
+CFLAGS=-std=gnu99 -Wall -Wextra -Wpedantic
 
 CXX=g++
 CXXFLAGS=-std=gnu++20 -Wall -Wextra -Wpedantic
