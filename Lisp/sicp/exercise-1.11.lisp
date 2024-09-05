@@ -17,13 +17,12 @@
 ;; The recursive version is pretty straight forward. Basically a 1:1 translation
 ;; of the mathematical formula.
 
-(define f-recur
-    (lambda (n)
-      (if (< n 3)
-          n
-          (+ (f-recur (- n 1))
-             (* 2 (f-recur (- n 2)))
-             (* 3 (f-recur (- n 3)))))))
+(defun f-recur (n)
+  (if (< n 3)
+      n
+      (+ (f-recur (- n 1))
+         (* 2 (f-recur (- n 2)))
+         (* 3 (f-recur (- n 3))))))
 
 (f-recur 2)  ; Expected: 2
 (f-recur 5)  ; Expected: 25
@@ -59,19 +58,17 @@
 ;; closures. This is because when calling `iter', the `n' variable is still
 ;; bound.
 
-(define f-iter
-    (lambda (n)
-      (define iter
-          (lambda (i result1 result2 result3)
-            (if (> i n)
-                result1
-                (iter (+ i 1)
-                      (+ result1 (* 2 result2) (* 3 result3))
-                      result1
-                      result2))))
-      (if (< n 3)
-          n
-          (iter 3 2 1 0))))
+(defun f-iter (n)
+  (defun iter (i result1 result2 result3)
+    (if (> i n)
+        result1
+        (iter (+ i 1)
+              (+ result1 (* 2 result2) (* 3 result3))
+              result1
+              result2)))
+  (if (< n 3)
+      n
+      (iter 3 2 1 0)))
 
 (f-iter 2)  ; Expected: 2
 (f-iter 5)  ; Expected: 25
