@@ -18,20 +18,40 @@ Note that because emacs lisp uses different namespaces for variables and
 functions, we can't just use =(f a)=. We need to call the function with
 =(funcall f a)=, which is equivalent to =(apply f (a))=.
 
-#+begin_src emacs-lisp :results output
+#+begin_src emacs-lisp
 (defun summation (a b f)
   (if (> a b)
       0
     (+ (funcall f a)
        (summation (+ a 1) b f))))
 
-(princ (summation 1 5 (lambda (x) x)))
-(princ ", ")
-(princ (summation 1 5 (lambda (x) (expt 2 x))))
+(list (summation 1 5 (lambda (x) x))
+      (summation 1 5 (lambda (x) (expt 2 x))))
 #+end_src
 
 #+RESULTS:
-: 15, 62
+| 15 | 62 |
+
+The problem with this function is that it's recursive and it could be done in an
+iterative way, with $O(1)$ space complexity.
+
+#+begin_src emacs-lisp
+(defun summation (a b f)
+  (defun iter (i total)
+    (if (> i b)
+        total
+      (iter (+ i 1)
+            (+ total (funcall f i)))))
+  (iter a 0))
+
+(list (summation 1 5 (lambda (x) x))
+      (summation 1 5 (lambda (x) (expt 2 x))))
+#+end_src
+
+#+RESULTS:
+| 15 | 62 |
+
+For more information, see [[https://web.mit.edu/6.001/6.037/sicp.pdf#subsection.1.2.1][section 1.2.1 of SICP]].
 
 * C
 
@@ -57,8 +77,10 @@ int pow2(int x) {
     return (1 << x); /* (2 ^ x) */
 }
 
-printf("%d, ", summation(1, 5, echo));
-printf("%d\n", summation(1, 5, pow2));
+int main(void) {
+    printf("%d, ", summation(1, 5, echo));
+    printf("%d\n", summation(1, 5, pow2));
+}
 #+end_src
 
 #+RESULTS:

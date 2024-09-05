@@ -4,6 +4,16 @@
     (+ (funcall f a)
        (summation (+ a 1) b f))))
 
-(princ (summation 1 5 (lambda (x) x)))
-(princ ", ")
-(princ (summation 1 5 (lambda (x) (expt x 2))))
+(list (summation 1 5 (lambda (x) x))
+      (summation 1 5 (lambda (x) (expt 2 x))))
+
+(defun summation (a b f)
+  (defun iter (i total)
+    (if (> i b)
+        total
+      (iter (+ i 1)
+            (+ total (funcall f i)))))
+  (iter a 0))
+
+(list (summation 1 5 (lambda (x) x))
+      (summation 1 5 (lambda (x) (expt 2 x))))
