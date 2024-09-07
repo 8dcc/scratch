@@ -30,25 +30,13 @@
   (/ n 2))
 
 ;;------------------------------------------------------------------------------
-;; The recursive version, equivalent to the original `fast-expt' from SICP.
+;; The recursive version, equivalent to the original `fast-expt' from SICP. I
+;; wrote the iterative version here, but I moved it to exercise-1.18.lisp.
 
 (defun fast-mul (a b)
   (cond ((equal? b 0) 0)
         ((even? b) (fast-mul (double a) (halve b)))
         (else (+ a (fast-mul a (- b 1))))))
-
-(fast-mul 5 7)  ; Expected: 35
-(fast-mul 5 8)  ; Expected: 40
-
-;;------------------------------------------------------------------------------
-;; And the iterative version, equivalent to Exercise 1.16.
-
-(defun fast-mul (a b)
-  (defun iter (total a b)
-    (cond ((equal? b 0) total)
-          ((even? b) (iter total (double a) (halve b))) ; a *= 2; b /= 2;
-          (else (iter (+ total a) a (- b 1)))))         ; total += a; b -= 1;
-  (iter 0 a b))
 
 (fast-mul 5 7)  ; Expected: 35
 (fast-mul 5 8)  ; Expected: 40
