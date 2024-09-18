@@ -48,30 +48,55 @@ static bool regex(const char* str, const char* pat, size_t* nmatch,
     return true;
 }
 
-int main(void) {
-    const char* str = "static int func(int num0, char c, int num1)";
-    const char* pat = "(int)";
+static void print_match_data(const char* str, int base_offset, size_t nmatch,
+                             regmatch_t* pmatch) {
+    const int global_start = base_offset + pmatch[0].rm_so;
+    const int global_end   = base_offset + pmatch[0].rm_eo;
 
-    int base_idx = 0;
+    printf("Pattern match from %d to %d: \"", global_start, global_end);
+    for (int i = global_start; i < global_end; i++)
+        putchar(str[i]);
+    printf("\"\n");
+
+    /* Print each sub-expression */
+    for (size_t i = 1; i < nmatch; i++) {
+        if (pmatch[i].rm_so == -1 || pmatch[i].rm_eo == -1)
+            break;
+
+        const int start = base_offset + pmatch[i].rm_so;
+        const int end   = base_offset + pmatch[i].rm_eo;
+
+        printf("  Sub-expression %zu from %d to %d: \"", i, start, end);
+        for (int j = start; j < end; j++)
+            putchar(str[j]);
+        printf("\"\n");
+    }
+}
+
+int main(int argc, char** argv) {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s \"PATTERN\" \"STRING\"\n", argv[0]);
+        exit(1);
+    }
+
+    const char* pat = argv[1];
+    const char* str = argv[2];
+
+    int str_offset = 0;
 
     size_t nmatch;
     regmatch_t* pmatch;
-    while (regex(&str[base_idx], pat, &nmatch, &pmatch)) {
-        if (pmatch[1].rm_so == -1 || pmatch[1].rm_eo == -1)
+    while (regex(&str[str_offset], pat, &nmatch, &pmatch)) {
+        if (pmatch[0].rm_so == -1 || pmatch[0].rm_eo == -1)
             break;
 
-        int start_idx = base_idx + pmatch[1].rm_so;
-        int end_idx   = base_idx + pmatch[1].rm_eo;
-
-        printf("Match from %d to %d: \"", start_idx, end_idx);
-        for (int i = start_idx; i < end_idx; i++)
-            putchar(str[i]);
-        printf("\"\n");
+        /* Print the global match and each sub-expression */
+        print_match_data(str, str_offset, nmatch, pmatch);
 
         /*
-         * Next iteration, continue searching from the end of the last match.
+         * Next iteration, continue searching from the end of the global match.
          */
-        base_idx = end_idx;
+        str_offset += pmatch[0].rm_eo;
 
         /*
          * Each (successful) call to `regex' requires the caller to free
