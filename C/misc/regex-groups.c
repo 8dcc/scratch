@@ -15,6 +15,8 @@ static bool regex(const char* str, const char* pat, size_t nmatch,
     }
 
     int code = regexec(&r, str, nmatch, pmatch, 0);
+    regfree(&r);
+
     if (code > REG_NOMATCH) {
         char err[100];
         regerror(code, &r, err, sizeof(err));
