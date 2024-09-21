@@ -33,6 +33,9 @@
  * I thought it was going to be harder because of signedness, but the only thing
  * that had to change was the overflow conditional, since we can hold an extra
  * negative value.
+ *
+ * Actually, this conditional isn't even necessary because no valid input can
+ * satisfy it. More information on the comment bellow.
  */
 
 int reverse(int x) {
@@ -47,11 +50,16 @@ int reverse(int x) {
          *
          * Since we have to multiply by 10, if the result before "appending" the
          * digit is less than -214748364 or greater than 214748364, we know it
-         * will overflow. However, if it's equal to those values, we have to
-         * check if the digit we are "appending" will cause the number to
-         * overflow. For negative values we have to make sure the digit is not
-         * smaller than -8, and for positive values we have to make sure it's
-         * not greater than 7.
+         * will overflow.
+         *
+         * However, if it's equal to those values, we have to check if the digit
+         * we are "appending" will cause the number to overflow. For negative
+         * values we have to make sure the digit is not smaller than -8, and for
+         * positive values we have to make sure it's not greater than 7.
+         *
+         * EDIT: We don't have to check this last part, since the first digit of
+         * the input can't be smaller than -2 or greater than 2. I decided to
+         * leave the checks because they help illustrate the problem.
          *
          * We assume that the compiler will optimize the constant divisions, but
          * we could calculate them once outside the loop instead of dividing
