@@ -31,7 +31,7 @@ _start:
                             ; the word like that makes sense.
     push    word 2          ; (AF_INET)
     mov     ecx, esp        ; Argument pointer into ecx
-    push    byte 16         ; Size of the arguments ecx is pointing to. See stack comment bellow
+    push    byte 16         ; Size of the arguments ecx is pointing to. See stack comment below
     push    ecx             ; Push the arg pointer
     push    edi             ; Push the FD from the socket
     mov     ecx, esp        ; Current stack layout:

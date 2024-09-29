@@ -35,7 +35,7 @@
  * negative value.
  *
  * Actually, this conditional isn't even necessary because no valid input can
- * satisfy it. More information on the comment bellow.
+ * satisfy it. More information on the comment below.
  */
 
 int reverse(int x) {

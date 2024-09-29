@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
             real_x *= ZOOM;
             real_x += X_OFFSET;
 
-            /* These 2 values will be increased each iteration bellow */
+            /* These 2 values will be increased each iteration below */
             double x = real_x;
             double y = real_y;
 

@@ -26,7 +26,7 @@ __attribute__((constructor)) void load(void) {
     }
 
     /* Get symbol from the handle we just got, cast into type and change value
-     * bellow */
+     * below */
     int* test_var_ptr = (int*)dlsym(handle, "test_var");
     printf("Got ptr.\n");
 
