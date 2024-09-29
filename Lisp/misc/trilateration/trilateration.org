@@ -1,0 +1,133 @@
+#+TITLE: Trilateration
+#+AUTHOR: 8dcc
+#+OPTIONS: toc:2
+#+STARTUP: nofold
+#+PROPERTY: header-args:scheme :tangle trilateration.scm
+#+PROPERTY: header-args:C :tangle trilateration.c
+#+LATEX_HEADER: \usepackage{amsmath}
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \newenvironment{tikzpicturecenter}{\vspace{1em}\begin{center}\begin{tikzpicture}}{\end{tikzpicture}\end{center}}
+
+* Introduction
+
+TODO: The current formulas are not correct.
+
+Let $P$ be an unknown point in a two-dimensional space. If we know the positions
+of two points $A$ and $B$ (called stations), and their distances from $P$, we
+can obtain the position of $P$. This process is called /trilateration/, even
+thought it's often referred to as /triangulation/.
+
+\begin{tikzpicturecenter}
+\coordinate (s1) at (1,2);
+\coordinate (s2) at (5,1);
+\coordinate (p) at (2.5,3.5);
+
+% Grid
+\draw[thin, gray, dotted] (0,0) grid (6,5);
+
+% Lines
+\draw[dashed] (s1) -- (s2) node[pos=0.5, below left]{$\Delta$};
+\draw (s1) -- (p) node[pos=0.5, above left]{$d_a$};
+\draw (s2) -- (p) node[pos=0.5, above right]{$d_b$};
+
+% Points in centers
+\filldraw (s1) circle (1pt) node[above left]{$A$};
+\filldraw (s2) circle (1pt) node[below right]{$B$};
+\filldraw (p) circle (1pt) node[above]{$P$};
+\end{tikzpicturecenter}
+
+* Calculating trilateration
+
+First, the distance between the two stations needs to be calculated.
+
+$$
+\Delta = \sqrt{(B_x - A_x)^2 + (B_y - A_y)^2}
+$$
+
+The formula for finding a point $P$ using trilateration is the following:
+
+\begin{align*}
+P_x &= \frac{d_a^2 - d_b^2 + \Delta^2}{2\Delta} \\
+P_y &= \pm \sqrt{d_a^2 - P_x^2}
+\end{align*}
+
+Note that $y$ has two values (i.e., solution is ambiguous); this is usually not
+a problem.
+
+* In Scheme
+
+First, the function for calculating a distance between two points. =A= and =B= are
+expected to be pairs with the form =(x . y)=.
+
+#+begin_src scheme
+(define (square n)
+  (* n n))
+
+(define (distance a b)
+  (sqrt (+ (square (- (car b) (car a)))
+           (square (- (cdr b) (cdr a))))))
+
+(distance '(1 . 2) '(5 . 1))
+#+end_src
+
+Then, the function for calculating the version of $P$ with positive $y$.
+
+#+begin_src scheme
+(define (trilaterate-positive s1 d1 s2 d2)
+  (define (calculate-px)
+    (let ((station-distance (distance s1 s2)))
+      (/ (+ (- (square d1) (square d2))
+            (square station-distance))
+         (* 2 station-distance))))
+  (define (calculate-py px)
+    (sqrt (- (square d1)
+             (square px))))
+  (let ((px (calculate-px)))
+    (cons px (calculate-py px))))
+#+end_src
+
+And optionally, a function that returns both positive and negative results.
+
+#+begin_src scheme
+(define (trilaterate s1 d1 s2 d2)
+  (let ((result (trilaterate-positive s1 d1 s2 d2)))
+    (list result
+          (cons (car result)
+                (- (cdr result))))))
+#+end_src
+
+Finally, an example call.
+
+#+begin_src scheme
+(trilaterate '(1 . 2) 2
+             '(5 . 1) 3)
+#+end_src
+
+Which results in $(1.45, \pm 1.37)$.
+
+TODO: This is incorrect.
+
+Plotted:
+
+\begin{tikzpicturecenter}
+\coordinate (s1) at (1,2);
+\coordinate (s2) at (5,1);
+\coordinate (p) at (1.45,1.37);
+
+% Grid
+\draw[thin, gray, dotted] (0,0) grid (6,5);
+
+% Lines
+\draw[dashed] (s1) -- (s2) node[pos=0.5, below left]{$\Delta$};
+\draw (s1) -- (p) node[pos=0.5, above left]{$d_1$};
+\draw (s2) -- (p) node[pos=0.5, above right]{$d_2$};
+
+% Radiuses
+\draw[dotted] (s1) circle (2);
+\draw[dotted] (s2) circle (3);
+
+% Points in centers
+\filldraw (s1) circle (1pt) node[above left]{$S_1$};
+\filldraw (s2) circle (1pt) node[below right]{$S_2$};
+\filldraw (p) circle (1pt) node[above]{$P$};
+\end{tikzpicturecenter}
