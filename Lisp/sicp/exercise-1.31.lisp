@@ -19,7 +19,7 @@
 
 (defun product-recur (term a next b)
   (if (> a b)
-      1
+      1.0
       (* (term a)
          (product-recur term (next a) next b))))
 
@@ -29,7 +29,7 @@
         result
         (iter (next a)
               (* result (term a)))))
-  (iter a 1))
+  (iter a 1.0))
 
 ;;------------------------------------------------------------------------------
 
@@ -45,4 +45,43 @@
 
 ;;------------------------------------------------------------------------------
 
-;; TODO: Approximate PI
+(defun wallis-product (accuracy)
+  ;; `product-pi' calculates the top or bottom part of the division, starting at
+  ;; the argument START and ending at ACCURACY.
+  (defun product-pi (start)
+    (product-iter (lambda (x) (* x x))
+                  start
+                  (lambda (x) (+ x 2))
+                  accuracy))
+  (/ (* 2 (product-pi 4))
+     (* (product-pi 3) (+ accuracy 1))))
+
+(defun approximate-pi (accuracy)
+  (* 4 (wallis-product accuracy)))
+
+(approximate-pi 100) ; Expected: ~3.12
+
+;;------------------------------------------------------------------------------
+
+;; This version is much better because it uses the alternative formula:
+;;
+;;    PI                      2i         2i
+;;   ---- = prod_(i=1)^n ( -------- * -------- )
+;;    2                     2i - 1     2i + 1
+;;
+;;
+(defun wallis-product-alternative (n)
+  (defun term (i)
+    (* (/ (* 2 i)
+          (- (* 2 i) 1))
+       (/ (* 2 i)
+          (+ (* 2 i) 1))))
+  (product-iter term
+                1
+                (lambda (x) (+ x 1))
+                n))
+
+(defun approximate-pi-alternative (accuracy)
+  (* 2 (wallis-product-alternative accuracy)))
+
+(approximate-pi-alternative 100) ; Expected: ~3.13
