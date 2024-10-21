@@ -209,7 +209,7 @@ int main(void) {
      */
     FILE* fp = fopen("output.wav", "wb");
     fwrite(header, 1, sizeof(WavHeader), fp);
-    fwrite(data, sizeof(uint16_t), num_samples, fp);
+    fwrite(data, sizeof(uint32_t), num_samples, fp);
     fclose(fp);
 
     free(data);
