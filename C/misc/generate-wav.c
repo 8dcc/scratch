@@ -19,6 +19,7 @@
  */
 
 #include <stdint.h>
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -101,7 +102,8 @@ static void init_wav_header(WavHeader* h, enum ENumChannels num_channels,
      * an argument.
      *
      * We also set the sample rate, that is, the number of samples per
-     * second. We also received it as an argument.
+     * second. We also received it as an argument. This is independent of
+     * the number of channels.
      *
      * Then we specify the `BitsPerSample' property, and it's important to note
      * that it's the size in bits of a sample in a single channel.
@@ -132,8 +134,8 @@ static void init_wav_header(WavHeader* h, enum ENumChannels num_channels,
      * channels), and we obtain the `Subchunk2Size' property.
      */
     memcpy(h->Subchunk2ID, "data", 4);
-    const int num_samples = h->SampleRate * audio_len_secs;
-    h->Subchunk2Size      = num_samples * h->BlockAlign;
+    const int total_samples = h->SampleRate * audio_len_secs;
+    h->Subchunk2Size        = total_samples * h->BlockAlign;
 
     /*
      * Finally, we set the `ChunkSize' property from the "RIFF" chunk
@@ -142,6 +144,20 @@ static void init_wav_header(WavHeader* h, enum ENumChannels num_channels,
      * haven't written yet).
      */
     h->ChunkSize = h->Subchunk2Size + sizeof(WavHeader);
+}
+
+/*
+ * Allocate the necessary samples for the specified WAV header.
+ *
+ * Remember that `header.BlockAlign' is the size of a sample in all channels. We
+ * also calculate the total samples in the file from the samples per second and
+ * the audio length. We multiply those two numbers to obtain the number of bytes
+ * the caller needs.
+ */
+static void* allocate_wav_data(WavHeader* header, int audio_len_secs) {
+    const size_t total_samples    = header->SampleRate * audio_len_secs;
+    const size_t bytes_per_sample = header->BlockAlign;
+    return malloc(total_samples * bytes_per_sample);
 }
 
 /*
@@ -157,30 +173,45 @@ static inline uint16_t generate_sample(int sample_number, double freq,
 }
 
 /*
- * Fill the body of a WAV file with some test samples.
+ * Fill the data of a WAV file with samples of the specified amplitude and
+ * frequency, for a specified number of seconds.
+ *
+ * In this case, it's assumed that `header.BitsPerSample' is 16, since it's
+ * hard-coded in `init_wav_header'.
  */
-static void fill_wav_body(WavHeader* header, uint32_t* data,
-                          size_t num_samples) {
-    const int wave_amplitude = 1000;
-    const double note_freq   = 256.0;
+static void fill_data_mono(WavHeader* header, uint16_t* data, int seconds,
+                           int amplitude, double freq) {
+    assert(header->BitsPerSample == 16);
+    assert(header->NumChannels == MONO);
 
-    /*
-     * Populate both channels of `data' with `num_samples' notes of frequency
-     * `note_freq'.
-     *
-     * The left samples will occupy the 16 most significant bits (left), and the
-     * right samples will occupy the 16 least significant bits (right).
-     */
-    for (size_t i = 0; i < num_samples; i++) {
+    const size_t total_samples = header->SampleRate * seconds;
+    for (size_t i = 0; i < total_samples; i++)
+        data[i] = generate_sample(i, freq, amplitude, header->SampleRate);
+}
+
+/*
+ * Fill the data of a WAV file with samples of the specified amplitude and
+ * frequency, for a specified number of seconds.
+ *
+ * In this case, it's assumed that `header.BitsPerSample' is 16, since it's
+ * hard-coded in `init_wav_header'. Each sample will be 32 bits, the left
+ * channel sample will occupy the first 16 bits, and the right channel sample
+ * will occupy the least significant 16 bits.
+ */
+static void fill_data_stereo(WavHeader* header, uint16_t* data, int seconds,
+                             int amplitude, double freq) {
+    assert(header->BitsPerSample == 16);
+    assert(header->NumChannels == STEREO);
+
+    const size_t total_samples = header->SampleRate * seconds;
+    for (size_t i = 0; i < total_samples; i++) {
         const uint16_t left_sample =
-          generate_sample(i, note_freq + 100, wave_amplitude,
-                          header->SampleRate);
-        data[i] = left_sample << 16;
+          generate_sample(i, freq + 100, amplitude, header->SampleRate);
+        *data++ = left_sample;
 
         const uint16_t right_sample =
-          generate_sample(i, note_freq - 100, wave_amplitude,
-                          header->SampleRate);
-        data[i] |= right_sample;
+          generate_sample(i, freq - 100, amplitude, header->SampleRate);
+        *data++ = right_sample;
     }
 }
 
@@ -191,25 +222,39 @@ int main(void) {
      * Initialize the WAV header, specifying the number of channels, the samples
      * per second, and the audio length in seconds.
      */
-    const enum ENumChannels num_channels = STEREO;
+    const enum ENumChannels num_channels = MONO;
     const int sample_rate                = 8000;
-    const int audio_length               = 10;
-    init_wav_header(header, num_channels, sample_rate, audio_length);
+    const int audio_len_secs             = 10;
+    init_wav_header(header, num_channels, sample_rate, audio_len_secs);
 
     /*
-     * Each element should be `header.BlockAlign' (2 bytes * 2 channels in our
-     * case).
+     * Allocate and fill the WAV data with a static tone. Set the wave amplitude
+     * and the note frequency here. In the stereo version, each channel will
+     * have a slightly different frequency.
      */
-    const size_t num_samples = header->SampleRate * audio_length;
-    uint32_t* data           = malloc(num_samples * sizeof(uint32_t));
-    fill_wav_body(header, data, num_samples);
+    uint16_t* data      = allocate_wav_data(header, audio_len_secs);
+    const int amplitude = 1000;
+    const double freq   = 256.0;
+    switch (header->NumChannels) {
+        case MONO:
+            fill_data_mono(header, data, audio_len_secs, amplitude, freq);
+            break;
+
+        case STEREO:
+            fill_data_stereo(header, data, audio_len_secs, amplitude, freq);
+            break;
+
+        default:
+            fprintf(stderr, "Invalid channel number.\n");
+            abort();
+    }
 
     /*
      * Write the header and data to the output file.
      */
     FILE* fp = fopen("output.wav", "wb");
     fwrite(header, 1, sizeof(WavHeader), fp);
-    fwrite(data, sizeof(uint32_t), num_samples, fp);
+    fwrite(data, header->BlockAlign, header->SampleRate * audio_len_secs, fp);
     fclose(fp);
 
     free(data);
