@@ -12,6 +12,11 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ----------------------------------------------------------------------------
+ *
+ * NOTE: An improved version of this allocator is available at:
+ * https://github.com/8dcc/libpool
  */
 
 #include <stddef.h>
@@ -194,8 +199,8 @@ void* pool_alloc(Pool* pool) {
  *   |
  *   '-- (pool.free_chunk)
  *
- * Note how the second block remains unchanged, and if we wanted to free it, we
- * would just have to set the first block as the `.next' pointer of the second.
+ * Note how the second chunk remains unchanged, and if we wanted to free it, we
+ * would just have to set the first chunk as the `.next' pointer of the second.
  */
 void pool_free(Pool* pool, void* ptr) {
     if (ptr == NULL)
