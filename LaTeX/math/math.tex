@@ -661,12 +661,40 @@ avoided.
 The following list presents some groups of propositions that share the same
 meaning. These become tautologies when using a biconditional operator, but I
 decided to separate them from the previous list because they serve as a list of
-propositions that could be expressed with an alternate form.
+propositions that could be expressed with an alternate form\footnote{The first
+two are called De Morgan's Laws.}.
 
 \begin{itemize}
   \item $\neg (p \land q) \ \iff \ \neg p \lor \neg q$
+  \item $\neg (p \lor q) \ \iff \ \neg p \land \neg q$
   \item $(p \land q) \lor (\neg p \land q) \ \iff \ q$
 \end{itemize}
+
+% ------------------------------------------------------------------------------
+\section{Bit tricks}
+% ------------------------------------------------------------------------------
+
+These laws come from the Hacker's Delight book, by Henry S. Warren, Jr.
+
+\begin{align*}
+  \neg (x\ \&\ y)   &= \neg x\ |\ \neg y \\
+  \neg (x\ |\ y)    &= \neg x\ \&\ \neg y \\
+  \neg (x + 1)      &= \neg x - 1 \\
+  \neg (x - 1)      &= \neg x + 1 \\
+  \neg (-x)         &= x - 1 \\
+  \neg (x \oplus y) &= \neg x \oplus y \\
+  \neg (x + y)      &= \neg x - y \\
+  \neg (x - y)      &= \neg x + y \\
+\end{align*}
+
+You can exchange the contents of two registers without using a third, with this
+\emph{exclusive or} trick:
+
+\begin{align*}
+  x \gets& x \oplus y \\
+  y \gets& y \oplus x \\
+  x \gets& x \oplus y \\
+\end{align*}
 
 % ------------------------------------------------------------------------------
 \section{Modulus operation}
@@ -854,8 +882,10 @@ HSV \textit{value}.
   Nykamp DQ. \emph{The dot product}. Math Insight. Retrieved 23 May 2024,
   from \url{https://mathinsight.org/dot_product}
 \bibitem{ads}
-  Al Doerr and Ken Levasseur. \emph{Applied Discrete Structures}.
+  Al Doerr and Ken Levasseur. (2024) \emph{Applied Discrete Structures}.
   3rd ed. pp. 39-72.
+\bibitem{hackers_delight}
+  Henry S. Warren, Jr. (2002) \emph{Hacker's Delight}.
 \end{thebibliography}
 
 \end{document}
