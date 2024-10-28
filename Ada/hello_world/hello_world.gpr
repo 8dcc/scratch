@@ -8,6 +8,6 @@ Project Hello_World is
   end Builder;
 
   package Compiler is
-     for Switches ("Ada") use ("-Wall", "-Wextra", "-ggdb3");
+     for Switches ("Ada") use ("-Wall", "-Wextra", "-Wpedantic", "-ggdb3");
   end Compiler;
 end Hello_World;
