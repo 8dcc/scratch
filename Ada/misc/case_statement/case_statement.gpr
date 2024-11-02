@@ -1,13 +1,13 @@
 Project Case_Statement is
-  for Main use ("case_statement");
-  for Object_Dir use "obj";
-  for Exec_Dir use ".";
+    for Main use ("case_statement");
+    for Object_Dir use "obj";
+    for Exec_Dir use ".";
 
-  package Builder is
-     for Executable_Suffix use ".out";
-  end Builder;
+    package Builder is
+        for Executable_Suffix use ".out";
+    end Builder;
 
-  package Compiler is
-     for Switches ("Ada") use ("-Wall", "-Wextra", "-Wpedantic", "-ggdb3");
-  end Compiler;
+    package Compiler is
+        for Switches ("Ada") use ("-Wall", "-Wextra", "-Wpedantic", "-ggdb3");
+    end Compiler;
 end Case_Statement;

@@ -1,13 +1,13 @@
 Project Symbol_Scopes is
-  for Main use ("symbol_scopes");
-  for Object_Dir use "obj";
-  for Exec_Dir use ".";
+    for Main use ("symbol_scopes");
+    for Object_Dir use "obj";
+    for Exec_Dir use ".";
 
-  package Builder is
-     for Executable_Suffix use ".out";
-  end Builder;
+    package Builder is
+        for Executable_Suffix use ".out";
+    end Builder;
 
-  package Compiler is
-     for Switches ("Ada") use ("-Wall", "-Wextra", "-ggdb3");
-  end Compiler;
+    package Compiler is
+        for Switches ("Ada") use ("-Wall", "-Wextra", "-ggdb3");
+    end Compiler;
 end Symbol_Scopes;
