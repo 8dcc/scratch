@@ -69,6 +69,11 @@ static size_t get_abbrev_sz(char** words, size_t words_sz, size_t target_idx) {
      * We check each word, and look for matches. If there are none, we found the
      * string.
      *
+     * We could start `i' as `target_idx+1' if we assumed that there were no
+     * repeated items in `words'. We could also use two loops to avoid the
+     * conditional: One iterates [0..target_idx) and the other iterates
+     * (target_idx..word_sz).
+     *
      * If the whole `target' matches another string (i.e. it's repeated in
      * `words'), the index of the last character is returned.
      */
@@ -77,7 +82,10 @@ static size_t get_abbrev_sz(char** words, size_t words_sz, size_t target_idx) {
     for (abbrev_sz = 1; abbrev_sz <= target_len && abbrev_has_match;
          abbrev_sz++) {
         abbrev_has_match = false;
-        for (size_t i = target_idx + 1; i < words_sz; i++) {
+        for (size_t i = 0; i < words_sz; i++) {
+            if (i == target_idx)
+                continue;
+
             if (!strncmp(target, words[i], abbrev_sz)) {
                 abbrev_has_match = true;
                 break;
