@@ -9,7 +9,7 @@ void move_stack(int num, char from, char to, char aux) {
     move_stack(num - 1, aux, to, from);
 }
 
-int main() {
+int main(void) {
     move_stack(4, 'A', 'B', 'C');
     return 0;
 }

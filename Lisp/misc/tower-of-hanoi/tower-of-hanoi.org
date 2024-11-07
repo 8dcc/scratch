@@ -6,21 +6,18 @@
 
 * Emacs lisp
 
-See SICP lectures by Harold Abelson and Gerald Jay Sussman, 1986. [[https://youtu.be/V_7mmwpgJHU?si=taZcChDFRIyKGzLe&t=2843][Link]]
+See SICP lectures by Harold Abelson and Gerald Jay Sussman, 1986. [[https://youtu.be/V_7mmwpgJHU?si=taZcChDFRIyKGzLe&t=2843][Link]].
 
 #+begin_src emacs-lisp :results output
-(defun my-print-list (lst)
-  (if (not (null lst))
-      (progn
-        (princ (car lst))
-        (my-print-list (cdr lst)))))
+(defun print-items (lst)
+  (dolist (e lst)
+    (princ e)))
 
 (defun move-stack (num from to aux)
-  (if (> num 0)
-      (progn
-        (move-stack (- num 1) from aux to)
-        (my-print-list (list "Moving from " from " to " to "\n"))
-        (move-stack (- num 1) aux to from))))
+  (when (> num 0)
+    (move-stack (- num 1) from aux to)
+    (print-items (list "Moving from " from " to " to "\n"))
+    (move-stack (- num 1) aux to from)))
 
 (move-stack 4 'A 'B 'C)
 #+end_src
@@ -49,7 +46,7 @@ Moving from C to B
 #+begin_src C :results output
 #include <stdio.h>
 
-void move_stack (int num, char from, char to, char aux) {
+void move_stack(int num, char from, char to, char aux) {
     if (num <= 0)
         return;
 
@@ -58,7 +55,10 @@ void move_stack (int num, char from, char to, char aux) {
     move_stack(num - 1, aux, to, from);
 }
 
-move_stack(4, 'A', 'B', 'C');
+int main(void) {
+    move_stack(4, 'A', 'B', 'C');
+    return 0;
+}
 #+end_src
 
 #+RESULTS:
