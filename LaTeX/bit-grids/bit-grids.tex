@@ -1,11 +1,25 @@
-\documentclass[border=10pt]{standalone}
+\documentclass{article}
 
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
-\begin{document}
+% Smaller margins
+\usepackage[
+a4paper,
+left=3cm,
+right=3cm,
+top=3cm,
+bottom=3cm,
+footskip=1cm
+]{geometry}
 
+% Remove page numbers
+\pagestyle{empty}
+
+\begin{document}
 \centering
+
+\resizebox{1\textwidth}{!}{%
 \begin{tikzpicture}
   \pgfmathsetmacro{\RectX}{1}
   \pgfmathsetmacro{\RectY}{1}
@@ -26,5 +40,56 @@
     \node at ($(\RectX+\pgfmathresult+0.5, \RectY+\RectHeight+0.5)$) {\pgfmathresult};
   }
 \end{tikzpicture}
+}%
+
+\vspace{0.3\textheight}
+
+\resizebox{1\textwidth}{!}{%
+\begin{tikzpicture}
+  \pgfmathsetmacro{\RectX}{1}
+  \pgfmathsetmacro{\RectY}{1}
+  \pgfmathsetmacro{\RectWidth}{32}
+  \pgfmathsetmacro{\RectHeight}{1}
+
+  \draw (\RectX,\RectY) rectangle ++(\RectWidth,\RectHeight);
+
+  \pgfmathsetmacro{\RectWidthMinusOne}{\RectWidth-1}
+  \foreach \i in {1,...,\RectWidthMinusOne} {
+    \draw ($(\RectX+\i,\RectY)$) -- ++(0,\RectHeight);
+  }
+
+  \pgfmathsetmacro{\LabelStep}{8}
+  \pgfmathsetmacro{\LabelCount}{(\RectWidth-1)/\LabelStep}
+  \foreach \i in {0,...,\LabelCount} {
+    \pgfmathparse{int(\i*\LabelStep)}
+    \node at ($(\RectX+\pgfmathresult+0.5, \RectY+\RectHeight+0.5)$) {\pgfmathresult};
+  }
+\end{tikzpicture}
+}%
+
+\vspace{0.3\textheight}
+
+\resizebox{1\textwidth}{!}{%
+\begin{tikzpicture}
+  \pgfmathsetmacro{\RectX}{1}
+  \pgfmathsetmacro{\RectY}{1}
+  \pgfmathsetmacro{\RectWidth}{32}
+  \pgfmathsetmacro{\RectHeight}{1}
+
+  \draw (\RectX,\RectY) rectangle ++(\RectWidth,\RectHeight);
+
+  \pgfmathsetmacro{\RectWidthMinusOne}{\RectWidth-1}
+  \foreach \i in {1,...,\RectWidthMinusOne} {
+    \draw ($(\RectX+\i,\RectY)$) -- ++(0,\RectHeight);
+  }
+
+  \pgfmathsetmacro{\LabelStep}{8}
+  \pgfmathsetmacro{\LabelCount}{(\RectWidth-1)/\LabelStep}
+  \foreach \i in {0,...,\LabelCount} {
+    \pgfmathparse{int(\i*\LabelStep)}
+    \node at ($(\RectX+\pgfmathresult+0.5, \RectY+\RectHeight+0.5)$) {\pgfmathresult};
+  }
+\end{tikzpicture}
+}%
 
 \end{document}
