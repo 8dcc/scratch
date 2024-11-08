@@ -56,14 +56,43 @@
 #include "arena.h"
 
 /*
- * The ALIGN_OFFSET macro aligns an OFFSET to ALIGNMENT, as long as it's a power
- * of two. An optimized version of:
+ * The PADDING_FOR_ALIGNMENT macro calculates the number of bytes that should be
+ * added to OFFSET in order for it to be aligned to ALIGNMENT, as long as
+ * ALIGNMENT is a power of two.
  *
- *   ALIGNMENT - (OFFSET % ALIGNMENT)
+ * Quoting Section 3-1 of Hacker's Delight, by Henry S. Warren, Jr.:
+ *
+ *   > An unsigned integer `x' can be rounded up to the next greater multiple of
+ *   > 8 with either of:
+ *   >
+ *   >   (x + 7) & -8
+ *   >   x + (-x & 7)
+ *   >
+ *   > The second term of the second expression is useful if you want to know
+ *   > how much you must add to `x' to make it a multiple of 8.
+ *
+ * Example of how this works, with the number 23:
+ *
+ *   |                    | Alignment     | Offset         |
+ *   |--------------------+---------------+----------------|
+ *   | Initial input      | 00010000 (16) | 00010111 (23)  |
+ *   | Negate offset      | -             | 11101001 (-23) |
+ *   | Decrease alignment | 00001111 (15) | -              |
+ *   | Bit-wise AND       | -             | 00001001 (9)   |
+ *
+ * And if `x' was already aligned:
+ *
+ *   |                    | Alignment     | Offset         |
+ *   |--------------------+---------------+----------------|
+ *   | Initial input      | 00010000 (16) | 00100000 (32)  |
+ *   | Negate offset      | -             | 11100000 (-32) |
+ *   | Decrease alignment | 00001111 (15) | -              |
+ *   | Bit-wise AND       | -             | 00000000 (0)   |
+ *
+ * We can't just do (ALIGNMENT - (OFFSET % ALIGNMENT)), because OFFSET might be
+ * already aligned, and that method would return ALIGNMENT.
  */
-#define MODULO_POWER_OF_TWO(A, B) ((A) & (B - 1))
-#define ALIGN_OFFSET(OFFSET, ALIGNMENT) \
-    ((ALIGNMENT)-MODULO_POWER_OF_TWO((OFFSET), (ALIGNMENT)))
+#define PADDING_FOR_ALIGNMENT(OFFSET, ALIGNMENT) (-(OFFSET) & ((ALIGNMENT)-1))
 
 /*----------------------------------------------------------------------------*/
 
@@ -129,15 +158,24 @@ void* arena_alloc(Arena* arena, size_t sz) {
     return result;
 }
 
-#if 0
+/*
+ * Same as `arena_alloc', but the returned pointer must be aligned to
+ * `alignment'.
+ */
 void* arena_alloc_aligned(Arena* arena, size_t sz, size_t alignment) {
     /*
-     * We align the arena offset to `ALLOC_ALIGNMENT', so the returned pointer
-     * is aligned.
+     * Calculate the padding needed for `offset', so that it's aligned with the
+     * `alignment' argument.
      *
      * FIXME: This assumes that `arena->data' is also aligned to
-     * `ALLOC_ALIGNMENT'. Don't assume this.
+     * `ALLOC_ALIGNMENT'. We shouldn't assume this.
      */
-    const size_t aligned_offset = ALIGN_OFFSET(arena->offset, alignment);
+    const size_t missing_padding =
+      PADDING_FOR_ALIGNMENT(arena->offset, alignment);
+
+    if (arena->offset + missing_padding >= arena->size)
+        return NULL;
+
+    arena->offset += missing_padding;
+    return arena_alloc(arena, sz);
 }
-#endif

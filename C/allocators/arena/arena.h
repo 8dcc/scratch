@@ -30,3 +30,4 @@ Arena arena_new(size_t arena_sz);
 void arena_destroy(Arena arena);
 
 void* arena_alloc(Arena* arena, size_t sz);
+void* arena_alloc_aligned(Arena* arena, size_t sz, size_t alignment);

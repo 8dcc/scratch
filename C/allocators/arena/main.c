@@ -111,10 +111,22 @@ int main(void) {
     /*
      * Open some example file for reading data into the arena.
      */
-    FILE* fp = fopen("/etc/profile", "r");
+    const char* target_file = "/etc/profile";
+    printf("main: Reading '%s', and printing lines.\n", target_file);
+    FILE* fp = fopen(target_file, "r");
     assert(fp != NULL);
     print_file_lines(arena, fp);
     fclose(fp);
+
+    /*
+     * Make sure `arena_alloc_aligned' works fine.
+     */
+    const size_t alignment = 16;
+    for (int i = 1; i <= 35; i++) {
+        void* ptr = arena_alloc_aligned(&arena, i, alignment);
+        assert(((uintptr_t)ptr % alignment) == 0);
+    }
+    printf("main: All pointers aligned correctly.\n");
 
     /*
      * Destroy the arena we allocated. It becomes unusable.
