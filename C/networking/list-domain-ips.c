@@ -26,7 +26,7 @@
 #include <arpa/inet.h> /* inet_ntop */
 #include <netdb.h>     /* struct addrinfo */
 
-static struct addrinfo* get_info(const char* target, const char* port) {
+static struct addrinfo* get_info(const char* target) {
     /*
      * We initialize an `addrinfo' structure with the hints for `getaddrinfo'
      * (its 3rd parameter).
@@ -44,7 +44,7 @@ static struct addrinfo* get_info(const char* target, const char* port) {
      * the `hints' we just defined.
      */
     struct addrinfo* target_info;
-    const int status = getaddrinfo(target, port, &hints, &target_info);
+    const int status = getaddrinfo(target, NULL, &hints, &target_info);
     if (status != 0) {
         fprintf(stderr, "Error getting information: %s\n",
                 gai_strerror(status));
@@ -120,15 +120,12 @@ static void print_info(const struct addrinfo* addr_info) {
 /*----------------------------------------------------------------------------*/
 
 int main(int argc, char** argv) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s \"DOMAIN-OR-IP\" \"PORT\"\n", argv[0]);
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s \"DOMAIN-OR-IP\"\n", argv[0]);
         return 1;
     }
 
-    const char* target = argv[1];
-    const char* port   = argv[2];
-
-    struct addrinfo* addr_info = get_info(target, port);
+    struct addrinfo* addr_info = get_info(argv[1]);
     print_info(addr_info);
     free_info(addr_info);
 
