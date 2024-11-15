@@ -59,9 +59,6 @@ static int uart_init(const char* device_path) {
      *   - CLOCAL: Ignore modem control lines.
      *   - IGNPAR: Ignore framing errors and parity errors.
      *   - ICRNL: Translate carriage return to newline on input.
-     *   - PARENB: Enable parity generation on output and parity checking for
-     *     input.
-     *   - PARODD: Odd parity (instead of even).
      *
      * Other constants:
      *   - TCIFLUSH: Flushes data received but not read.
@@ -104,6 +101,17 @@ int main(int argc, char** argv) {
     if (uart_fd < 0) {
         fprintf(stderr, "Could not initialize UART device '%s': %s\n", uart_dev,
                 strerror(errno));
+        return 1;
+    }
+
+    /*
+     * Write some test string.
+     */
+    printf("Writing some test string...\n");
+    if (!uart_write_str(uart_fd, "*ping*\n")) {
+        fprintf(stderr, "Failed to write to UART device: %s\n",
+                strerror(errno));
+        close(uart_fd);
         return 1;
     }
 
