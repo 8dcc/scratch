@@ -75,7 +75,7 @@ static int uart_init(const char* device_path) {
     options.c_iflag     = IGNPAR | ICRNL;
     options.c_oflag     = 0;
     options.c_lflag     = 0;
-    options.c_cc[VMIN]  = 0;
+    options.c_cc[VMIN]  = 1;
     options.c_cc[VTIME] = 0;
     tcflush(fd, TCIFLUSH);
 
