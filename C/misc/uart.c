@@ -71,10 +71,10 @@ static int uart_init(const char* device_path) {
         return -1;
     }
 
-    options.c_cflag = B9600 | CS8 | CREAD | CLOCAL;
-    options.c_iflag = IGNPAR | ICRNL;
-    options.c_oflag = 0;
-    options.c_lflag = 0;
+    options.c_cflag     = B9600 | CS8 | CREAD | CLOCAL;
+    options.c_iflag     = IGNPAR | ICRNL;
+    options.c_oflag     = 0;
+    options.c_lflag     = 0;
     options.c_cc[VMIN]  = 0;
     options.c_cc[VTIME] = 0;
     tcflush(fd, TCIFLUSH);
@@ -88,12 +88,12 @@ static int uart_init(const char* device_path) {
 }
 
 static inline bool uart_write_str(int fd, const char* str) {
-    return write(fd, str, strlen(str)) > 0;
+    return write(fd, str, strlen(str)) >= 0;
 }
 
 static inline bool uart_read_str(int fd, char* str, size_t size) {
-    const size_t num_read = read(fd, str, size - 1);
-    if (num_read <= 0)
+    const int num_read = read(fd, str, size - 1);
+    if (num_read < 0)
         return false;
 
     str[num_read] = '\0';
