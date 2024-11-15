@@ -54,11 +54,12 @@ static int uart_init(const char* device_path) {
      * Flags from <termios.h>, see termios(3):
      *
      *   - B<RATE>: Baud rate, where <RATE> might be 9600, 57600, 115200, etc.
-     *   - CSIZE: Character size mask. Values are CS5, CS6, CS7, or CS8.
+     *   - CS<NUM>: Character size mask. Values are CS5, CS6, CS7, or CS8.
      *   - CREAD: Enable the receiver.
      *   - CLOCAL: Ignore modem control lines.
-     *   - IGNPAR: Ignore framing errors and parity errors.
-     *   - ICRNL: Translate carriage return to newline on input.
+     *
+     * We don't set `PARENB' to avoid the parity bit, and we don't set `CSTOPB'
+     * because we only need 1 stop bit.
      *
      * Other constants:
      *   - TCIFLUSH: Flushes data received but not read.
@@ -72,11 +73,10 @@ static int uart_init(const char* device_path) {
     }
 
     options.c_cflag     = B9600 | CS8 | CREAD | CLOCAL;
-    options.c_iflag     = IGNPAR | ICRNL;
     options.c_oflag     = 0;
     options.c_lflag     = 0;
     options.c_cc[VMIN]  = 1;
-    options.c_cc[VTIME] = 0;
+    options.c_cc[VTIME] = 1;
     tcflush(fd, TCIFLUSH);
 
     if (tcsetattr(fd, TCSANOW, &options) < 0) {
@@ -91,12 +91,25 @@ static inline bool uart_write_str(int fd, const char* str) {
     return write(fd, str, strlen(str)) >= 0;
 }
 
-static inline bool uart_read_str(int fd, char* str, size_t size) {
-    const int num_read = read(fd, str, size - 1);
-    if (num_read < 0)
-        return false;
+static inline bool uart_read_line(int fd, char* str, size_t str_sz) {
+    size_t bytes_left    = str_sz - 1;
+    size_t bytes_written = 0;
 
-    str[num_read] = '\0';
+    while (bytes_left > 0) {
+        const int num_read = read(fd, &str[bytes_written], bytes_left);
+        if (num_read < 0)
+            return false;
+        if (num_read == 0)
+            continue;
+
+        bytes_written += num_read;
+        bytes_left -= num_read;
+
+        if (str[bytes_written - 1] == '\n')
+            break;
+    }
+
+    str[bytes_written] = '\0';
     return true;
 }
 
@@ -128,23 +141,23 @@ int main(int argc, char** argv) {
     /*
      * Read some string, and write it back with a different case.
      */
-    char buf[256];
-    if (!uart_read_str(uart_fd, buf, sizeof(buf))) {
+    char line[256];
+    if (!uart_read_line(uart_fd, line, sizeof(line))) {
         fprintf(stderr, "Failed to read from UART device.\n");
         close(uart_fd);
         return 1;
     }
-    printf("Original string: '%s'\n", buf);
+    printf("Original string: '%s'\n", line);
 
-    for (size_t i = 0; buf[i] != '\0'; i++) {
-        if (isupper(buf[i]))
-            buf[i] = tolower(buf[i]);
-        else if (islower(buf[i]))
-            buf[i] = toupper(buf[i]);
+    for (size_t i = 0; line[i] != '\0'; i++) {
+        if (isupper(line[i]))
+            line[i] = tolower(line[i]);
+        else if (islower(line[i]))
+            line[i] = toupper(line[i]);
     }
-    printf("New string: '%s'\n", buf);
+    printf("New string: '%s'\n", line);
 
-    if (!uart_write_str(uart_fd, buf)) {
+    if (!uart_write_str(uart_fd, line)) {
         fprintf(stderr, "Failed to write to UART device: %s\n",
                 strerror(errno));
         close(uart_fd);
