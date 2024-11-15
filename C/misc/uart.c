@@ -41,13 +41,10 @@ static int uart_init(const char* device_path) {
      * Flags from <fcntl.h>, see open(2):
      *
      *   - O_RDWR: Read and write privileges.
-     *   - O_NDELAY: Don't try to open the file in non-blocking mode. When
-     *     non-blocking mode is set, no I/O operations will cause the calling
-     *     process to wait. We actually do want to wait.
      *   - O_NOCTTY: Since the file is a terminal device, we set this to avoid
      *     it becoming the process's controlling terminal.
      */
-    int fd = open(device_path, O_RDWR | O_NOCTTY | O_NDELAY);
+    int fd = open(device_path, O_RDWR | O_NOCTTY);
     if (fd == -1)
         return -1;
 
