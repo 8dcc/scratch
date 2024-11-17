@@ -2,23 +2,22 @@
 CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
 
-OBJ_FILES=main.c.o util.c.o liblog.c.o
-OBJS=$(addprefix obj/, $(OBJ_FILES))
-
-BIN=cod-bo3-cheat.out
+SRC=util.c liblog.c
+OBJ=$(addprefix obj/, $(addsuffix .o, $(SRC)))
 
 #-------------------------------------------------------------------------------
 
-.PHONY: clean all
+.PHONY: all clean
 
-all: $(BIN)
+all: cod-bo3-cheat1.out cod-bo3-cheat2.out
 
 clean:
-	rm -f $(BIN) $(OBJS)
+	rm -f $(OBJ)
+	rm -f cod-bo3-cheat1.out cod-bo3-cheat2.out
 
 #-------------------------------------------------------------------------------
 
-$(BIN): $(OBJS)
+cod-bo3-cheat%.out: obj/main%.c.o $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
 
 obj/%.c.o : %.c
