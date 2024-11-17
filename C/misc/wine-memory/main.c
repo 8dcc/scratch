@@ -4,15 +4,19 @@
 #include "util.h"
 #include "liblog.h"
 
-/* NOTE: The target module is obtained by looking at the /proc/PID/maps file of
+/*
+ * NOTE: The target module is obtained by looking at the /proc/PID/maps file of
  * the process. See the list-cod-bo3-modules.sh script.
  * In this case, the target module we want to read/write is the executable
- * itself, not a DLL. */
+ * itself, not a DLL.
+ */
 #define TARGET_MODULE_REGEX ".*BlackOps3.exe$"
 
-/* In this case, this is the offset inside the module of a JMP instruction that
+/*
+ * In this case, this is the offset inside the module of a JMP instruction that
  * we want to patch. Specifically the one that's used to check whether or not
- * the H.A.T.R. score-streak is enabled in the mini-map. */
+ * the H.A.T.R. score-streak is enabled in the mini-map.
+ */
 #define TARGET_OFFSET 0x59240C
 
 /*----------------------------------------------------------------------------*/
@@ -35,8 +39,10 @@ int main(int argc, char** argv) {
     log_dbg("Target PID: %d", pid);
     log_dbg("Target module regex: %s", TARGET_MODULE_REGEX);
 
-    /* Get the base address of the module matching the regex by parsing
-     * /proc/PID/maps. */
+    /*
+     * Get the base address of the module matching the regex by parsing
+     * /proc/PID/maps.
+     */
     void* base_address = getModuleBaseAddress(pid, TARGET_MODULE_REGEX);
     if (!base_address) {
         log_ftl("Couldn't find base address of module matching regex.");
@@ -70,8 +76,10 @@ int main(int argc, char** argv) {
             return 1;
         }
 
-        /* Overwrite them with the new bytes, effectively enabling or disabling
-         * the JMP instruction. */
+        /*
+         * Overwrite them with the new bytes, effectively enabling or disabling
+         * the JMP instruction.
+         */
         writeProcessMemory(pid, target_address, bytes, sizeof(bytes));
     }
 

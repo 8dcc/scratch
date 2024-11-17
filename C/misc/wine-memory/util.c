@@ -55,8 +55,10 @@ void writeProcessMemory(pid_t pid, void* addr, void* data, size_t sz) {
 
 /*----------------------------------------------------------------------------*/
 
-/* Returns true if string `str' mathes regex pattern `pat'. Pattern uses BRE
- * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html */
+/*
+ * Returns true if string `str' mathes regex pattern `pat'. Pattern uses BRE
+ * syntax: https://www.gnu.org/software/sed/manual/html_node/BRE-syntax.html
+ */
 bool myRegex(regex_t expr, const char* str) {
     int code = regexec(&expr, str, 0, NULL, 0);
     if (code > REG_NOMATCH) {
