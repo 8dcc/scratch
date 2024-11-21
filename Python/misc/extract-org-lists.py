@@ -15,8 +15,27 @@
 # this program. If not, see <https://www.gnu.org/licenses/>.
 
 # This script extracts plain lists from an Org file. See:
-#   https://orgmode.org/org.html#Plain-Lists
-#   https://github.com/8dcc/scratch
+#
+#   - https://orgmode.org/org.html#Plain-Lists
+#   - https://github.com/8dcc/scratch
+#
+# Example usage from an Org mode code block. Extracts the lists to another file,
+# and then sorts it using `org-sort-list':
+#
+#   (let ((input "my-input-file.org")
+#         (output "exported-lists.org"))
+#     (shell-command
+#      (concat "/usr/bin/python3 extract-lists.py "
+#              (shell-quote-argument input)
+#              " > "
+#              (shell-quote-argument output)))
+#     (with-current-buffer
+#         (or (find-buffer-visiting output)
+#             (find-file-noselect output))
+#       (revert-buffer nil 'noconfirm)
+#       (goto-char 0)
+#       (org-sort-list nil ?a)
+#       (save-buffer)))
 
 import sys, os
 import re
