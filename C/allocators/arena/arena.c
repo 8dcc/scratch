@@ -144,7 +144,7 @@ void* arena_alloc(Arena* arena, size_t sz) {
      * Not enough memory in arena. Instead of returning NULL, we could
      * reallocate the arena, for example.
      */
-    if (arena->offset + sz >= arena->size)
+    if (arena->offset + sz > arena->size)
         return NULL;
 
     void* result = &arena->data[arena->offset];
@@ -167,7 +167,7 @@ void* arena_alloc_aligned(Arena* arena, size_t sz, size_t alignment) {
     const size_t missing_padding =
       PADDING_FOR_ALIGNMENT(arena->offset, alignment);
 
-    if (arena->offset + missing_padding >= arena->size)
+    if (arena->offset + missing_padding > arena->size)
         return NULL;
 
     arena->offset += missing_padding;
