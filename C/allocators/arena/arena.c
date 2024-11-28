@@ -12,9 +12,9 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
+ *
+ *******************************************************************************
+ *
  * What is an arena allocator?
  * ---------------------------
  *
@@ -113,23 +113,17 @@ Arena arena_new(size_t arena_sz) {
     Arena arena;
     arena.size   = arena_sz;
     arena.offset = 0;
-
-    /*
-     * NOTE: We could use an external function for allocating the actual arena.
-     */
-    arena.data = malloc(arena.size);
-
+    arena.data   = malloc(arena.size);
     return arena;
 }
 
 /*
  * Free the contents of the specified `Arena'. The arena, along with the memory
  * blocks allocated from it using `arena_alloc', become unusable.
+ *
+ * NOTE: We could use an external function for freeing the actual arena.
  */
 void arena_destroy(Arena arena) {
-    /*
-     * NOTE: We could use an external function for freeing the actual arena.
-     */
     free(arena.data);
     arena.data = NULL;
 }

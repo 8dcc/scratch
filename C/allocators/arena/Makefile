@@ -3,7 +3,9 @@ CC=gcc
 CFLAGS=-std=gnu99 -Wall -Wextra -Wpedantic -ggdb3
 LDLIBS=
 
-OBJ=obj/main.c.o obj/arena.c.o
+SRC=main.c arena.c
+OBJ=$(addprefix obj/, $(addsuffix .o, $(SRC)))
+
 BIN=arena-allocator-test.out
 
 #-------------------------------------------------------------------------------

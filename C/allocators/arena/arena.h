@@ -26,6 +26,10 @@ typedef struct {
     size_t size;
 } Arena;
 
+/*
+ * NOTE: Since this is meant to be a PoC, comments for these functions can be
+ * found in the source file.
+ */
 Arena arena_new(size_t arena_sz);
 void arena_destroy(Arena arena);
 
