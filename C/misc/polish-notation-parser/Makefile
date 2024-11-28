@@ -3,23 +3,23 @@ CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra -Wpedantic
 LDLIBS=-lreadline
 
-OBJ_FILES=main.c.o parser.c.o calc.c.o
-OBJS=$(addprefix obj/, $(OBJ_FILES))
+SRC=main.c parser.c calc.c
+OBJ=$(addprefix obj/, $(addsuffix .o, $(SRC)))
 
 BIN=polish-notation-parser.out
 
 #-------------------------------------------------------------------------------
 
-.PHONY: clean all
+.PHONY: all clean
 
 all: $(BIN)
 
 clean:
-	rm -f $(BIN) $(OBJS)
+	rm -f $(BIN) $(OBJ)
 
 #-------------------------------------------------------------------------------
 
-$(BIN): $(OBJS)
+$(BIN): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 obj/%.c.o : %.c
