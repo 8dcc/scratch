@@ -1,7 +1,11 @@
+/*
+ * FIXME: This program has problems when compiling (e.g. try '-Wpedantic') and
+ * when executing (e.g. try resizing the window fast).
+ */
 
 #include <stdbool.h>
 #include <stdio.h>
-#include "include/glad/glad.h"
+#include "deps/glad.h"
 #include <GLFW/glfw3.h>
 
 #define COMPILATION_CHECK

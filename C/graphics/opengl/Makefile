@@ -3,24 +3,24 @@ CC=gcc
 CFLAGS=-std=c99 -Wall -Wextra
 LDLIBS=-lglfw
 
-OBJ_FILES=main.c.o glad.c.o
-OBJS=$(addprefix obj/, $(OBJ_FILES))
+SRC=main.c deps/glad.c
+OBJ=$(addprefix obj/, $(addsuffix .o, $(SRC)))
 
 BIN=opengl-test.out
 
 #-------------------------------------------------------------------------------
 
-.PHONY: clean all install
+.PHONY: all clean
 
 all: $(BIN)
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJ)
 	rm -f $(BIN)
 
 #-------------------------------------------------------------------------------
 
-$(BIN): $(OBJS)
+$(BIN): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 obj/%.c.o : %.c
