@@ -6,29 +6,29 @@ LDFLAGS=-fPIE
 AS=nasm
 ASFLAGS=-f elf64
 
-OBJ_FILES=main.c.o callstack.asm.o
-OBJS=$(addprefix obj/, $(OBJ_FILES))
+SRC=main.c callstack.asm
+OBJ=$(addprefix obj/, $(addsuffix .o, $(SRC)))
 
 BIN=callstack-test.out
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 .PHONY: all clean
 
 all: $(BIN)
 
 clean:
-	rm -f $(BIN) $(OBJS)
+	rm -f $(BIN) $(OBJ)
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-$(BIN): $(OBJS)
+$(BIN): $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-obj/%.c.o: %.c
+obj/main.c.o: main.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-obj/%.asm.o: %.asm
+obj/callstack.asm.o: callstack.asm
 	@mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) -o $@ $<
