@@ -34,14 +34,15 @@
 #define CHUNK_SZ 64
 
 /*
- * The `Chunk' structure contains a union, used to specify the chunk size more
- * easily. The data in a non-free chunk will be overwritten by the user:
+ * The `Chunk' type is a union so the chunk size can be specified more
+ * easily. The data in a non-free chunk will be overwritten by the user with the
+ * `arr' member:
  *
  *   +-------------+  +-------------+  +-------------+  +-------------+
  *   | <user-data> |  | <user-data> |  | <user-data> |  | <user-data> |
  *   +-------------+  +-------------+  +-------------+  +-------------+
  *
- * However, if the chunk is free, we can use the `v.next' pointer to build a
+ * However, if the chunk is free, we can use the `Chunk.next' pointer to build a
  * linked list of available chunks:
  *
  *   +-------------+  +-------------+  +-------------+  +-------------+
@@ -59,12 +60,10 @@
  *
  * For more information, see the comments in `pool_alloc' and `pool_free'.
  */
-typedef struct Chunk Chunk;
-struct Chunk {
-    union {
-        Chunk* next;
-        char arr[CHUNK_SZ];
-    } v;
+typedef union Chunk Chunk;
+union Chunk {
+    Chunk* next;
+    char arr[CHUNK_SZ];
 };
 
 /*
@@ -120,8 +119,8 @@ Pool* pool_new(size_t pool_sz) {
     }
 
     for (size_t i = 0; i < pool_sz - 1; i++)
-        pool->chunk_arr[i].v.next = &pool->chunk_arr[i + 1];
-    pool->chunk_arr[pool_sz - 1].v.next = NULL;
+        pool->chunk_arr[i].next = &pool->chunk_arr[i + 1];
+    pool->chunk_arr[pool_sz - 1].next = NULL;
 
     return pool;
 }
@@ -146,7 +145,7 @@ void pool_close(Pool* pool) {
  * chunk size is hard-coded in this source file.
  *
  * The allocation process is very simple and fast. Since the `pool' has a
- * pointer to the start of a linked list of free `Chunk' structures, we can just
+ * pointer to the start of a linked list of free `Chunk' items, we can just
  * return that pointer, and set the new start of the linked list to the second
  * item of the old list. Before the allocation:
  *
@@ -173,7 +172,7 @@ void* pool_alloc(Pool* pool) {
         return NULL;
 
     Chunk* result    = pool->free_chunk;
-    pool->free_chunk = pool->free_chunk->v.next;
+    pool->free_chunk = pool->free_chunk->next;
     return result;
 }
 
@@ -211,6 +210,6 @@ void pool_free(Pool* pool, void* ptr) {
         return;
 
     Chunk* freed     = ptr;
-    freed->v.next    = pool->free_chunk;
+    freed->next      = pool->free_chunk;
     pool->free_chunk = freed;
 }
