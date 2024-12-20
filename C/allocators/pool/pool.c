@@ -17,6 +17,9 @@
  *
  * NOTE: An improved version of this allocator is available as a stand-alone
  * library at: https://github.com/8dcc/libpool
+ *
+ * NOTE: See also my blog article about pool allocators at:
+ * https://8dcc.github.io/programming/pool-allocator.html
  */
 
 #include <stddef.h>
