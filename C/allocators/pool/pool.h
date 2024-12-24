@@ -23,12 +23,14 @@
 #define POOL_H_ 1
 
 #include <stddef.h>
+#include <stdbool.h>
 
 /* For more information and comments, see <pool.c> */
 
 typedef struct Pool Pool;
 
 Pool* pool_new(size_t pool_sz);
+bool pool_resize(Pool* pool, size_t extra_chunk_num);
 void pool_close(Pool* pool);
 
 void* pool_alloc(Pool* pool);

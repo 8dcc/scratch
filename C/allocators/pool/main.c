@@ -65,7 +65,7 @@ int main(void) {
 
     /*
      * Keep allocating until we run out of chunks. We are "leaking" pool memory
-     * in this loop, but it's not leaked to the system because we will `close'
+     * in this loop, but it's not leaked to the system because we will "close"
      * the pool later.
      */
     for (int i = 0;; i++) {
@@ -73,6 +73,18 @@ int main(void) {
             printf("Failed to allocate chunk at iteration: %d (pool size: "
                    "%d)\n",
                    i, POOL_SZ);
+            break;
+        }
+    }
+
+    /*
+     * After we run out of chunks, resize the pool, adding 10 more chunks.
+     */
+    pool_resize(pool, 10);
+    for (int i = 0;; i++) {
+        if (pool_alloc(pool) == NULL) {
+            printf(
+              "After resizing, failed to allocate chunk at iteration: %d\n", i);
             break;
         }
     }

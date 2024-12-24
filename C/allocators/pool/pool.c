@@ -23,6 +23,7 @@
  */
 
 #include <stddef.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "pool.h"
@@ -126,6 +127,31 @@ Pool* pool_new(size_t pool_sz) {
     pool->chunk_arr[pool_sz - 1].next = NULL;
 
     return pool;
+}
+
+/*
+ * Resize the specified `pool', adding `extra_chunk_num' free chunks.
+ *
+ * Resizing the pool simply means allocating a new chunk array, and prepending
+ * it to the `pool->free_chunk' linked list.
+ */
+bool pool_resize(Pool* pool, size_t extra_chunk_num) {
+    if (pool == NULL || extra_chunk_num == 0)
+        return false;
+
+    /*
+     * FIXME: Save `extra_chunk_arr' pointer for freeing it inside `pool_close'.
+     */
+    Chunk* extra_chunk_arr = malloc(extra_chunk_num * sizeof(Chunk));
+    if (extra_chunk_arr == NULL)
+        return false;
+
+    for (size_t i = 0; i < extra_chunk_num - 1; i++)
+        extra_chunk_arr[i].next = &extra_chunk_arr[i + 1];
+    extra_chunk_arr[extra_chunk_num - 1].next = pool->free_chunk;
+
+    pool->free_chunk = extra_chunk_arr;
+    return true;
 }
 
 /*
