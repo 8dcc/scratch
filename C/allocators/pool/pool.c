@@ -81,15 +81,15 @@ union Chunk {
 typedef struct LinkedPtr LinkedPtr;
 struct LinkedPtr {
     LinkedPtr* next;
-    void* ptr;
+    Chunk* ptr;
 };
 
 /*
  * The actual pool structure, which contains a pointer to the first chunk, and
  * a pointer to the start of the linked list of free chunks.
  *
- * We need to store the first chunk for freeing the actual `Chunk' array once
- * the user is done with the pool.
+ * We need to store a list of array starts for freeing the actual `Chunk' arrays
+ * once the user is done with the pool.
  *
  * The user is able to allocate with O(1) time, because the `Pool.free_chunk'
  * pointer always points to a free chunk without needing to iterate anything.
@@ -163,15 +163,9 @@ bool pool_resize(Pool* pool, size_t extra_chunk_num) {
     if (pool == NULL || extra_chunk_num == 0)
         return false;
 
-    LinkedPtr* array_start = malloc(sizeof(LinkedPtr));
-    if (array_start == NULL)
-        return false;
-
     Chunk* extra_chunk_arr = malloc(extra_chunk_num * sizeof(Chunk));
-    if (extra_chunk_arr == NULL) {
-        free(array_start);
+    if (extra_chunk_arr == NULL)
         return false;
-    }
 
     /* Link the new free chunks together */
     for (size_t i = 0; i < extra_chunk_num - 1; i++)
@@ -180,6 +174,12 @@ bool pool_resize(Pool* pool, size_t extra_chunk_num) {
     /* Prepend the new chunk array to the linked list of free chunks */
     extra_chunk_arr[extra_chunk_num - 1].next = pool->free_chunk;
     pool->free_chunk                          = extra_chunk_arr;
+
+    LinkedPtr* array_start = malloc(sizeof(LinkedPtr));
+    if (array_start == NULL) {
+        free(extra_chunk_arr);
+        return false;
+    }
 
     /* Prepend to the linked list of array starts */
     array_start->ptr   = extra_chunk_arr;
