@@ -130,15 +130,8 @@ Pool* pool_new(size_t pool_sz) {
     if (pool == NULL)
         return NULL;
 
-    pool->array_starts = malloc(sizeof(LinkedPtr));
-    if (pool->array_starts == NULL) {
-        free(pool);
-        return NULL;
-    }
-
     Chunk* arr = pool->free_chunk = malloc(pool_sz * sizeof(Chunk));
     if (arr == NULL) {
-        free(pool->array_starts);
         free(pool);
         return NULL;
     }
@@ -146,6 +139,13 @@ Pool* pool_new(size_t pool_sz) {
     for (size_t i = 0; i < pool_sz - 1; i++)
         arr[i].next = &arr[i + 1];
     arr[pool_sz - 1].next = NULL;
+
+    pool->array_starts = malloc(sizeof(LinkedPtr));
+    if (pool->array_starts == NULL) {
+        free(arr);
+        free(pool);
+        return NULL;
+    }
 
     pool->array_starts->next = NULL;
     pool->array_starts->ptr  = arr;
