@@ -16,7 +16,7 @@
  *
  * ----------------------------------------------------------------------------
  *
- * This program prints the layout of a C structure.
+ * This program prints the layout of a C structure in different formats.
  */
 
 #include <stdint.h>
@@ -25,16 +25,32 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define PRINT_MEMBER(INSTANCE, MEMBER)                                         \
+#define LENGTH(ARR) (sizeof(ARR) / sizeof((ARR)[0]))
+
+#define PRINT_MEMBER_BYTES(INSTANCE, MEMBER)                                   \
     do {                                                                       \
         memset(&INSTANCE, 0, sizeof(INSTANCE));                                \
         INSTANCE.MEMBER = -1;                                                  \
         char arr[sizeof(INSTANCE)];                                            \
         memset(arr, 0, sizeof(arr));                                           \
         memcpy(arr, &INSTANCE, sizeof(INSTANCE));                              \
-        for (size_t i = 0; i < sizeof(arr); i++)                               \
+        for (size_t i = 0; i < LENGTH(arr); i++)                               \
             for (int j = 7; j >= 0; j--)                                       \
                 putchar((arr[i] & (1 << j)) ? '#' : '.');                      \
+        printf(" (%s)\n", #MEMBER);                                            \
+    } while (0)
+
+#define PRINT_MEMBER_INTEGERS(INSTANCE, MEMBER)                                \
+    do {                                                                       \
+        memset(&INSTANCE, 0, sizeof(INSTANCE));                                \
+        INSTANCE.MEMBER = -1;                                                  \
+        int arr[sizeof(INSTANCE) / sizeof(int)];                               \
+        memset(arr, 0, sizeof(arr));                                           \
+        memcpy(arr, &INSTANCE, sizeof(INSTANCE));                              \
+        for (size_t i = 0; i < LENGTH(arr); i++)                               \
+            for (int j = 3; j >= 0; j--)                                       \
+                for (int k = 7; k >= 0; k--)                                   \
+                    putchar((arr[i] & (1 << (j * 8 + k))) ? '#' : '.');        \
         printf(" (%s)\n", #MEMBER);                                            \
     } while (0)
 
@@ -58,14 +74,24 @@ typedef struct {
 int main(void) {
     MyStruct s;
 
-    PRINT_MEMBER(s, member1);
-    PRINT_MEMBER(s, member2);
-    PRINT_MEMBER(s, member3);
-    PRINT_MEMBER(s, member4);
-    PRINT_MEMBER(s, member5);
+    printf("Printing as %zu-bit bytes:\n", sizeof(char));
+    PRINT_MEMBER_BYTES(s, member1);
+    PRINT_MEMBER_BYTES(s, member2);
+    PRINT_MEMBER_BYTES(s, member3);
+    PRINT_MEMBER_BYTES(s, member4);
+    PRINT_MEMBER_BYTES(s, member5);
     PRINT_BYTE_MARKS(s);
 
-    printf("Total size: %zu bytes.\n", sizeof(MyStruct));
+    printf("\nPrinting as %zu-byte integers (reversing endianness):\n",
+           sizeof(int));
+    PRINT_MEMBER_INTEGERS(s, member1);
+    PRINT_MEMBER_INTEGERS(s, member2);
+    PRINT_MEMBER_INTEGERS(s, member3);
+    PRINT_MEMBER_INTEGERS(s, member4);
+    PRINT_MEMBER_INTEGERS(s, member5);
+    PRINT_BYTE_MARKS(s);
+
+    printf("\nTotal size: %zu bytes.\n", sizeof(MyStruct));
 
     return 0;
 }
