@@ -96,6 +96,9 @@ def print_info_from_url(url):
 
     article_count = 1
     for article in articles:
+        for superscript in article.findAll('sup'):
+            superscript.extract()
+
         title = get_valid_elem(article, "h1", { "class": "c-page-header__title" })
         etymology = article.find("div", attrs={ "class": "c-text-intro" })
         definition_list = get_valid_elem(article, "ol", { "class": "c-definitions" })
@@ -103,10 +106,6 @@ def print_info_from_url(url):
 
         if article_count > 1:
             print()
-
-        superscript = title.find('sup')
-        if superscript != None:
-            superscript.extract()
 
         title_text = title.text.capitalize()
         if len(articles) > 1:
