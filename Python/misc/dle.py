@@ -70,8 +70,8 @@ def extract_definitions(html_list):
     result = []
     for li in get_valid_elems(html_list, "li", { "class": "j" }):
         if REMOVE_EXAMPLES:
-            example = li.find("span", attrs={ "class": "h" })
-            if example != None:
+            examples = li.findAll("span", attrs={ "class": "h" })
+            for example in examples:
                 example.extract()
 
         definition = get_valid_elem(li, "div")
