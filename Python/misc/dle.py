@@ -70,7 +70,7 @@ def extract_definitions(html_list):
     result = []
     for li in get_valid_elems(html_list, "li", { "class": "j" }):
         if REMOVE_EXAMPLES:
-            example = li.find('span', attrs = { "class": "h" })
+            example = li.find("span", attrs={ "class": "h" })
             if example != None:
                 example.extract()
 
@@ -97,7 +97,7 @@ def print_info_from_url(url):
     article_count = 1
     for article in articles:
         title = get_valid_elem(article, "h1", { "class": "c-page-header__title" })
-        etim = get_valid_elem(article, "div", { "class": "c-text-intro" })
+        etymology = article.find("div", attrs={ "class": "c-text-intro" })
         definition_list = get_valid_elem(article, "ol", { "class": "c-definitions" })
         extracted_definitions = extract_definitions(definition_list)
 
@@ -115,8 +115,9 @@ def print_info_from_url(url):
         pretty_print(title_text)
         print("=" * len(title_text) + "\n")
 
-        pretty_print(etim.text)
-        print()
+        if etymology != None:
+            pretty_print(etymology.text)
+            print()
 
         print_definitions(extracted_definitions)
 
