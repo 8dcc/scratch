@@ -92,16 +92,35 @@ def print_info_from_url(url):
     r = requests.get(url=url, headers=headers)
     soup = BeautifulSoup(r.content, "html5lib")
 
-    title = get_valid_elem(soup, "h1", { "class": "c-page-header__title" })
-    etim = get_valid_elem(soup, "div", { "class": "c-text-intro" })
-    definition_list = get_valid_elem(soup, "ol", { "class": "c-definitions" })
-    extracted_definitions = extract_definitions(definition_list)
+    articles = get_valid_elems(soup, "article", { "class": "o-main__article" })
 
-    pretty_print(title.text.title())
-    print("=" * len(title.text) + "\n")
-    pretty_print(etim.text)
-    print()
-    print_definitions(extracted_definitions)
+    article_count = 1
+    for article in articles:
+        title = get_valid_elem(article, "h1", { "class": "c-page-header__title" })
+        etim = get_valid_elem(article, "div", { "class": "c-text-intro" })
+        definition_list = get_valid_elem(article, "ol", { "class": "c-definitions" })
+        extracted_definitions = extract_definitions(definition_list)
+
+        if article_count > 1:
+            print()
+
+        superscript = title.find('sup')
+        if superscript != None:
+            superscript.extract()
+
+        title_text = title.text.title()
+        if len(articles) > 1:
+            title_text += f" ({article_count})"
+
+        pretty_print(title_text)
+        print("=" * len(title_text) + "\n")
+
+        pretty_print(etim.text)
+        print()
+
+        print_definitions(extracted_definitions)
+
+        article_count += 1
 
 #-------------------------------------------------------------------------------
 # Entry point.
