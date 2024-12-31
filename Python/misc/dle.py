@@ -108,7 +108,7 @@ def print_info_from_url(url):
         if superscript != None:
             superscript.extract()
 
-        title_text = title.text.title()
+        title_text = title.text.capitalize()
         if len(articles) > 1:
             title_text += f" ({article_count})"
 
