@@ -40,6 +40,10 @@ MAX_WIDTH = 80
 #-------------------------------------------------------------------------------
 # I/O helpers.
 
+def ftl(text):
+    sys.stderr.write(text + "\n")
+    exit(1)
+
 def pretty_print(text, init_indent=0, rest_indent=0, width=MAX_WIDTH):
     print(textwrap.fill(text,
                         width=width,
@@ -52,15 +56,13 @@ def pretty_print(text, init_indent=0, rest_indent=0, width=MAX_WIDTH):
 def get_valid_elem(parent, elem, attrs=None):
     result = parent.find(elem, attrs=attrs)
     if (result == None):
-        sys.stderr.write(f"Could not find a '{elem}' element with the specified attributes: {attrs}\n")
-        exit(1)
+        ftl(f"Could not find a '{elem}' element with the specified attributes: {attrs}")
     return result
 
 def get_valid_elems(parent, elem, attrs=None):
     result = parent.findAll(elem, attrs=attrs)
     if (result == None):
-        sys.stderr.write(f"Could not find any '{elem}' elements with the specified attributes: {attrs}\n")
-        exit(1)
+        ftl(f"Could not find any '{elem}' elements with the specified attributes: {attrs}")
     return result
 
 #-------------------------------------------------------------------------------
@@ -130,8 +132,7 @@ def print_info_from_url(url):
 
 def main():
     if len(sys.argv) < 2:
-        sys.stderr.write(f"Usage: {sys.argv[0]} WORD\n")
-        exit(1)
+        ftl(f"Usage: {sys.argv[0]} WORD")
 
     target_word = sys.argv[1]
     url = f"https://dle.rae.es/{target_word}"
