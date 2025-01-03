@@ -53,14 +53,14 @@ def pretty_print(text, init_indent=0, rest_indent=0, width=MAX_WIDTH):
 #-------------------------------------------------------------------------------
 # BeautifulSoup helpers.
 
-def get_valid_elem(parent, elem, attrs=None):
+def get_valid_elem(parent, elem, attrs={}):
     result = parent.find(elem, attrs=attrs)
     if (result == None):
         ftl(f"Could not find a '{elem}' element with the specified attributes: {attrs}")
     return result
 
-def get_valid_elems(parent, elem, attrs=None):
-    result = parent.findAll(elem, attrs=attrs)
+def get_valid_elems(parent, elem, attrs={}, recursive=True):
+    result = parent.find_all(elem, attrs=attrs, recursive=recursive)
     if (result == None):
         ftl(f"Could not find any '{elem}' elements with the specified attributes: {attrs}")
     return result
@@ -70,13 +70,14 @@ def get_valid_elems(parent, elem, attrs=None):
 
 def extract_definitions(html_list):
     result = []
-    for li in get_valid_elems(html_list, "li", { "class": "j" }):
+    for li in get_valid_elems(html_list, "li", recursive=False):
         if REMOVE_EXAMPLES:
             examples = li.find_all("span", attrs={ "class": "h" })
             for example in examples:
                 example.extract()
 
-        definition = get_valid_elem(li, "div")
+        definition_item = get_valid_elem(li, "div", attrs={ "class": "c-definitions__item" })
+        definition = get_valid_elem(definition_item, "div", attrs=None)
         result.append(definition.text)
 
     return result
