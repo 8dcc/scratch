@@ -1,6 +1,4 @@
 
-;; TODO: Import stdlib, use `defun'
-
 ;; Exercise 1.11
 ;; =============
 ;;
