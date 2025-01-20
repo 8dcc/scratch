@@ -48,11 +48,25 @@ int main(int argc, char** argv) {
     }
 
     /*
-     * FIXME: This doesn't work with big negative values.
+     * Make sure we don't rotate past the original index. Overflows and
+     * underflows are handled below.
      */
+    offset %= UCHAR_MAX;
+
     int c;
-    while ((c = getchar()) != EOF)
-        putchar((c + offset) % UCHAR_MAX);
+    while ((c = getchar()) != EOF) {
+        c += offset;
+
+        /*
+         * Handle undeflows and overflows.
+         */
+        if (c < 0)
+            c += UCHAR_MAX + 1;
+        else if (c > UCHAR_MAX)
+            c -= UCHAR_MAX - 1;
+
+        putchar(c);
+    }
 
     return 0;
 }
