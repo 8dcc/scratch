@@ -12,6 +12,24 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ============================================================================
+ *
+ * Rotate a string with the specified offset. When the 'OFFSET' argument is
+ * positive, the 'INPUT' bytes are rotated right; and if the 'OFFSET' argument
+ * is negative, the 'INPUT' bytes are rotated left.
+ *
+ * The behavior is similar to the 'ROR' (for positive values) and 'ROL' (for
+ * negative values) x86 instructions, except with ASCII values, rather than
+ * bits.
+ *
+ * The output of the following command should print the INPUT with no changes.
+ *
+ *     echo INPUT | ./string-rot.out <N> | ./string-rot.out <-N>
+ *
+ * For example:
+ *
+ *     echo "Hello, world!" | ./string-rot.out 5 | ./string-rot.out -5
  */
 
 #include <limits.h>
@@ -29,9 +47,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    /*
+     * FIXME: This doesn't work with big negative values.
+     */
     int c;
     while ((c = getchar()) != EOF)
-        putchar((c + offset) % CHAR_MAX);
+        putchar((c + offset) % UCHAR_MAX);
 
     return 0;
 }
