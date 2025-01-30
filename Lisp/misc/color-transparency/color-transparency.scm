@@ -27,7 +27,7 @@
              (rgb-scale c2 t2)))
 
   (define (transparencies-implicit-reversed colors transparencies)
-    (if (or (null? (cdr colors)))
+    (if (null? (cdr colors))
         (car colors)
         (let ((cur-transparency (car transparencies)))
           (rgb-add (rgb-scale (car colors)
