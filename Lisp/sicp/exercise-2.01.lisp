@@ -30,13 +30,8 @@
 ;; Also note that my `simplify-rat' function is the same as the `make-rat'
 ;; function shown in Section 2.1.1; I just chose to separate them for
 ;; readability. To make the actually desired function, you could use something
-;; like:
-;;
-;;   (defun make-better-rat (n d)
-;;     (normalize-rat (simplify-rat (make-rat n d))))
-;;
-;; I think this approach is cleaner and more SICP-like than combining all 3
-;; procedures into one.
+;; like the `make-better-rat' function, defined below. I think this approach is
+;; cleaner and more SICP-like than combining all 3 procedures into one.
 
 ;; -----------------------------------------------------------------------------
 ;; Dependencies
