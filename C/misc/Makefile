@@ -8,7 +8,8 @@ LDLIBS=
 MATH_BINS=bresenham-line.out \
           rotation-matrix.out \
           spinning-torus.out \
-          generate-wav.out
+          generate-wav.out \
+          baseN.out
 
 #-------------------------------------------------------------------------------
 
