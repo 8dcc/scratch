@@ -55,6 +55,7 @@
           (format-point (start-segment s))
           (format-point (end-segment s))))
 
+;; Expected: "(2.000000,2.000000)-(4.000000,5.000000) => (3.000000,3.500000)"
 (let ((segment (make-segment (make-point 2.0 2.0)
                              (make-point 4.0 5.0))))
   (format "%s => %s"

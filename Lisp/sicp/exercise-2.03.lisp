@@ -71,12 +71,14 @@
 ;; -----------------------------------------------------------------------------
 ;; Examples
 
+;; Expected: (35 24)
 (let ((rect-width impl1-rect-width)
       (rect-height impl1-rect-height)
       (my-rect (impl1-make-rect 5 7)))
   (list (rect-area my-rect)
         (rect-perimeter my-rect)))
 
+;; Expected: (35.000000 24.000000)
 (let ((rect-width impl2-rect-width)
       (rect-height impl2-rect-height)
       (my-rect (impl2-make-rect (make-point 3.0 3.0)
