@@ -17,11 +17,6 @@
 ;; -----------------------------------------------------------------------------
 ;; Dependencies
 
-(defun as-unified-num (n)
-  (cond ((flt? n) n)
-        ((int? n) (int->flt n))
-        (tru (error "Invalid type."))))
-
 (defun average (a b)
   (/ (+ a b) 2))
 
@@ -29,11 +24,12 @@
 ;; Exercise
 
 (defun make-point (x y)
+  (assert (and (flt? x) (flt? y)))
   (cons x y))
 (defun x-point (p)
-  (as-unified-num (car p)))
+  (car p))
 (defun y-point (p)
-  (as-unified-num (cdr p)))
+  (cdr p))
 
 (defun make-segment (start end)
   (cons start end))
@@ -59,8 +55,8 @@
           (format-point (start-segment s))
           (format-point (end-segment s))))
 
-(let ((segment (make-segment (make-point 2 2)
-                             (make-point 4 5))))
+(let ((segment (make-segment (make-point 2.0 2.0)
+                             (make-point 4.0 5.0))))
   (format "%s => %s"
           (format-segment segment)
           (format-point (midpoint-segment segment))))
