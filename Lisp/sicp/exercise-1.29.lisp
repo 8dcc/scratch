@@ -15,11 +15,6 @@
 ;; integrate cube between 0 and 1 (with `n' = 100 and `n' = 1000), and compare
 ;; the results to those of the integral procedure shown above.
 ;;
-;; Notes:
-;; ------
-;;
-;; Tested in SL commit fe52acf. There are bugs, see comments below.
-;;
 ;; Extra Emacs stuff:
 ;; ------------------
 ;;
@@ -50,14 +45,6 @@
       (let ((factor (cond ((or (= k 0) (= k n)) 1)
                           ((even? k)            2)
                           (tru                  4)))
-            ;; FIXME: When writing this, closures in SL are not implemented, so
-            ;; `term' is supposed to access the symbol `a' from
-            ;; `simpsons-integral', but instead accesses the symbol `a' from
-            ;; `sum', since that environment is closer.
-            ;;
-            ;; A possible workaround is renaming the argument of `sum', since
-            ;; it's still being called from here, `term' could access the right
-            ;; `a'.
             (y (f (+ a (* k h)))))
         (* factor y)))
     (* (/ h 3)
@@ -66,9 +53,5 @@
 (defun cube (n)
   (* n n n))
 
-(simpsons-integral cube 0 1 100) ; Result: 0.250000
-
-;; This does work, but it's incredibly slow in the current version of SL (~20
-;; seconds), and takes a tremendous ammount of memory (~347 MiBs, ~22 million
-;; allocations). Note the SL version used for these tests in the top comment.
+(simpsons-integral cube 0 1 100)  ; Result: 0.250000
 (simpsons-integral cube 0 1 1000) ; Result: 0.250000

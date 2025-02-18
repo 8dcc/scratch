@@ -8,9 +8,12 @@
 ;; '(double inc)' should be a procedure that adds 2. What value is returned by
 ;;
 ;;   (((double (double double)) inc) 5)
+;;
+;; Notes
+;; -----
+;;
+;; FIXME: This crashes SL with a stack overflow in commit c6415e2.
 
-;; FIXME: When writing this, closures in SL are not implemented, so the lambda
-;; returned by `double' can't access the argument `f'.
 (defun double (f)
   (lambda (arg)
     (f (f arg))))

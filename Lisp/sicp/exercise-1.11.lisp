@@ -50,11 +50,6 @@
 ;; `f(3)'. On the second iteration, `f(4)' will be calculated using those
 ;; values. This cycle continues until the counter `i' reaches 6, at that point
 ;; `result1' contains the value of `f(5)', so it's returned.
-;;
-;; NOTE: The inner `iter' function is able to access the parameter `n' of the
-;; outer function, even though currently (commit b9e1c8a) SL doesn't support
-;; closures. This is because when calling `iter', the `n' variable is still
-;; bound.
 
 (defun f-iter (n)
   (defun iter (i result1 result2 result3)
