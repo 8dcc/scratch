@@ -1,6 +1,5 @@
 
 CC=gcc
-CXX=g++
 CFLAGS=-std=gnu99 -Wall -Wextra -ggdb3
 LDLIBS=
 
@@ -15,7 +14,7 @@ MATH_BINS=bresenham-line.out \
 
 .PHONY: all clean
 
-all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildcard ./*.cpp))
+all: $(patsubst %.c, %.out, $(wildcard ./*.c))
 
 clean:
 	rm -f *.out
@@ -26,6 +25,3 @@ $(MATH_BINS): LDLIBS+=-lm
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
-
-%.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $< $(LDLIBS)

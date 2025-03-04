@@ -7,7 +7,7 @@ LDLIBS=
 
 .PHONY: all clean
 
-all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildcard ./*.cpp))
+all: $(patsubst %.c, %.out, $(wildcard ./*.c))
 
 clean:
 	rm -f *.out

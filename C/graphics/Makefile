@@ -1,6 +1,5 @@
 
 CC=gcc
-CXX=g++
 CFLAGS=-std=gnu99 -Wall -Wextra -Wpedantic -ggdb3
 LDLIBS=
 
@@ -13,7 +12,7 @@ RAYLIB_BINS=raylib-cube.out
 
 .PHONY: all clean
 
-all: $(patsubst %.c, %.out, $(wildcard ./*.c)) $(patsubst %.cpp, %.out, $(wildcard ./*.cpp))
+all: $(patsubst %.c, %.out, $(wildcard ./*.c))
 
 clean:
 	rm -f *.out
@@ -26,6 +25,3 @@ $(RAYLIB_BINS): LDLIBS+=-lraylib
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
-
-%.out: %.cpp
-	$(CXX) $(CFLAGS) -o $@ $< $(LDLIBS)
