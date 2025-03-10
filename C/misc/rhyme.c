@@ -169,6 +169,12 @@ static void dict_free(Dict dict) {
 /*----------------------------------------------------------------------------*/
 /* Dictionary matching */
 
+#ifdef ONLY_VOWELS
+static inline bool is_vowel(char c) {
+    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+}
+#endif /* ONLY_VOWELS */
+
 /*
  * Return the number of rhyme matches between A and B, starting from the end.
  */
@@ -179,10 +185,18 @@ static inline int rightmost_matches(Word a, Word b) {
     const char* b_right = &b.str[b.len - 1];
 
     int result = 0;
-    while (a_left <= a_right && b_left <= b_right && *a_right == *b_right) {
+    for (; a_left <= a_right && b_left <= b_right; a_right--, b_right--) {
+#ifdef ONLY_VOWELS
+        while (!is_vowel(*a_right) && a_left <= a_right)
+            a_right--;
+        while (!is_vowel(*b_right) && b_left <= b_right)
+            b_right--;
+#endif /* ONLY_VOWELS */
+
+        if (*a_right != *b_right)
+            break;
+
         result++;
-        a_right--;
-        b_right--;
     }
 
     return result;
@@ -192,7 +206,15 @@ static inline int rightmost_matches(Word a, Word b) {
  * Return the number of potential rhyme matches in a word.
  */
 static inline int potential_matches(Word word) {
+#ifdef ONLY_VOWELS
+    int result = 0;
+    for (size_t i = 0; i < word.len; i++)
+        if (is_vowel(word.str[i]))
+            result++;
+    return result;
+#else  /* not ONLY_VOWELS */
     return word.len;
+#endif /* not ONLY_VOWELS */
 }
 
 /*
