@@ -170,21 +170,29 @@ static void dict_free(Dict dict) {
 /* Dictionary matching */
 
 /*
- * Return the number of matching characters starting from the end of A and B.
+ * Return the number of rhyme matches between A and B, starting from the end.
  */
-static inline int rightmost_matches(const char* a, size_t a_sz, const char* b,
-                                    size_t b_sz) {
-    const char* a_right = &a[a_sz - 1];
-    const char* b_right = &b[b_sz - 1];
+static inline int rightmost_matches(Word a, Word b) {
+    const char* a_left  = a.str;
+    const char* a_right = &a.str[a.len - 1];
+    const char* b_left  = b.str;
+    const char* b_right = &b.str[b.len - 1];
 
     int result = 0;
-    while (a <= a_right && b <= b_right && *a_right == *b_right) {
+    while (a_left <= a_right && b_left <= b_right && *a_right == *b_right) {
         result++;
         a_right--;
         b_right--;
     }
 
     return result;
+}
+
+/*
+ * Return the number of potential rhyme matches in a word.
+ */
+static inline int potential_matches(Word word) {
+    return word.len;
 }
 
 /*
@@ -199,14 +207,16 @@ static inline int rightmost_matches(const char* a, size_t a_sz, const char* b,
  * all characters of the target match the right-most characters of the word.
  */
 static void dict_match(Dict dict, const char* target) {
-    const size_t target_len = strlen(target);
+    const Word target_word = {
+        .str = (char*)target,
+        .len = strlen(target),
+    };
 
     for (size_t i = 0; i < dict.size; i++) {
-        const char* cur_str  = dict.words[i].str;
-        const size_t cur_len = dict.words[i].len;
-        const int match_num =
-          rightmost_matches(target, target_len, cur_str, cur_len);
-        dict.words[i].match = (float)match_num / target_len;
+        const Word cur_word = dict.words[i];
+        const int match_num = rightmost_matches(target_word, cur_word);
+        const int potential = potential_matches(target_word);
+        dict.words[i].match = (float)match_num / potential;
     }
 }
 
