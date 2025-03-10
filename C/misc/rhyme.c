@@ -15,6 +15,7 @@
  */
 
 #include <errno.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -210,7 +211,51 @@ static void dict_match(Dict dict, const char* target) {
 }
 
 /*----------------------------------------------------------------------------*/
+/* Dictionary sorting */
+
+/*
+ * Swap the specified words.
+ */
+static inline void word_swap(Word* a, Word* b) {
+    static Word tmp;
+    tmp = *a;
+    *a  = *b;
+    *b  = tmp;
+}
+
+/*
+ * Check if the word A should appear before the word B or not.
+ */
+static inline bool word_is_sorted(const Word* a, const Word* b) {
+    return (a->match >= b->match);
+}
+
+/*
+ * Sort the specified dictionary using the Insertion Sort algorithm.
+ */
+static void dict_sort(Dict dict) {
+    for (size_t i = 0; i < dict.size; i++) {
+        /*
+         * Check how the current element compares to the previous one. If it
+         * needs to be sorted, keep moving to the front.
+         */
+        for (size_t j = i; j > 0; j--) {
+            Word* prev = &dict.words[j - 1];
+            Word* cur  = &dict.words[j];
+            if (word_is_sorted(prev, cur))
+                break;
+            word_swap(prev, cur);
+        }
+    }
+}
+
+/*----------------------------------------------------------------------------*/
 /* Dictionary printing */
+
+static inline void word_print(Word word) {
+    for (size_t i = 0; i < word.len; i++)
+        putchar(word.str[i]);
+}
 
 /*
  * Print all possible information about a dictionary.
@@ -218,9 +263,19 @@ static void dict_match(Dict dict, const char* target) {
 static inline void dict_print(Dict dict) {
     for (size_t i = 0; i < dict.size; i++) {
         printf("[%zu] ", i);
-        for (size_t j = 0; j < dict.words[i].len; j++)
-            putchar(dict.words[i].str[j]);
+        word_print(dict.words[i]);
         printf(" (%.2f)\n", dict.words[i].match);
+    }
+}
+
+static inline void dict_print_matches(Dict dict, float match_threshold) {
+    for (size_t i = 0; i < dict.size; i++) {
+        if (dict.words[i].match < match_threshold)
+            continue;
+
+        printf("(%.2f) ", dict.words[i].match);
+        word_print(dict.words[i]);
+        putchar('\n');
     }
 }
 
@@ -244,7 +299,8 @@ int main(int argc, char** argv) {
 
     Dict dict = dict_read(dict_fp);
     dict_match(dict, target_word);
-    dict_print(dict);
+    dict_sort(dict);
+    dict_print_matches(dict, 0.1);
 
     dict_free(dict);
     fclose(dict_fp);
