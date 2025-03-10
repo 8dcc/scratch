@@ -61,6 +61,10 @@ void safe_realloc(void* double_ptr, size_t size) {
 
 /*----------------------------------------------------------------------------*/
 
+/*
+ * Initialize and return a dictionary containing each non-empty line of thje
+ * specified file.
+ */
 static Dict dict_read(FILE* fp) {
     Dict result = {
         .words = NULL,
@@ -142,12 +146,18 @@ static Dict dict_read(FILE* fp) {
     return result;
 }
 
+/*
+ * Free all elements of a dictionary.
+ */
 static void dict_free(Dict dict) {
     for (size_t i = 0; i < dict.size; i++)
         free(dict.words[i].str);
     free(dict.words);
 }
 
+/*
+ * Print all possible information about a dictionary.
+ */
 static inline void dict_print(Dict dict) {
     for (size_t i = 0; i < dict.size; i++) {
         printf("[%zu] ", i);
