@@ -26,10 +26,19 @@
         fputc('\n', stderr);                                                   \
     } while (0)
 
+/*----------------------------------------------------------------------------*/
+
+typedef struct Word {
+    char* str;
+    size_t len;
+} Word;
+
 typedef struct Dict {
-    char** words;
+    Word* words;
     size_t size;
 } Dict;
+
+/*----------------------------------------------------------------------------*/
 
 void* safe_malloc(size_t size) {
     void* result = malloc(size);
@@ -77,12 +86,12 @@ static Dict dict_read(FILE* fp) {
 
             /*
              * We encountered a newline, and our current word buffer is not
-             * empty. Terminate the word, reset the word position, and move to
-             * the next dictionary position (which will potentially hold a new
-             * word buffer).
+             * empty. Store the real word length, reset the word position, and
+             * move to the next dictionary position (which will potentially hold
+             * a new word buffer).
              */
-            assert(cur_word_pos < cur_word_sz);
-            result.words[dict_pos][cur_word_pos] = '\0';
+            assert(cur_word_pos <= cur_word_sz);
+            result.words[dict_pos].len = cur_word_pos;
             cur_word_pos = cur_word_sz = 0;
             dict_pos++;
             continue;
@@ -97,18 +106,18 @@ static Dict dict_read(FILE* fp) {
          * the buffer.
          *
          * Otherwise, if the current word is full, duplicate the current word
-         * size and reallocate the buffer. Keep in mind that we have to store an
-         * extra byte for the null terminator.
+         * size and reallocate the buffer.
          */
         if (cur_word_pos == 0) {
             assert(cur_word_sz == 0);
             if (dict_pos >= dict_sz) {
                 dict_sz = (dict_sz == 0) ? 100 : dict_sz * 2;
-                safe_realloc(&result.words, dict_sz * sizeof(char*));
+                safe_realloc(&result.words, dict_sz * sizeof(Word));
             }
-            cur_word_sz            = 10;
-            result.words[dict_pos] = safe_malloc(cur_word_sz * sizeof(char));
-        } else if (cur_word_pos >= cur_word_sz - 1) {
+            cur_word_sz = 10;
+            result.words[dict_pos].str =
+              safe_malloc(cur_word_sz * sizeof(char));
+        } else if (cur_word_pos >= cur_word_sz) {
             assert(cur_word_sz > 0);
             cur_word_sz *= 2;
             safe_realloc(&result.words[dict_pos], cur_word_sz * sizeof(char));
@@ -118,15 +127,15 @@ static Dict dict_read(FILE* fp) {
          * If we reached this point, we know we have a valid buffer for writing
          * our character.
          */
-        result.words[dict_pos][cur_word_pos++] = c;
+        result.words[dict_pos].str[cur_word_pos++] = c;
     }
 
     /*
      * In case the file didn't end with a newline, terminate the last word.
      */
     if (cur_word_pos != 0) {
-        assert(cur_word_pos < cur_word_sz);
-        result.words[dict_pos][cur_word_pos] = '\0';
+        assert(cur_word_pos <= cur_word_sz);
+        result.words[dict_pos].len = cur_word_pos;
     }
 
     result.size = dict_pos;
@@ -135,13 +144,17 @@ static Dict dict_read(FILE* fp) {
 
 static void dict_free(Dict dict) {
     for (size_t i = 0; i < dict.size; i++)
-        free(dict.words[i]);
+        free(dict.words[i].str);
     free(dict.words);
 }
 
-static void dict_print(Dict dict) {
-    for (size_t i = 0; i < dict.size; i++)
-        printf("[%zu] %s\n", i, dict.words[i]);
+static inline void dict_print(Dict dict) {
+    for (size_t i = 0; i < dict.size; i++) {
+        printf("[%zu] ", i);
+        for (size_t j = 0; j < dict.words[i].len; j++)
+            putchar(dict.words[i].str[j]);
+        putchar('\n');
+    }
 }
 
 int main(int argc, char** argv) {
