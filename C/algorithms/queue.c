@@ -20,24 +20,34 @@
 #include <stdlib.h>
 
 /*
+ * Type for a single value in the queue.
+ */
+typedef int queue_value_t;
+
+/*
+ * Type for indexes in the queue.
+ */
+typedef long queue_idx_t;
+
+/*
  * Structure representing a circular integer queue that can wrap around itself,
  * providing capacity for 'size' elements.
  *
  * Elements will be pushed (enqueued) to the 'back', and popped (dequeued) from
  * the 'front'.
  */
-typedef struct int_queue {
-    int* data;
-    size_t size;
-    size_t front;
-    size_t back;
-} int_queue_t;
+typedef struct queue {
+    queue_value_t* data;
+    queue_idx_t size;
+    queue_idx_t front;
+    queue_idx_t back;
+} queue_t;
 
 /*
  * Return the next (incremented) value for the specified index in the queue,
  * wrapping around the end when necessary.
  */
-static inline size_t get_next_idx(int_queue_t* queue, size_t cur_idx) {
+static inline queue_idx_t get_next_idx(queue_t* queue, queue_idx_t cur_idx) {
     return (cur_idx >= queue->size - 1) ? 0 : cur_idx + 1;
 }
 
@@ -45,14 +55,14 @@ static inline size_t get_next_idx(int_queue_t* queue, size_t cur_idx) {
  * Return the previous (decremented) value for the specified index in the queue,
  * wrapping around the start when necessary.
  */
-static inline size_t get_prev_idx(int_queue_t* queue, size_t cur_idx) {
+static inline queue_idx_t get_prev_idx(queue_t* queue, queue_idx_t cur_idx) {
     return (cur_idx <= 0) ? queue->size - 1 : cur_idx - 1;
 }
 
 /*
  * Return true if the specified queue is full.
  */
-bool queue_is_full(int_queue_t* queue) {
+bool queue_is_full(queue_t* queue) {
     /*
      * The list is full if the 'back' index of the queue is right before the
      * 'front' index.
@@ -68,7 +78,7 @@ bool queue_is_full(int_queue_t* queue) {
 /*
  * Return true if the specified queue is empty.
  */
-bool queue_is_empty(int_queue_t* queue) {
+bool queue_is_empty(queue_t* queue) {
     /*
      * The list is empty if the 'back' index of the queue is equal to the
      * 'front' index.
@@ -82,7 +92,7 @@ bool queue_is_empty(int_queue_t* queue) {
  *
  * Returns true on success, and false otherwise.
  */
-bool queue_init(int_queue_t* queue, size_t size) {
+bool queue_init(queue_t* queue, queue_idx_t size) {
     queue->data = calloc(size, sizeof(queue->data[0]));
     if (queue->data == NULL)
         return false;
@@ -96,7 +106,7 @@ bool queue_init(int_queue_t* queue, size_t size) {
  * Deinitialize the specified queue, freeing the necessary heap-allocated
  * members. Doesn't free the queue structure itself.
  */
-void queue_finish(int_queue_t* queue) {
+void queue_finish(queue_t* queue) {
     if (queue->data != NULL) {
         free(queue->data);
         queue->data = NULL;
@@ -108,7 +118,7 @@ void queue_finish(int_queue_t* queue) {
  *
  * Returns true on success, or false on error (e.g. if the queue is full).
  */
-bool queue_enqueue(int_queue_t* queue, int value) {
+bool queue_enqueue(queue_t* queue, queue_value_t value) {
     if (queue_is_full(queue))
         return false;
 
@@ -126,7 +136,7 @@ bool queue_enqueue(int_queue_t* queue, int value) {
  *
  * FIXME: Return a unique value that can't be normally inside the queue.
  */
-int queue_dequeue(int_queue_t* queue) {
+queue_value_t queue_dequeue(queue_t* queue) {
     if (queue_is_empty(queue))
         return -1;
 
@@ -140,7 +150,7 @@ int queue_dequeue(int_queue_t* queue) {
  * Dump the values in the specified queue, in the logical order in which they
  * would be dequeued (front -> back).
  */
-void queue_dump(FILE* fp, int_queue_t* queue) {
+void queue_dump(FILE* fp, queue_t* queue) {
     if (queue_is_empty(queue)) {
         fprintf(fp, "<empty>");
         return;
@@ -148,7 +158,7 @@ void queue_dump(FILE* fp, int_queue_t* queue) {
 
     fprintf(fp, "[ ");
 
-    size_t i = queue->front;
+    queue_idx_t i = queue->front;
     for (;;) {
         fprintf(fp, "%d", queue->data[i]);
 
@@ -163,7 +173,7 @@ void queue_dump(FILE* fp, int_queue_t* queue) {
 }
 
 int main(void) {
-    int_queue_t my_queue;
+    queue_t my_queue;
     queue_init(&my_queue, 10);
     assert(queue_is_empty(&my_queue));
 
