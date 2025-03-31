@@ -25,20 +25,23 @@
 typedef int queue_value_t;
 
 /*
- * Type for indexes in the queue.
+ * Types for indexes and sizes in the queue.
  */
-typedef long queue_idx_t;
+typedef size_t queue_size_t;
+typedef queue_size_t queue_idx_t;
 
 /*
- * Structure representing a circular integer queue that can wrap around itself,
- * providing capacity for 'size' elements.
+ * Structure representing a circular integer queue that can wrap around
+ * itself. Elements will be pushed (enqueued) to the 'back', and popped
+ * (dequeued) from the 'front'.
  *
- * Elements will be pushed (enqueued) to the 'back', and popped (dequeued) from
- * the 'front'.
+ * The 'capacity' stores the size of the 'data' array, and 'count' stores the
+ * actual difference between 'back' and 'front'.
  */
 typedef struct queue {
     queue_value_t* data;
-    queue_idx_t size;
+    queue_size_t capacity;
+    queue_size_t count;
     queue_idx_t front;
     queue_idx_t back;
 } queue_t;
@@ -48,7 +51,7 @@ typedef struct queue {
  * wrapping around the end when necessary.
  */
 static inline queue_idx_t get_next_idx(queue_t* queue, queue_idx_t cur_idx) {
-    return (cur_idx >= queue->size - 1) ? 0 : cur_idx + 1;
+    return (cur_idx >= queue->capacity - 1) ? 0 : cur_idx + 1;
 }
 
 /*
@@ -56,49 +59,39 @@ static inline queue_idx_t get_next_idx(queue_t* queue, queue_idx_t cur_idx) {
  * wrapping around the start when necessary.
  */
 static inline queue_idx_t get_prev_idx(queue_t* queue, queue_idx_t cur_idx) {
-    return (cur_idx <= 0) ? queue->size - 1 : cur_idx - 1;
+    return (cur_idx == 0) ? queue->capacity - 1 : cur_idx - 1;
 }
 
 /*
  * Return true if the specified queue is full.
  */
 bool queue_is_full(queue_t* queue) {
-    /*
-     * The list is full if the 'back' index of the queue is right before the
-     * 'front' index.
-     *
-     * FIXME: According to this method, a full list stores a value in
-     * 'queue->data[queue->back]', but this is not currently the case, since the
-     * 'back' index indicates where the next element should be enqueued, not
-     * where the last element was enqueued.
-     */
-    return queue->back == get_prev_idx(queue, queue->front);
+    return queue->count == queue->capacity;
 }
 
 /*
  * Return true if the specified queue is empty.
  */
 bool queue_is_empty(queue_t* queue) {
-    /*
-     * The list is empty if the 'back' index of the queue is equal to the
-     * 'front' index.
-     */
-    return queue->back == queue->front;
+    return queue->count == 0;
 }
 
 /*
- * Initialize the specified integer queue with the specified size. The list is
- * allocated on the heap, and must be freed with 'queue_finish'.
+ * Initialize the specified integer queue with the specified capacity. The list
+ * is allocated on the heap, and must be freed with 'queue_finish'.
  *
  * Returns true on success, and false otherwise.
  */
-bool queue_init(queue_t* queue, queue_idx_t size) {
-    queue->data = calloc(size, sizeof(queue->data[0]));
+bool queue_init(queue_t* queue, queue_size_t capacity) {
+    queue->data = calloc(capacity, sizeof(queue->data[0]));
     if (queue->data == NULL)
         return false;
 
-    queue->size  = size;
-    queue->front = queue->back = 0;
+    queue->capacity = capacity;
+    queue->count    = 0;
+    queue->front    = 0;
+    queue->back     = 0;
+
     return true;
 }
 
@@ -124,6 +117,7 @@ bool queue_enqueue(queue_t* queue, queue_value_t value) {
 
     queue->data[queue->back] = value;
     queue->back              = get_next_idx(queue, queue->back);
+    queue->count++;
 
     return true;
 }
@@ -142,6 +136,7 @@ queue_value_t queue_dequeue(queue_t* queue) {
 
     const int result = queue->data[queue->front];
     queue->front     = get_next_idx(queue, queue->front);
+    queue->count--;
 
     return result;
 }
@@ -158,12 +153,12 @@ void queue_dump(FILE* fp, queue_t* queue) {
 
     fprintf(fp, "[ ");
 
-    queue_idx_t i = queue->front;
-    for (;;) {
-        fprintf(fp, "%d", queue->data[i]);
+    queue_idx_t real_idx = queue->front;
+    for (queue_idx_t i = 0; i < queue->count; i++) {
+        fprintf(fp, "%d", queue->data[real_idx]);
 
-        i = get_next_idx(queue, i);
-        if (i == queue->back)
+        real_idx = get_next_idx(queue, real_idx);
+        if (real_idx == queue->back)
             break;
 
         fprintf(fp, ", ");
