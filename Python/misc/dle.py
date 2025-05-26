@@ -61,7 +61,7 @@ def get_valid_elem(parent, elem, attrs={}):
 
 def get_valid_elems(parent, elem, attrs={}, recursive=True):
     result = parent.find_all(elem, attrs=attrs, recursive=recursive)
-    if (result == None):
+    if (result == None or len(result) <= 0):
         ftl(f"Could not find any '{elem}' elements with the specified attributes: {attrs}")
     return result
 
@@ -83,6 +83,9 @@ def extract_definitions(html_list):
     return result
 
 def print_definitions(definitions):
+    if len(definitions) <= 0:
+        ftl("No definitions found.")
+
     definition_counter=1
     for definition in definitions:
         pretty_print(definition,
@@ -97,6 +100,7 @@ def print_info_from_url(url):
     soup = BeautifulSoup(r.content, "html5lib")
 
     articles = get_valid_elems(soup, "article", { "class": "o-main__article" })
+    assert len(articles) > 0
 
     article_count = 1
     for article in articles:
