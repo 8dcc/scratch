@@ -99,7 +99,7 @@ bool queue_init(queue_t* queue, queue_size_t capacity) {
  * Deinitialize the specified queue, freeing the necessary heap-allocated
  * members. Doesn't free the queue structure itself.
  */
-void queue_finish(queue_t* queue) {
+void queue_destroy(queue_t* queue) {
     if (queue->data != NULL) {
         free(queue->data);
         queue->data = NULL;
@@ -198,5 +198,6 @@ int main(void) {
     queue_dump(stdout, &my_queue);
     putchar('\n');
 
+    queue_destroy(&my_queue);
     return 0;
 }
