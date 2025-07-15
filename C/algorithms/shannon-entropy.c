@@ -1,3 +1,20 @@
+/*
+ * Copyright 2025 8dcc
+ *
+ * This file is part of scratch.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stddef.h>
 #include <stdio.h>
@@ -27,13 +44,15 @@ double entropy(void* data, size_t data_sz) {
         /* Probablity of encountering this byte on the input */
         const double probability = (double)occurrences[byte] / data_sz;
 
-        /* The log2() multiplication is used to make sure that we get 0
+        /*
+         * The log2() multiplication is used to make sure that we get 0
          * "surprise" when the probability of the event is 1. For more
          * information, see my article about entropy:
          *   https://8dcc.github.io/programming/understanding-entropy.html
          *
          * Since the log2 of [0..1] is always negative, we subtract from the
-         * total to increase its value. */
+         * total to increase its value.
+         */
         result -= probability * log2(probability);
     }
 
@@ -49,7 +68,7 @@ int main(int argc, char** argv) {
     }
 
     FILE* fp = fopen(argv[1], "rb");
-    if (!fp) {
+    if (fp == NULL) {
         fprintf(stderr, "Can't open file: \"%s\"\n", argv[1]);
         return 1;
     }
@@ -60,8 +79,9 @@ int main(int argc, char** argv) {
     fseek(fp, 0L, SEEK_SET);
 
     char* file_content = malloc(file_sz);
-    if (!file_content) {
+    if (file_content == NULL) {
         fprintf(stderr, "Couldn't allocate %zu bytes.\n", file_sz);
+        fclose(fp);
         return 1;
     }
 
