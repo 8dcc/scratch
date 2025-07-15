@@ -20,6 +20,7 @@
 #ifndef BASE64_H_
 #define BASE64_H_ 1
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h> /* Error messages */
@@ -112,8 +113,9 @@ char* base64_encode(const void* src, size_t sz) {
     uint8_t base64_idx;
 
     while (sz > 0) {
-        /* First, make sure we have space left for the next 4 characters */
-        if (encoded_pos + 4 >= encoded_sz) {
+        /* First, make sure we have space left for the next 4 characters plus a
+         * potential null terminator. */
+        if (encoded_pos + 5 >= encoded_sz) {
             encoded_sz += 100;
             encoded = realloc(encoded, encoded_sz);
         }
@@ -154,12 +156,10 @@ char* base64_encode(const void* src, size_t sz) {
         sz--;
     }
 
-    /* Make sure we have space left for the null-terminator */
-    if (encoded_pos >= encoded_sz)
-        encoded = realloc(encoded, encoded_sz + 1);
-
-    /* Null terminate the string, and return it */
+    /* Null terminate the string */
+    assert(encoded_pos < encoded_sz);
     encoded[encoded_pos] = '\0';
+
     return encoded;
 }
 
