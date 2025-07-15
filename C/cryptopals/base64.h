@@ -20,10 +20,12 @@
 #ifndef BASE64_H_
 #define BASE64_H_ 1
 
+#include <errno.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h> /* Error messages */
+#include <stdio.h>  /* Error messages */
+#include <string.h> /* strerror */
 #include <stdlib.h>
 
 typedef struct ByteArray {
@@ -102,9 +104,9 @@ char* base64_encode(const void* src, size_t sz) {
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
     /* Encoded base64 string that will be returned */
-    size_t encoded_sz  = 100;
-    char* encoded      = (char*)malloc(encoded_sz);
     size_t encoded_pos = 0;
+    size_t encoded_sz  = 0;
+    char* encoded      = NULL;
 
     /* Used for iterating the input data */
     const uint8_t* binary = (uint8_t*)src;
@@ -117,7 +119,16 @@ char* base64_encode(const void* src, size_t sz) {
          * potential null terminator. */
         if (encoded_pos + 5 >= encoded_sz) {
             encoded_sz += 100;
-            encoded = realloc(encoded, encoded_sz);
+            char* reallocated = realloc(encoded, encoded_sz);
+            if (reallocated == NULL) {
+                fprintf(stderr,
+                        "Could not allocate %zu bytes: %s\n",
+                        encoded_sz,
+                        strerror(errno));
+                free(encoded);
+                return NULL;
+            }
+            encoded = reallocated;
         }
 
         /* Bits 2..7 of 1st input byte */
