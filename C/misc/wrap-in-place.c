@@ -11,32 +11,34 @@
  *
  * The original input pointer is returned.
  */
-char* wrap_in_place(char* str, int max_column) {
+char* wrap_in_place(char* str, unsigned int max_column) {
     char* const original_str = str;
 
-    int cur_column        = 0;
-    size_t last_space_idx = 0;
+    size_t last_newline_idx = 0;
+    size_t last_space_idx   = 0;
     for (size_t i = 0; str[i] != '\0'; i++) {
-        if (isspace(str[i]))
+        if (isspace(str[i])) {
             last_space_idx = i;
+            if (str[i] == '\n')
+                last_newline_idx = i;
+        }
 
         /*
          * If we were about to exceed the maximum column and we stored a space
          * index since we changed into this line, overwrite the last space with
          * a newline.
+         *
+         * NOTE: This assumes that all characters use the same width, which is
+         * not normally the case. A simple hack for this would be to count tabs
+         * and set 'cur_line_width' to something like:
+         *
+         *     (i - last_newline_idx) + (tab_count * (tab_width - 1))
          */
-        if (cur_column >= max_column && last_space_idx > 0) {
+        const size_t cur_line_width = i - last_newline_idx;
+        if (cur_line_width > max_column) {
             str[last_space_idx] = '\n';
-            assert(i >= last_space_idx);
-            cur_column     = i - last_space_idx;
-            last_space_idx = 0;
+            last_newline_idx    = last_space_idx;
         }
-
-        /* NOTE: We could also increase the column depending on tab width */
-        if (str[i] == '\n')
-            cur_column = last_space_idx = 0;
-        else
-            cur_column++;
     }
 
     return original_str;
