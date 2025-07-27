@@ -9,8 +9,8 @@ class LoggedInt:
         self.val = val
         self.logs = logs
 
-    # Applies a one-argument transformation function to the current instance,
-    # and combines the result with the existing log list.
+    # Applies a one-argument monadic function to the current instance, and
+    # combines the result with the existing log list.
     def bind(self, function):
         new_logged_int = function(self.val)
         return LoggedInt(
@@ -20,7 +20,7 @@ class LoggedInt:
 
 # ------------------------------------------------------------------------------
 
-# Transformation functions.
+# Monadic functions.
 def add(a, b):
     return LoggedInt(a + b, [f"Added {a} to {b}"])
 
