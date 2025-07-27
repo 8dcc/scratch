@@ -33,6 +33,9 @@ def mul(a, b):
 def div(a, b):
     return LoggedInt(a / b, [f"Divided {a} by {b}"])
 
+def square(a):
+    return LoggedInt(a * a, [f"Squared {a}"])
+
 # ------------------------------------------------------------------------------
 
 def main():
@@ -40,6 +43,7 @@ def main():
         add(6, 5).bind(lambda a: sub(a, 4))
                  .bind(lambda a: mul(a, 3))
                  .bind(lambda a: div(a, 2))
+                 .bind(lambda a: square(a))
     )
 
     print(f"Final result: {logged_result.val}")
