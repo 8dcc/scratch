@@ -5,7 +5,7 @@
 
 # Monadic type, expands a base integer type to add logging functionality.
 class LoggedInt:
-    def __init__(self, val, logs):
+    def __init__(self, val, logs=[]):
         self.val = val
         self.logs = logs
 
@@ -38,8 +38,8 @@ def div(a, b):
 def main():
     logged_result = (
         add(6, 5).bind(lambda a: sub(a, 4))
-                .bind(lambda a: mul(a, 3))
-                .bind(lambda a: div(a, 2))
+                 .bind(lambda a: mul(a, 3))
+                 .bind(lambda a: div(a, 2))
     )
 
     print(f"Final result: {logged_result.val}")
