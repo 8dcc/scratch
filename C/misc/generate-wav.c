@@ -165,7 +165,7 @@ static void* allocate_wav_data(WavHeader* header, int audio_len_secs) {
 
 /*
  * Generate a sample from the specified frequency, amplitude and sample rate.
- * Uses a sinusoidal function. For more information, see:
+ * For more information, see:
  *   -  https://www.math.net/sinusoidal
  *   -  https://www.desmos.com/calculator/fuv5xs95i5
  */
@@ -173,8 +173,28 @@ static inline uint16_t generate_sample(int sample_number,
                                        double freq,
                                        int amplitude,
                                        int sample_rate) {
-    return (uint16_t)(cos((2 * M_PI * freq * sample_number) / sample_rate) *
-                      amplitude);
+    /*
+     * The period of the sinusoidal wave determines how wide is a full cycle or
+     * oscillation. The base period would be used for sinusoidal waves of 1Hz,
+     * where a cycle is performed each unit in the X axis. That based period is
+     * multiplied by the frequency to obtain the actual period of the desired
+     * wave.
+     */
+    const double base_period = 2 * M_PI;
+    const double period      = base_period * freq;
+
+    /*
+     * Given the period of the target wave, the phase angle at the specific
+     * sample is obtained.
+     */
+    const double phase_angle = (period * sample_number) / sample_rate;
+
+    /*
+     * The cosine of the phase angle can be used to obtain the Y coordinate of
+     * the wave at that specific point. This can be multiplied by the amplitude
+     * to return the final sample value.
+     */
+    return (uint16_t)(cos(phase_angle) * amplitude);
 }
 
 /*
