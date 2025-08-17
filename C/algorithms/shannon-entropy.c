@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <math.h> /* log2() */
 
-double entropy(void* data, size_t data_sz) {
+double entropy(const void* data, size_t data_sz) {
     static int occurrences[256];
 
     /* Initialize the occurrences to zero */
