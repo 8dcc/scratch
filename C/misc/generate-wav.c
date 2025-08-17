@@ -23,7 +23,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <math.h> /* cosf() */
+
+#include <math.h> /* cosf, M_PI */
 
 /*
  * Audio formats. Normally Pulse-Code Modulation (PCM), where each sample is
@@ -74,8 +75,10 @@ typedef struct {
  *
  * Credits: http://soundfile.sapp.org/doc/WaveFormat/
  */
-static void init_wav_header(WavHeader* h, enum ENumChannels num_channels,
-                            int sample_rate, int audio_len_secs) {
+static void init_wav_header(WavHeader* h,
+                            enum ENumChannels num_channels,
+                            int sample_rate,
+                            int audio_len_secs) {
     /*
      * First, the "RIFF" chunk descriptor.
      *
@@ -166,8 +169,10 @@ static void* allocate_wav_data(WavHeader* header, int audio_len_secs) {
  *   -  https://www.math.net/sinusoidal
  *   -  https://www.desmos.com/calculator/fuv5xs95i5
  */
-static inline uint16_t generate_sample(int sample_number, double freq,
-                                       int amplitude, int sample_rate) {
+static inline uint16_t generate_sample(int sample_number,
+                                       double freq,
+                                       int amplitude,
+                                       int sample_rate) {
     return (uint16_t)(cos((2 * M_PI * freq * sample_number) / sample_rate) *
                       amplitude);
 }
@@ -179,8 +184,11 @@ static inline uint16_t generate_sample(int sample_number, double freq,
  * In this case, it's assumed that `header.BitsPerSample' is 16, since it's
  * hard-coded in `init_wav_header'.
  */
-static void fill_data_mono(WavHeader* header, uint16_t* data, int seconds,
-                           int amplitude, double freq) {
+static void fill_data_mono(WavHeader* header,
+                           uint16_t* data,
+                           int seconds,
+                           int amplitude,
+                           double freq) {
     assert(header->BitsPerSample == 16);
     assert(header->NumChannels == MONO);
 
@@ -198,8 +206,11 @@ static void fill_data_mono(WavHeader* header, uint16_t* data, int seconds,
  * channel sample will occupy the first 16 bits, and the right channel sample
  * will occupy the least significant 16 bits.
  */
-static void fill_data_stereo(WavHeader* header, uint16_t* data, int seconds,
-                             int amplitude, double freq) {
+static void fill_data_stereo(WavHeader* header,
+                             uint16_t* data,
+                             int seconds,
+                             int amplitude,
+                             double freq) {
     assert(header->BitsPerSample == 16);
     assert(header->NumChannels == STEREO);
 
