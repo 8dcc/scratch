@@ -12,10 +12,6 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <https://www.gnu.org/licenses/>.
- *
- * ----------------------------------------------------------------------------
- *
- * TODO: Test in big-endian systems.
  */
 
 #include <stdint.h>
@@ -69,6 +65,8 @@ typedef struct {
     char Subchunk2ID[4];
     uint32_t Subchunk2Size;
 } WavHeader;
+
+/*----------------------------------------------------------------------------*/
 
 /*
  * Initialize a `WavHeader' structure with the specified parameters.
@@ -157,7 +155,7 @@ static void init_wav_header(WavHeader* h,
  * the audio length. We multiply those two numbers to obtain the number of bytes
  * the caller needs.
  */
-static void* allocate_wav_data(WavHeader* header, int audio_len_secs) {
+static void* allocate_wav_data(const WavHeader* header, int audio_len_secs) {
     const size_t total_samples    = header->SampleRate * audio_len_secs;
     const size_t bytes_per_sample = header->BlockAlign;
     return malloc(total_samples * bytes_per_sample);
@@ -204,7 +202,7 @@ static inline uint16_t generate_sample(int sample_number,
  * In this case, it's assumed that `header.BitsPerSample' is 16, since it's
  * hard-coded in `init_wav_header'.
  */
-static void fill_data_mono(WavHeader* header,
+static void fill_data_mono(const WavHeader* header,
                            uint16_t* data,
                            int seconds,
                            int amplitude,
@@ -226,7 +224,7 @@ static void fill_data_mono(WavHeader* header,
  * channel sample will occupy the first 16 bits, and the right channel sample
  * will occupy the least significant 16 bits.
  */
-static void fill_data_stereo(WavHeader* header,
+static void fill_data_stereo(const WavHeader* header,
                              uint16_t* data,
                              int seconds,
                              int amplitude,
@@ -246,8 +244,17 @@ static void fill_data_stereo(WavHeader* header,
     }
 }
 
+/*----------------------------------------------------------------------------*/
+
 int main(void) {
+    /*
+     * Allocate the WAV header structure.
+     */
     WavHeader* header = malloc(sizeof(WavHeader));
+    if (header == NULL) {
+        fprintf(stderr, "Could not allocate %zu bytes.\n", sizeof(WavHeader));
+        return 1;
+    }
 
     /*
      * Initialize the WAV header, specifying the number of channels, the samples
@@ -259,11 +266,21 @@ int main(void) {
     init_wav_header(header, num_channels, sample_rate, audio_len_secs);
 
     /*
+     * Allocate the actual WAV data array, which will contain all the audio
+     * samples.
+     */
+    uint16_t* data = allocate_wav_data(header, audio_len_secs);
+    if (data == NULL) {
+        fprintf(stderr, "Could not WAV data array.\n");
+        free(header);
+        return 1;
+    }
+
+    /*
      * Allocate and fill the WAV data with a static tone. Set the wave amplitude
      * and the note frequency here. In the stereo version, each channel will
      * have a slightly different frequency.
      */
-    uint16_t* data      = allocate_wav_data(header, audio_len_secs);
     const int amplitude = 1000;
     const double freq   = 256.0;
     switch (header->NumChannels) {
@@ -276,12 +293,15 @@ int main(void) {
             break;
 
         default:
-            fprintf(stderr, "Invalid channel number.\n");
-            abort();
+            fprintf(stderr,
+                    "Invalid number of channels: %d\n",
+                    header->NumChannels);
+            return 1;
     }
 
     /*
      * Write the header and data to the output file.
+     * FIXME: Test in big-endian systems.
      */
     FILE* fp = fopen("output.wav", "wb");
     fwrite(header, 1, sizeof(WavHeader), fp);
