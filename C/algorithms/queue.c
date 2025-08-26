@@ -50,7 +50,8 @@ typedef struct queue {
  * Return the next (incremented) value for the specified index in the queue,
  * wrapping around the end when necessary.
  */
-static inline queue_idx_t get_next_idx(queue_t* queue, queue_idx_t cur_idx) {
+static inline queue_idx_t get_next_idx(const queue_t* queue,
+                                       queue_idx_t cur_idx) {
     return (cur_idx >= queue->capacity - 1) ? 0 : cur_idx + 1;
 }
 
@@ -58,27 +59,28 @@ static inline queue_idx_t get_next_idx(queue_t* queue, queue_idx_t cur_idx) {
  * Return the previous (decremented) value for the specified index in the queue,
  * wrapping around the start when necessary.
  */
-static inline queue_idx_t get_prev_idx(queue_t* queue, queue_idx_t cur_idx) {
+static inline queue_idx_t get_prev_idx(const queue_t* queue,
+                                       queue_idx_t cur_idx) {
     return (cur_idx == 0) ? queue->capacity - 1 : cur_idx - 1;
 }
 
 /*
  * Return true if the specified queue is full.
  */
-bool queue_is_full(queue_t* queue) {
+bool queue_is_full(const queue_t* queue) {
     return queue->count == queue->capacity;
 }
 
 /*
  * Return true if the specified queue is empty.
  */
-bool queue_is_empty(queue_t* queue) {
+bool queue_is_empty(const queue_t* queue) {
     return queue->count == 0;
 }
 
 /*
  * Initialize the specified integer queue with the specified capacity. The list
- * is allocated on the heap, and must be freed with 'queue_finish'.
+ * is allocated on the heap, and must be freed with 'queue_destroy'.
  *
  * Returns true on success, and false otherwise.
  */
@@ -145,7 +147,7 @@ queue_value_t queue_dequeue(queue_t* queue) {
  * Dump the values in the specified queue, in the logical order in which they
  * would be dequeued (front -> back).
  */
-void queue_dump(FILE* fp, queue_t* queue) {
+void queue_dump(FILE* fp, const queue_t* queue) {
     if (queue_is_empty(queue)) {
         fprintf(fp, "<empty>");
         return;
