@@ -23,5 +23,5 @@ pactl load-module module-null-sink sink_name=V1 sink_properties=device.descripti
 # headphones
 pactl load-module module-loopback source=V1.monitor sink=$DEFAULT_SINK
 
-echo "TODO: Play something from the pythong prorgam, and from pavucontrol,"
+echo "TODO: Play something from the python program, and from pavucontrol,"
 echo "change the output of the python program (something like ffplay)."
