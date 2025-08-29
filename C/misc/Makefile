@@ -22,6 +22,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 $(MATH_BINS): LDLIBS+=-lm
+websocket-handshake.out: LDLIBS+=-lcrypto -lb64
 
 %.out: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
