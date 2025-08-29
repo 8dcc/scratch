@@ -107,6 +107,8 @@ static bool get_websocket_handshake_key(const char* base64_client_key,
     size_t base64_len =
       base64_encode_block((char*)hash, sizeof(hash), output, &b64_state);
     base64_len += base64_encode_blockend(output + base64_len, &b64_state);
+    if (output[base64_len - 1] == '\n')
+        output[base64_len - 1] = '\0';
 
     /* DEBUG */
     printf("Encoded: ");
@@ -131,10 +133,10 @@ int main(int argc, char** argv) {
     if (!get_websocket_handshake_key(client_key,
                                      base64_response,
                                      sizeof(base64_response))) {
-        printf("<error>");
+        fprintf(stderr, "<error>\n");
         return 1;
     }
 
-    printf("%s", base64_response);
+    printf("%s\n", base64_response);
     return 0;
 }
