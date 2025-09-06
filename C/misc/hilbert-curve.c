@@ -219,6 +219,7 @@ bool transform_hilbert(const char* input, char* output, int level) {
     }
 
     /* Size of each hilbert point */
+    assert(square_side % draws_per_side == 0);
     const size_t block_side = square_side / draws_per_side;
 
     HilbertCtx ctx = {
