@@ -88,7 +88,7 @@ static bool get_websocket_handshake_key(const char* base64_client_key,
 
     /* DEBUG */
     printf("Concatenated: ");
-    DUMP(concat_buffer, sizeof(concat_buffer));
+    DUMP(concat_buffer, concat_buffer_len);
 
     uint8_t hash[SHA_DIGEST_LENGTH];
     SHA1((uint8_t*)concat_buffer, concat_buffer_len, hash);
