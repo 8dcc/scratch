@@ -9,7 +9,7 @@ To use these scripts, you will need to set up your OBD2 adapter. The following
 steps have been tested on Arch Linux (kernel 6.16.8) with a cheap Bluetooth OBD2
 adapter (made by /Junsun/).
 
-- Install system packages ::
+** Install system packages
 
   #+begin_src bash
   sudo pacman -S bluetooth               # The 'bluetooth' service.
@@ -17,7 +17,7 @@ adapter (made by /Junsun/).
   sudo pacman -S bluez-deprecated-tools  # The 'rfcomm' command.
   #+end_src
 
-- Install python modules ::
+** Install python modules
 
   Depending on whether or not you need to run the scripts as root (e.g. for
   accessing the serial device), the following command should be executed with
@@ -27,14 +27,14 @@ adapter (made by /Junsun/).
   sudo pip install --break-system-packages obd
   #+end_src
 
-- Start the bluetooth service ::
+** Start the bluetooth service
 
   #+begin_src bash
   sudo systemctl start bluetooth
   sudo systemctl status bluetooth  # Validate
   #+end_src
 
-- Connect to bluetooth device ::
+** Connect to bluetooth device
 
   Use the =bluetoothctl= tool to pair and connect with the device. Its MAC address
   can be obtained from the output of =scan on=.
@@ -50,7 +50,7 @@ adapter (made by /Junsun/).
   [bluetoothctl]> exit
   #+end_src
 
-- Bind bluetooth device to serial device ::
+** Bind bluetooth device to serial device
 
   If the serial device is already bound, release it first.
 
