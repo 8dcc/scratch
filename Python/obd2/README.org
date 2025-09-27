@@ -9,6 +9,9 @@ To use these scripts, you will need to set up your OBD2 adapter. The following
 steps have been tested on Arch Linux (kernel 6.16.8) with a cheap Bluetooth OBD2
 adapter (made by /Junsun/).
 
+Alternative, you can try to use the [[file:bluetooth-connect.sh][=bluetooth-connect.sh=]] script from this
+directory.
+
 ** Install system packages
 
   #+begin_src bash
