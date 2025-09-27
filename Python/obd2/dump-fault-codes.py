@@ -15,10 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import obd
-import time
 import sys
-from datetime import datetime
+import obd
 
 def err(msg):
     sys.stderr.write(msg + "\n")
