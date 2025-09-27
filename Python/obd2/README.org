@@ -1,0 +1,73 @@
+#+TITLE: OBD2 utilities
+#+AUTHOR: 8dcc
+
+Python scripts for obtaining data from an OBD2 serial device.
+
+* Setting up
+
+To use these scripts, you will need to set up your OBD2 adapter. The following
+steps have been tested on Arch Linux (kernel 6.16.8) with a cheap Bluetooth OBD2
+adapter (made by /Junsun/).
+
+- Install system packages ::
+
+  #+begin_src bash
+  sudo pacman -S bluetooth               # The 'bluetooth' service.
+  sudo pacman -S bluez-utils             # The 'bluetoothctl' command.
+  sudo pacman -S bluez-deprecated-tools  # The 'rfcomm' command.
+  #+end_src
+
+- Install python modules ::
+
+  Depending on whether or not you need to run the scripts as root (e.g. for
+  accessing the serial device), the following command should be executed with
+  =sudo=.
+
+  #+begin_src bash
+  sudo pip install --break-system-packages obd
+  #+end_src
+
+- Start the bluetooth service ::
+
+  #+begin_src bash
+  sudo systemctl start bluetooth
+  sudo systemctl status bluetooth  # Validate
+  #+end_src
+
+- Connect to bluetooth device ::
+
+  Use the =bluetoothctl= tool to pair and connect with the device. Its MAC address
+  can be obtained from the output of =scan on=.
+
+  #+begin_src
+  $ bluetoothctl
+  [bluetoothctl]> agent on
+  [bluetoothctl]> power on
+  [bluetoothctl]> scan on  # Retreive the MAC address of your adapter.
+  [bluetoothctl]> pair XX:XX:XX:XX:XX:XX
+  [bluetoothctl]> trust XX:XX:XX:XX:XX:XX
+  [bluetoothctl]> connect XX:XX:XX:XX:XX:XX
+  [bluetoothctl]> exit
+  #+end_src
+
+- Bind bluetooth device to serial device ::
+
+  If the serial device is already bound, release it first.
+
+  #+begin_src bash
+  sudo rfcomm release 0
+  #+end_src
+
+  Bind it to the bluetooth device's MAC address.
+
+  #+begin_src bash
+  sudo rfcomm bind 0 XX:XX:XX:XX:XX:XX 1
+  #+end_src
+
+  Verify the serial device status. Make sure the last word of the output is
+  /clean/, not /closed/. If it is /closed/, ensure the bluetooth connection is active.
+
+  #+begin_src bash
+  rfcomm
+  # rfcomm0: XX:XX:XX:XX:XX:XX channel 1 clean
+  #+end_src
