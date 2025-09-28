@@ -18,7 +18,6 @@
 import time
 import sys
 import threading
-from datetime import datetime
 from numbers import Number
 
 import obd
@@ -198,18 +197,40 @@ def wrn(msg):
     sys.stderr.write("[Warning] " + msg + "\n")
 
 # Background thread for modifying the ringbuffer
-def update_loop(obd_connection, ringbuffers, command_descriptors):
+def update_loop(obd_connection, ringbuffers, command_descriptors, log_file=None):
     assert len(ringbuffers) == len(command_descriptors)
+
+    # Print CSV header, if needed.
+    if log_file:
+        with open(log_file, 'w') as f:
+            f.write("Date,")
+            for command_descriptor in command_descriptors:
+                f.write(f"{command_descriptor.getName()},")
+            f.write("\n")
+
     while True:
+        csv_row = [time.time()]
         for i in range(len(ringbuffers)):
-            ringbuffers[i].append(command_descriptors[i].getFinalResult(obd_connection))
+            cur_result = command_descriptors[i].getFinalResult(obd_connection)
+            ringbuffers[i].append(cur_result)
+
+            # Also store all results sequencially, for logging it as CSV.
+            csv_row.append(cur_result)
+
+        if log_file:
+            with open(log_file, 'a') as f:
+                for cur_result in csv_row:
+                    f.write(f"{cur_result},")
+                f.write("\n")
 
 def main():
-    if len(sys.argv) != 2:
-        err(f"Usage: {sys.argv[0]} SERIAL-DEVICE")
+    if len(sys.argv) < 2:
+        err(f"Usage: {sys.argv[0]} SERIAL-DEVICE [LOG-FILE]")
         sys.exit(1)
 
     device_path = sys.argv[1]
+    log_file = sys.argv[2] if len(sys.argv) > 2 else None
+
     obd_connection = obd.OBD(device_path)
     if not obd_connection or not obd_connection.is_connected():
         err(f"Could not connect to '{device_path}'. Aborting.")
@@ -268,7 +289,7 @@ def main():
     # Update ringbuffers with OBD data in a separate thread.
     threading.Thread(
         target=update_loop,
-        args=(obd_connection, ringbuffers, command_descriptors),
+        args=(obd_connection, ringbuffers, command_descriptors, log_file),
         daemon=True
     ).start()
 
