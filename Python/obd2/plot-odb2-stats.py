@@ -140,6 +140,58 @@ class RingBufferPlotter:
 
 # ------------------------------------------------------------------------------
 
+def query_num_cmd(obd_connection, command):
+    time.sleep(OBD_QUERY_DELAY)
+
+    # Query the current command.
+    query_response = obd_connection.query(command)
+    if not query_response or query_response.is_null():
+        wrn("Got NULL query response.")
+        return None
+
+    # If the current query response has a "magnitude" attribute, it
+    # contains the unit, so we need to further extract the value.
+    query_value = query_response.value
+    if hasattr(query_value, "magnitude"):
+        query_value = query_value.magnitude
+
+    # We can only plot numbers.
+    if not isinstance(query_value, Number):
+        wrn(f"Got non-numeric query response: {query_value}")
+        return None
+
+    return query_value
+
+class ComplexObdCmd:
+    def __init__(self, name, commands, result_transformator=None):
+        self.name = name
+        self.commands = commands
+
+        # Function to be called with an array of query results for each command.
+        if callable(result_transformator):
+            self.result_transformator = result_transformator
+        else:
+            self.result_transformator = lambda result_arr: result_arr[0]
+
+    def getName(self):
+        return self.name
+
+    def getCommands(self):
+        return self.commands
+
+    def getFinalResult(self, obd_connection):
+        # Get an array with the results of querying each command.
+        query_results = list(map(
+            lambda cmd: query_num_cmd(obd_connection, cmd),
+            self.commands
+        ))
+
+        # Calculate the result of applying the transformator function to the
+        # array of queried commands.
+        return self.result_transformator(query_results)
+
+# ------------------------------------------------------------------------------
+
 def err(msg):
     sys.stderr.write("[Error] " + msg + "\n")
 
@@ -147,80 +199,65 @@ def wrn(msg):
     sys.stderr.write("[Warning] " + msg + "\n")
 
 # Background thread for modifying the ringbuffer
-def update_loop(connection, ringbuffers, commands):
-    assert len(ringbuffers) == len(commands)
+def update_loop(obd_connection, ringbuffers, command_descriptors):
+    assert len(ringbuffers) == len(command_descriptors)
     while True:
         for i in range(len(ringbuffers)):
-            time.sleep(OBD_QUERY_DELAY)
-
-            # Query the current command.
-            query_response = connection.query(commands[i][0])
-            if not query_response or query_response.is_null():
-                wrn("Got NULL query response.")
-                continue
-
-            # If the current query response has a "magnitude" attribute, it
-            # contains the unit, so we need to further extract the value.
-            query_value = query_response.value
-            if hasattr(query_value, "magnitude"):
-                query_value = query_value.magnitude
-
-            # We can only plot numbers.
-            if not isinstance(query_value, Number):
-                wrn(f"Got non-numeric query response: {query_value}")
-                continue
-
-            if FIX_RPM_BUG and commands[i][0] == obd.commands.RPM and 200 <= query_value <= 300:
-                query_value = 0
-
-            ringbuffers[i].append(query_value)
+            ringbuffers[i].append(command_descriptors[i].getFinalResult(obd_connection))
 
 def main():
     if len(sys.argv) != 2:
         err(f"Usage: {sys.argv[0]} SERIAL-DEVICE")
-        exit(1)
+        sys.exit(1)
 
     device_path = sys.argv[1]
-    connection = obd.OBD(device_path)
-    if not connection or not connection.is_connected():
+    obd_connection = obd.OBD(device_path)
+    if not obd_connection or not obd_connection.is_connected():
         err(f"Could not connect to '{device_path}'. Aborting.")
         sys.exit(1)
 
     print(f"Connected to  '{device_path}'.")
-    print(f"  * Protocol: {connection.protocol_name()}")
+    print(f"  * Protocol: {obd_connection.protocol_name()}")
 
     # Try to query ELM version.
-    adapter_info = connection.query(obd.commands.ELM_VERSION)
+    adapter_info = obd_connection.query(obd.commands.ELM_VERSION)
     if adapter_info and not adapter_info.is_null():
        print(f"  * Adapter Version: {adapter_info.value}")
     print()
 
-    commands = [
-        # Command, Name
-        (obd.commands.RPM, "RPM"),
-        (obd.commands.SPEED, "Speed"),
-        (obd.commands.THROTTLE_POS, "Throttle %"),
-        (obd.commands.ENGINE_LOAD, "Engine Load"),
-        (obd.commands.COOLANT_TEMP, "Coolant Temp"),
-        (obd.commands.FUEL_LEVEL, "Fuel Level"),
-        (obd.commands.INTAKE_TEMP, "Intake Temp"),
-        (obd.commands.MAF, "Air Flow"),
+    command_descriptors = [
+        # For RPMs, if the value falls in the "RPM bug" range, reset it to zero.
+        ComplexObdCmd(
+            "RPM",
+            [obd.commands.RPM],
+            lambda result_arr: 0 if FIX_RPM_BUG and 200 <= result_arr[0] <= 300 else result_arr[0],
+        ),
+
+        ComplexObdCmd("Speed", [obd.commands.SPEED]),
+        ComplexObdCmd("Throttle %", [obd.commands.THROTTLE_POS]),
+        ComplexObdCmd("Engine Load", [obd.commands.ENGINE_LOAD]),
     ]
 
-    # Verify they are all supported
-    for command in commands:
-        if not obd.commands.has_command(command[0]) or not connection.supports(command[0]):
-            wrn(f"The current adapter doesn't support the '{command[1]}' command. Removing from list.")
-            commands.remove(command)
+    # Verify they are all supported.
+    for command_descriptor in command_descriptors:
+        for command in command_descriptor.getCommands():
+            if not obd.commands.has_command(command) or not obd_connection.supports(command):
+                wrn(f"The current adapter doesn't support the '{command_descriptor.getName()}' command ({command}). Removing from list.")
+                command_descriptors.remove(command_descriptor)
+                break
 
+    # Initialize the ringbuffer array.
     ringbuffers = []
-    for i in range(len(commands)):
-        ringbuffers.append(RingBuffer(commands[i][1], RINGBUFFER_SIZE))
+    for command_descriptor in command_descriptors:
+        ringbuffers.append(RingBuffer(
+            command_descriptor.getName(),
+            RINGBUFFER_SIZE,
+        ))
 
     # Update ringbuffers with OBD data in a separate thread.
     threading.Thread(
         target=update_loop,
-        args=(connection, ringbuffers, commands),
+        args=(obd_connection, ringbuffers, command_descriptors),
         daemon=True
     ).start()
 
