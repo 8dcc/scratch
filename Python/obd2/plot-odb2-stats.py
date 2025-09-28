@@ -99,7 +99,6 @@ class RingBufferPlotter:
 
     def on_update(self, frame):
         # Iterate over all ringbuffers and their corresponding axes
-        axes = []
         for i, (cur_ringbuffer, cur_ax) in enumerate(zip(self.ringbuffers, self.axes), 0):
             cur_buffer = cur_ringbuffer.getBuffer()
 
@@ -222,7 +221,7 @@ def main():
     # Try to query ELM version.
     adapter_info = obd_connection.query(obd.commands.ELM_VERSION)
     if adapter_info and not adapter_info.is_null():
-       print(f"  * Adapter Version: {adapter_info.value}")
+        print(f"  * Adapter Version: {adapter_info.value}")
     print()
 
     command_descriptors = [
