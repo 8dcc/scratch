@@ -236,6 +236,18 @@ def main():
         ComplexObdCmd("Speed", [obd.commands.SPEED]),
         ComplexObdCmd("Throttle %", [obd.commands.THROTTLE_POS]),
         ComplexObdCmd("Engine Load", [obd.commands.ENGINE_LOAD]),
+
+        # Boost is calculated by subtracting the atmosferic pressure from intake
+        # manifold pressure.
+        #
+        # NOTE: You should ideally calculate it with MONITOR_BOOST_PRESSURE_B1,
+        # or calculate (INTAKE_PRESSURE - BAROMETRIC_PRESSURE). However, not all
+        # cars support this, so a generic barometric pressure is used (101.3 kPa).
+        ComplexObdCmd(
+            "Boost",
+            [obd.commands.INTAKE_PRESSURE],
+            lambda result_arr: result_arr[0] - 101.3,
+        ),
     ]
 
     # Verify they are all supported.
