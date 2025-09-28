@@ -119,7 +119,10 @@ class RingBufferPlotter:
 
             # Set the bottom limit to 0, and the top limit to the highest
             # non-nil value.
-            cur_ax.set_ylim(0, max([d + 1 for d in cur_buffer if d is not None] + [1]))
+            cur_ax.set_ylim(
+                min([d - 1 for d in cur_buffer if d is not None] + [0]),
+                max([d + 1 for d in cur_buffer if d is not None] + [1])
+            )
 
             # Plot the non-nil ringbuffer data using a line graph.
             cur_ax.plot(
