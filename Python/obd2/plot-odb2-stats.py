@@ -28,6 +28,10 @@ from matplotlib.animation import FuncAnimation
 RINGBUFFER_SIZE = 100  # Elements
 OBD_QUERY_DELAY = 0.1  # Seconds
 
+# Some ECUs have a bug that makes them report ~250 RPMs when the engine is
+# off. This affects some Renault, Dacia and Nissan ECUs.
+FIX_RPM_BUG = True
+
 class RingBuffer:
     def __init__(self, name, size):
         self.name = name  # For identification when plotting
@@ -71,7 +75,8 @@ class RingBufferPlotter:
         # Initialize the plot axes once.
         self.axes = []
         for i in range(len(self.ringbuffers)):
-            # Use the base axis for the first ringbuffer, create new axes for others
+            # Use the base axis for the first ringbuffer, create new axes for
+            # the rest.
             cur_ax = self.ax if i == 0 else self.ax.twinx()
 
             # Store the axis
@@ -164,6 +169,9 @@ def update_loop(connection, ringbuffers, commands):
             if not isinstance(query_value, Number):
                 wrn(f"Got non-numeric query response: {query_value}")
                 continue
+
+            if FIX_RPM_BUG and commands[i][0] == obd.commands.RPM and 200 <= query_value <= 300:
+                query_value = 0
 
             ringbuffers[i].append(query_value)
 
