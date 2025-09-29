@@ -46,19 +46,33 @@
   (* (expt car-base a)
      (expt cdr-base b)))
 
-;; Given a BASE and TOTAL, return an exponent such that: BASE ^ result = TOTAL
-(defun obtain-exponent (base total)
+;; Count the number of times that TOTAL can be divided by a prime DIVISOR with
+;; an exact result.
+;;
+;; For example, the following table shows a call with a TOTAL of 3888 and a
+;; DIVISOR of 2, where (3888 = 2^4 * 3^5):
+;;
+;;   | Iteration | Total           |
+;;   |-----------+-----------------|
+;;   |         0 | 3888            |
+;;   |         1 | 3888 / 2 = 1944 |
+;;   |         2 | 1944 / 2 = 972  |
+;;   |         3 | 972 / 2 = 486   |
+;;   |         4 | 486 / 2 = 243   |
+;;   | (Ignored) | 243 / 2 = 121.5 |
+;;
+(defun count-exact-divisions (total divisor)
   (defun iter (total i)
-    (if (zero? (mod total base))
-        (iter (/ total car-base) (+ 1 i))
+    (if (zero? (mod total divisor))
+        (iter (/ total divisor) (+ 1 i))
         i))
   (iter total 0))
 
 (defun my-car (n)
-  (obtain-exponent car-base n))
+  (count-exact-divisions n car-base))
 
 (defun my-cdr (n)
-  (obtain-exponent cdr-base n))
+  (count-exact-divisions n cdr-base))
 
 ;; -----------------------------------------------------------------------------
 ;; Examples
