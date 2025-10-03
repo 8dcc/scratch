@@ -20,8 +20,14 @@
 ;; Notes
 ;; -----
 ;;
-;; The reader might find interesting my article about the Y-combinator, which
-;; explains some lambda-calculus concepts:
+;; The reader might find interesting my article about Church numerals, mainly
+;; motivated by this exercise, which explains the main lambda-calculus concepts,
+;; along with the full explanations on the reduction processes below:
+;;
+;;   https://8dcc.github.io/math/understanding-church-numerals.html
+;;
+;; See also my article about the Y-combinator
+;;
 ;;   https://8dcc.github.io/programming/understanding-y-combinator.html
 
 ;; -----------------------------------------------------------------------------
@@ -48,39 +54,16 @@
 ;; This can be obtained from substituting the argument `zero' in a call to
 ;; `add-1' (i.e. through beta-reduction). These are the steps that were used:
 ;;
-;; 1. Expand the call to `add-1'.
+;;   1. (add-1 zero)
+;;   2. ((lambda (n) (lambda (f) (lambda (x) (f ((n f) x)))))
+;;       (lambda (f) (lambda (x) x)))
+;;   3. (lambda (f) (lambda (x) (f (((lambda (y) (lambda (z) z)) f) x))))
+;;   4. (lambda (f) (lambda (x) (f ((lambda (z) z) x))))
+;;   5. (lambda (f) (lambda (x) (f x)))
 ;;
-;;     (add-1                                                zero)
-;;      ^^^^^                                                ^^^^
-;;      vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv vvvvvvvvvvvvvvvvvvvvvvvvvvv
-;;     ((lambda (n) (lambda (f) (lambda (x) (f ((n f) x))))) (lambda (f) (lambda (x) x)))
-;;
-;; 2. Evaluate outer-most call, replacing `zero' as the N parameter in the body
-;;    of the function. Rename the F parameter of `zero' to Y, and the X from the
-;;    body of `zero' to Z.
-;;
-;;     ((lambda (n) (lambda (f) (lambda (x) (f ((n f) x))))) (lambda (f) (lambda (x) x)))
-;;                                               ^
-;;                                   vvvvvvvvvvvvvvvvvvvvvvvvvvv
-;;      (lambda (f) (lambda (x) (f (((lambda (y) (lambda (z) z)) f) x))))
-;;
-;; 3. Simplify the lambda by evaluating the call to `zero', that is, the call to
-;;    the lambda whose parameter is Y and whose argument is F.
-;;
-;;     (lambda (f) (lambda (x) (f (((lambda (y) (lambda (z) z)) f) x))))
-;;                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-;;                                 vvvvvvvvvvvvvv
-;;     (lambda (f) (lambda (x) (f ((lambda (z) z) x))))
-;;
-;; 4. Simplify the call to the identity lambda, that is, the call to the lambda
-;;    whose parameter is Z and whose argument is X.
-;;
-;;     (lambda (f) (lambda (x) (f ((lambda (z) z) x))))
-;;                                ^^^^^^^^^^^^^^^^^^
-;;                                v
-;;     (lambda (f) (lambda (x) (f x)))
-;;
-;; That is the final simplified result.
+;; Again, please see my article about Church numerals for a detailed explanation
+;; of each step:
+;;   https://8dcc.github.io/math/understanding-church-numerals.html
 (define one
   (lambda (f) (lambda (x) (f x))))
 
