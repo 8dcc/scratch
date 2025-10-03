@@ -78,4 +78,53 @@
 (define two
   (lambda (f) (lambda (x) (f (f x)))))
 
-;; TODO: Arbitrary addition.
+;; The sum of `two' and `three':
+;;
+;;   (lambda (f) (lambda (x) (f (f x))))
+;;   (lambda (f) (lambda (x) (f (f (f x)))))
+;;
+;; Should return `five':
+;;
+;;   (lambda (f) (lambda (x) (f (f (f (f (f x)))))))
+;;
+;; The `add' function uses the inner-most body of `b' (e.g. "(f (f (f x)))" for
+;; `three') as the `x' argument of the inner lambda of `a'.
+(defun add (a b)
+  (lambda (f)
+    (lambda (x)
+      ((a f) ((b f) x)))))
+
+;; -----------------------------------------------------------------------------
+;; Examples
+
+;; Simple functions for testing church numerals.
+(defun increase (val)
+  (+ val 1))
+(defun square (val)
+  (* val val))
+
+;; Sum of church numerals `one' and `two', that is, a function that applies a
+;; function to a value 3 times.
+(define church-three (add one two))
+(write-to-str church-three)
+
+;; The expression (church-three increase) returns a function that receives a
+;; value `x' and that calls `increase' on it 3 times:
+;;
+;;   (increase (increase (increase x)))
+;;
+;; That function then receives 10 as the argument of `x', returning 13.
+((church-three increase) 10)
+
+;; Equivalent to:
+;;
+;;   (square (square (square x)))
+;;
+;; Which is also equivalent to:
+;;
+;;   ((x^2)^2)^2 = x^(2*2*2) = x^8
+;;
+;; In this example:
+;;
+;;  3^8 = 6561
+((church-three square) 3)
