@@ -57,8 +57,8 @@
 ;;   1. (add-1 zero)
 ;;   2. ((lambda (n) (lambda (f) (lambda (x) (f ((n f) x)))))
 ;;       (lambda (f) (lambda (x) x)))
-;;   3. (lambda (f) (lambda (x) (f (((lambda (y) (lambda (z) z)) f) x))))
-;;   4. (lambda (f) (lambda (x) (f ((lambda (z) z) x))))
+;;   3. (lambda (f) (lambda (x) (f (((lambda (g) (lambda (y) y)) f) x))))
+;;   4. (lambda (f) (lambda (x) (f ((lambda (y) y) x))))
 ;;   5. (lambda (f) (lambda (x) (f x)))
 ;;
 ;; Again, please see my article about Church numerals for a detailed explanation
@@ -72,8 +72,8 @@
 ;;   1. (add-1 one)
 ;;   2. ((lambda (n) (lambda (f) (lambda (x) (f ((n f) x)))))
 ;;       (lambda (f) (lambda (x) (f x))))
-;;   3. (lambda (f) (lambda (x) (f (((lambda (y) (lambda (z) (y z))) f) x))))
-;;   4. (lambda (f) (lambda (x) (f ((lambda (z) (f z)) x))))
+;;   3. (lambda (f) (lambda (x) (f (((lambda (g) (lambda (y) (g y))) f) x))))
+;;   4. (lambda (f) (lambda (x) (f ((lambda (y) (f y)) x))))
 ;;   5. (lambda (f) (lambda (x) (f (f x))))
 (define two
   (lambda (f) (lambda (x) (f (f x)))))
