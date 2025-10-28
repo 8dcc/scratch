@@ -1,0 +1,1 @@
+Simple logarithmic scale graph.

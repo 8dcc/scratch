@@ -1,0 +1,24 @@
+\documentclass[border=10pt]{standalone}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+\begin{document}
+
+\begin{tikzpicture}
+  \begin{axis}[
+    xlabel={$x$},
+    ylabel={$y$},
+    title={Logarithmic Curve: $y = \log_{10}(x)$},
+    domain=0.1:5,
+    samples=100,
+    grid=major,
+    axis lines=middle,
+    width=10cm,
+    height=6cm
+    ]
+    \addplot[blue, thick] {log10(x)};
+  \end{axis}
+\end{tikzpicture}
+
+\end{document}
