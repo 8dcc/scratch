@@ -1,5 +1,5 @@
-Simple UART
-===========
+RP2040 Hello World
+==================
 
 Simple hello world example through the USB for the RP2040.
 
