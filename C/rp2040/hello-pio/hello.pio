@@ -1,0 +1,38 @@
+
+.pio_version 0
+.program hello
+
+loop:
+    ;; Take one word of data from the TX FIFO buffer, and place it in the Output
+    ;; Shift Register (OSR).
+    pull
+
+    ;; Shift the data from the OSR, one bit at a time.
+    out pins, 1
+
+    ;; Jump back to the start of the loop.
+    jmp loop
+
+% c-sdk {
+static inline void hello_program_init(PIO pio, uint sm, uint offset, uint pin) {
+    pio_sm_config c = hello_program_get_default_config(offset);
+
+    /*
+     * Configure the GPIO pin for the PIO state machine.
+     *
+     * First, map the state machine's OUT pin group to one pin, namely the `pin`
+     * parameter to this function. Then, initialize the GPIO, connecting the PIO
+     * to the pad. Finally, set the pin direction to "output" at the PIO.
+     */
+    sm_config_set_out_pins(&c, pin, 1);
+    pio_gpio_init(pio, pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
+
+    /*
+     * Load our configuration, and jump to the start of the program. Then, set
+     * the state machine as "running".
+     */
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}
