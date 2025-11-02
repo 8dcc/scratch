@@ -3,10 +3,9 @@
 
 #include "pico/stdlib.h"
 
-/*
- * GPIO number of the built-in Pico LED.
- */
-#define LED_PIN 25
+#if !defined(PICO_DEFAULT_LED_PIN) || PICO_DEFAULT_LED_PIN >= NUM_BANK0_GPIOS
+#error Expected a valid LED pin.
+#endif
 
 int main(void) {
     /*
@@ -24,12 +23,12 @@ int main(void) {
     /*
      * Initialize the LED GPIO, and show a heart-beat.
      */
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     for (;;) {
-        gpio_put(LED_PIN, 1);
+        gpio_put(PICO_DEFAULT_LED_PIN, 1);
         sleep_ms(100);
-        gpio_put(LED_PIN, 0);
+        gpio_put(PICO_DEFAULT_LED_PIN, 0);
         sleep_ms(900);
     }
 

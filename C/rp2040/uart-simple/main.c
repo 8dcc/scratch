@@ -4,10 +4,9 @@
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 
-/*
- * GPIO number of the built-in Pico LED.
- */
-#define LED_PIN 25
+#if !defined(PICO_DEFAULT_LED_PIN) || PICO_DEFAULT_LED_PIN >= NUM_BANK0_GPIOS
+#error Expected a valid LED pin.
+#endif
 
 int main(void) {
     /*
@@ -24,8 +23,8 @@ int main(void) {
     /*
      * Initialize the LED GPIO, for showing activity.
      */
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
 
     bool led_toggle = false;
     for (;;) {
@@ -37,7 +36,7 @@ int main(void) {
             const char c = uart_getc(uart0);
             uart_putc(uart0, toupper(c));
 
-            gpio_put(LED_PIN, led_toggle);
+            gpio_put(PICO_DEFAULT_LED_PIN, led_toggle);
             led_toggle = !led_toggle;
         }
     }
