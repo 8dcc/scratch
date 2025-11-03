@@ -13,14 +13,14 @@ int main(void) {
     /*
      * Find a free PIO state machine for our program, and load it for us.
      */
-    PIO pio     = pio0;
-    uint offset = pio_add_program(pio, &hello_program);
+    const PIO pio     = pio0;
+    const uint offset = pio_add_program(pio, &hello_program);
 
     /*
      * Configure the PIO using the function that we defined in 'hello.pio', and
      * load it into the state machine zero.
      */
-    uint sm = 0;
+    const uint sm = 0;
     hello_program_init(pio, sm, offset, PICO_DEFAULT_LED_PIN);
 
     for (;;) {
