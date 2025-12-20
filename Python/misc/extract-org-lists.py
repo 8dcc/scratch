@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <https://www.gnu.org/licenses/>.
-
+#
+# ------------------------------------------------------------------------------
+#
 # This script extracts plain lists from an Org file. See:
 #
 #   - https://orgmode.org/org.html#Plain-Lists
