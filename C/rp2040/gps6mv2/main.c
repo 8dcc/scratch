@@ -225,6 +225,14 @@ static void read_gps_data(void) {
     }
 }
 
+/* Convert NMEA coordinate (DDMM.MMMM or DDDMM.MMMM) to decimal degrees */
+static double nmea_coord_to_decimal(const char* coord, int deg_digits) {
+    double raw     = atof(coord);
+    int degrees    = (int)(raw / 100);
+    double minutes = raw - (degrees * 100);
+    return degrees + (minutes / 60.0);
+}
+
 /* Display parsed GPS data */
 static void display_gps_info(void) {
     printf("\n========== GPS STATUS ==========\n");
@@ -249,8 +257,11 @@ static void display_gps_info(void) {
             printf("Date: %s\n", gps_data.date);
         }
 
-        printf("Latitude: %s %s\n", gps_data.latitude, gps_data.lat_dir);
-        printf("Longitude: %s %s\n", gps_data.longitude, gps_data.lon_dir);
+        /* Convert NMEA coords (DDMM.MMMM) to decimal degrees */
+        double lat = nmea_coord_to_decimal(gps_data.latitude, 2);
+        double lon = nmea_coord_to_decimal(gps_data.longitude, 3);
+        printf("Latitude: %.6f %s\n", lat, gps_data.lat_dir);
+        printf("Longitude: %.6f %s\n", lon, gps_data.lon_dir);
         printf("Altitude: %s m\n", gps_data.altitude);
 
         /* Convert speed from knots to km/h (1 knot = 1.852 km/h) */
