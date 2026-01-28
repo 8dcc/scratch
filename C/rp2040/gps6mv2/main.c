@@ -1,11 +1,27 @@
+/*
+ * Copyright 2026 8dcc
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include "hardware/irq.h"
+
+#include "nmea_parser.h"
 
 #if !defined(PICO_DEFAULT_LED_PIN) || PICO_DEFAULT_LED_PIN >= NUM_BANK0_GPIOS
 #error Expected a valid LED pin.
@@ -29,11 +45,11 @@ static volatile uint16_t rx_tail = 0;
 /* UART RX interrupt handler */
 static void on_uart_rx(void) {
     while (uart_is_readable(GPS_UART_ID)) {
-        char c = uart_getc(GPS_UART_ID);
+        char c             = uart_getc(GPS_UART_ID);
         uint16_t next_head = (rx_head + 1) & (RX_BUFFER_SIZE - 1);
         if (next_head != rx_tail) {
             rx_buffer[rx_head] = c;
-            rx_head = next_head;
+            rx_head            = next_head;
         }
         /* If buffer full, drop the character */
     }
@@ -43,7 +59,7 @@ static void on_uart_rx(void) {
 static int rx_getc(void) {
     if (rx_head == rx_tail)
         return -1;
-    char c = rx_buffer[rx_tail];
+    char c  = rx_buffer[rx_tail];
     rx_tail = (rx_tail + 1) & (RX_BUFFER_SIZE - 1);
     return c;
 }
@@ -66,178 +82,117 @@ typedef struct {
 
 static gps_data_t gps_data = { 0 };
 
-static void print_escaped(const char* buffer, size_t buffer_len) {
-    for (size_t i = 0; i < buffer_len; i++) {
-        const char c = buffer[i];
-        switch (c) {
-            case '\n':
-                printf("\\n");
-                break;
-            case '\r':
-                printf("\\r");
-                break;
-            default:
-                putchar(c);
-                break;
-        }
-    }
+/* Copy field to destination buffer with size limit */
+static void copy_field(char* dst, size_t dst_sz, const nmea_field_t* field) {
+    size_t len = (field->length < dst_sz - 1) ? field->length : dst_sz - 1;
+    memcpy(dst, field->data, len);
+    dst[len] = '\0';
 }
 
-/* Calculate NMEA checksum */
-static uint8_t calculate_checksum(const char* sentence, size_t length) {
-    assert(sentence != NULL && length > 0);
-
-    if (sentence[0] != '$')
-        return 0;
-
-    /*
-     * The NMEA checksum is the bit-wise XOR of all characters between the
-     * starting '$' and the checksum separator '*'.
-     */
-    uint8_t checksum = 0;
-    for (int i = 1; i < length && sentence[i] != '*'; i++)
-        checksum ^= sentence[i];
-    return checksum;
-}
-
-/* Verify NMEA checksum */
-static bool verify_checksum(const char* sentence) {
-    const char* checksum_pos = strchr(sentence, '*');
-    if (checksum_pos == NULL) {
-        fprintf(stderr, "Could not find checksum marker in sentence.\n");
-        return false;
+/* Parse integer from field (not null-terminated) */
+static int parse_field_int(const nmea_field_t* field) {
+    int result = 0;
+    for (size_t i = 0; i < field->length; i++) {
+        char c = field->data[i];
+        if (c >= '0' && c <= '9')
+            result = result * 10 + (c - '0');
+        else
+            break;
     }
-
-    /* FIXME: Check dangerous calls */
-    int length         = checksum_pos - sentence;
-    uint8_t calculated = calculate_checksum(sentence, length);
-    uint8_t received   = (uint8_t)strtol(checksum_pos + 1, NULL, 16);
-
-    const bool result = (calculated == received);
-    if (!result)
-        fprintf(stderr,
-                "Calculated checksum (%d) and received checksum (%d) do not "
-                "match.\n",
-                calculated,
-                received);
-
     return result;
 }
 
-/*
- * Get pointer to field N (0-indexed) in a comma-separated sentence.
- * Returns pointer to field start and sets *len to field length.
- * Returns NULL if field not found.
- */
-static const char* get_field(const char* sentence, size_t sentence_size,
-                             int field_num, size_t* len) {
-    const char* pos = sentence;
-    const char* end = sentence + sentence_size;
-    int current_field = 0;
-
-    /* Skip to the requested field */
-    while (pos < end && current_field < field_num) {
-        if (*pos == ',')
-            current_field++;
-        pos++;
-    }
-
-    if (pos >= end)
-        return NULL;
-
-    /* Find end of this field */
-    const char* field_start = pos;
-    while (pos < end && *pos != ',' && *pos != '*' && *pos != '\r' && *pos != '\n')
-        pos++;
-
-    *len = pos - field_start;
-    return field_start;
-}
-
 /* Parse GPGGA sentence (position and fix data) */
-static void parse_gpgga(const char* sentence, size_t sentence_size) {
-    size_t len;
-    const char* field;
-
+static void parse_gpgga(const nmea_message_t* msg) {
     /* Field 1: UTC time */
-    if ((field = get_field(sentence, sentence_size, 1, &len)) && len > 0)
-        sscanf(field, "%11[^,*\r\n]", gps_data.time);
+    if (msg->num_fields > 1 && msg->fields[1].length > 0)
+        copy_field(gps_data.time, sizeof(gps_data.time), &msg->fields[1]);
 
     /* Field 2: Latitude */
-    if ((field = get_field(sentence, sentence_size, 2, &len)) && len > 0)
-        sscanf(field, "%15[^,*\r\n]", gps_data.latitude);
+    if (msg->num_fields > 2 && msg->fields[2].length > 0)
+        copy_field(gps_data.latitude, sizeof(gps_data.latitude),
+                   &msg->fields[2]);
 
     /* Field 3: Latitude direction */
-    if ((field = get_field(sentence, sentence_size, 3, &len)) && len > 0)
-        sscanf(field, "%1[^,*\r\n]", gps_data.lat_dir);
+    if (msg->num_fields > 3 && msg->fields[3].length > 0)
+        copy_field(gps_data.lat_dir, sizeof(gps_data.lat_dir), &msg->fields[3]);
 
     /* Field 4: Longitude */
-    if ((field = get_field(sentence, sentence_size, 4, &len)) && len > 0)
-        sscanf(field, "%15[^,*\r\n]", gps_data.longitude);
+    if (msg->num_fields > 4 && msg->fields[4].length > 0)
+        copy_field(gps_data.longitude, sizeof(gps_data.longitude),
+                   &msg->fields[4]);
 
     /* Field 5: Longitude direction */
-    if ((field = get_field(sentence, sentence_size, 5, &len)) && len > 0)
-        sscanf(field, "%1[^,*\r\n]", gps_data.lon_dir);
+    if (msg->num_fields > 5 && msg->fields[5].length > 0)
+        copy_field(gps_data.lon_dir, sizeof(gps_data.lon_dir), &msg->fields[5]);
 
     /* Field 6: Fix quality */
-    if ((field = get_field(sentence, sentence_size, 6, &len)) && len > 0)
-        sscanf(field, "%d", &gps_data.fix_quality);
+    if (msg->num_fields > 6 && msg->fields[6].length > 0)
+        gps_data.fix_quality = parse_field_int(&msg->fields[6]);
     else
         gps_data.fix_quality = 0;
 
     /* Field 7: Number of satellites */
-    if ((field = get_field(sentence, sentence_size, 7, &len)) && len > 0)
-        sscanf(field, "%d", &gps_data.satellites);
+    if (msg->num_fields > 7 && msg->fields[7].length > 0)
+        gps_data.satellites = parse_field_int(&msg->fields[7]);
     else
         gps_data.satellites = 0;
 
     /* Field 9: Altitude */
-    if ((field = get_field(sentence, sentence_size, 9, &len)) && len > 0)
-        sscanf(field, "%11[^,*\r\n]", gps_data.altitude);
+    if (msg->num_fields > 9 && msg->fields[9].length > 0)
+        copy_field(gps_data.altitude, sizeof(gps_data.altitude),
+                   &msg->fields[9]);
 
     gps_data.data_valid = (gps_data.fix_quality > 0);
 }
 
 /* Parse GPRMC sentence (recommended minimum data) */
-static void parse_gprmc(const char* sentence, size_t sentence_size) {
-    size_t len;
-    const char* field;
-
+static void parse_gprmc(const nmea_message_t* msg) {
     /* Field 7: Speed over ground (knots) */
-    if ((field = get_field(sentence, sentence_size, 7, &len)) && len > 0)
-        sscanf(field, "%11[^,*\r\n]", gps_data.speed);
+    if (msg->num_fields > 7 && msg->fields[7].length > 0)
+        copy_field(gps_data.speed, sizeof(gps_data.speed), &msg->fields[7]);
 
     /* Field 8: Course over ground */
-    if ((field = get_field(sentence, sentence_size, 8, &len)) && len > 0)
-        sscanf(field, "%11[^,*\r\n]", gps_data.course);
+    if (msg->num_fields > 8 && msg->fields[8].length > 0)
+        copy_field(gps_data.course, sizeof(gps_data.course), &msg->fields[8]);
 
     /* Field 9: Date */
-    if ((field = get_field(sentence, sentence_size, 9, &len)) && len > 0)
-        sscanf(field, "%11[^,*\r\n]", gps_data.date);
+    if (msg->num_fields > 9 && msg->fields[9].length > 0)
+        copy_field(gps_data.date, sizeof(gps_data.date), &msg->fields[9]);
 }
 
 /* Process complete NMEA sentence */
 static void process_nmea_sentence(const char* sentence, size_t sentence_size) {
-    /* Print raw NMEA sentence */
     printf("Processing: '");
-    print_escaped(sentence, sentence_size);
+    nmea_print_escaped(sentence, sentence_size);
     printf("'\n");
 
-    if (!verify_checksum(sentence)) {
-        fprintf(stderr, "Checksum error.\n");
+    nmea_message_t msg;
+    if (!nmea_parse_message(&msg, sentence, sentence_size)) {
+        fprintf(stderr, "Failed to parse NMEA message.\n");
         return;
     }
 
-    /* Parse specific sentence types */
-    if (strncmp(sentence, "$GPGGA", 6) == 0 ||
-        strncmp(sentence, "$GNGGA", 6) == 0) {
-        parse_gpgga(sentence, sentence_size);
-    } else if (strncmp(sentence, "$GPRMC", 6) == 0 ||
-               strncmp(sentence, "$GNRMC", 6) == 0) {
-        parse_gprmc(sentence, sentence_size);
-    } else {
-        fprintf(stderr, "Unknown sentence type. Not processing.\n");
+    if (msg.received_checksum != msg.calculated_checksum) {
+        fprintf(stderr,
+                "Checksum error: received 0x%02X, calculated 0x%02X.\n",
+                msg.received_checksum,
+                msg.calculated_checksum);
         return;
+    }
+
+    /* Check sentence type (field 0, without '$' delimiter) */
+    if (msg.fields[0].length < 5) {
+        fprintf(stderr, "Invalid sentence type.\n");
+        return;
+    }
+
+    const char* type = msg.fields[0].data;
+    if (strncmp(type, "GPGGA", 5) == 0 || strncmp(type, "GNGGA", 5) == 0) {
+        parse_gpgga(&msg);
+    } else if (strncmp(type, "GPRMC", 5) == 0 ||
+               strncmp(type, "GNRMC", 5) == 0) {
+        parse_gprmc(&msg);
     }
 }
 

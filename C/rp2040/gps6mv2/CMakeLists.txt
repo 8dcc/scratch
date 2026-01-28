@@ -16,6 +16,7 @@ pico_sdk_init()
 
 add_executable(rp2040_gps6mv2
     main.c
+    nmea_parser.c
 )
 
 # Link with the Pico standard library and hardware UART.
