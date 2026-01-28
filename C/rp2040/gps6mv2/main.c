@@ -15,6 +15,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "pico/stdlib.h"
@@ -110,7 +111,8 @@ static void parse_gpgga(const nmea_message_t* msg) {
 
     /* Field 2: Latitude */
     if (msg->num_fields > 2 && msg->fields[2].length > 0)
-        copy_field(gps_data.latitude, sizeof(gps_data.latitude),
+        copy_field(gps_data.latitude,
+                   sizeof(gps_data.latitude),
                    &msg->fields[2]);
 
     /* Field 3: Latitude direction */
@@ -119,7 +121,8 @@ static void parse_gpgga(const nmea_message_t* msg) {
 
     /* Field 4: Longitude */
     if (msg->num_fields > 4 && msg->fields[4].length > 0)
-        copy_field(gps_data.longitude, sizeof(gps_data.longitude),
+        copy_field(gps_data.longitude,
+                   sizeof(gps_data.longitude),
                    &msg->fields[4]);
 
     /* Field 5: Longitude direction */
@@ -140,7 +143,8 @@ static void parse_gpgga(const nmea_message_t* msg) {
 
     /* Field 9: Altitude */
     if (msg->num_fields > 9 && msg->fields[9].length > 0)
-        copy_field(gps_data.altitude, sizeof(gps_data.altitude),
+        copy_field(gps_data.altitude,
+                   sizeof(gps_data.altitude),
                    &msg->fields[9]);
 
     gps_data.data_valid = (gps_data.fix_quality > 0);
@@ -230,12 +234,29 @@ static void display_gps_info(void) {
 
     if (gps_data.data_valid) {
         printf("---------------------------------\n");
-        printf("Time: %s\n", gps_data.time);
-        printf("Date: %s\n", gps_data.date);
+
+        /* Format datetime: NMEA time is HHMMSS.ss, date is DDMMYY */
+        if (strlen(gps_data.time) >= 6 && strlen(gps_data.date) >= 6) {
+            printf("DateTime: 20%.2s.%.2s.%.2s %.2s:%.2s:%.2s\n",
+                   &gps_data.date[4],
+                   &gps_data.date[2],
+                   &gps_data.date[0],
+                   &gps_data.time[0],
+                   &gps_data.time[2],
+                   &gps_data.time[4]);
+        } else {
+            printf("Time: %s\n", gps_data.time);
+            printf("Date: %s\n", gps_data.date);
+        }
+
         printf("Latitude: %s %s\n", gps_data.latitude, gps_data.lat_dir);
         printf("Longitude: %s %s\n", gps_data.longitude, gps_data.lon_dir);
         printf("Altitude: %s m\n", gps_data.altitude);
-        printf("Speed: %s knots\n", gps_data.speed);
+
+        /* Convert speed from knots to km/h (1 knot = 1.852 km/h) */
+        double speed_knots = atof(gps_data.speed);
+        printf("Speed: %.2f km/h\n", speed_knots * 1.852);
+
         printf("Course: %s degrees\n", gps_data.course);
     }
     printf("================================\n\n");
