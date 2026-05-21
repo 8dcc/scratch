@@ -29,8 +29,15 @@ def main():
     dev.grab()  # take exclusive control
 
     ui = UInput({
-        ecodes.EV_REL: [ecodes.REL_WHEEL_HI_RES, ecodes.REL_WHEEL],
-        ecodes.EV_KEY: [ecodes.KEY_PAGEDOWN],
+        ecodes.EV_REL: [
+            ecodes.REL_WHEEL_HI_RES,
+            ecodes.REL_WHEEL,
+        ],
+        ecodes.EV_KEY: [
+            ecodes.KEY_PAGEDOWN,
+            ecodes.KEY_PAGEUP,
+            ecodes.KEY_PLAYPAUSE,
+        ],
     }, name="anticater-scroll", version=0x1)
 
     print(f"Grabbed {dev.name}, emitting hi-res scroll (step={HI_RES_STEP})")
@@ -48,9 +55,17 @@ def main():
             elif event.code == ecodes.KEY_VOLUMEDOWN:
                 ui.write(ecodes.EV_REL, ecodes.REL_WHEEL_HI_RES, HI_RES_STEP)
                 ui.syn()
-            elif event.code == ecodes.KEY_MUTE:
+            elif event.code == ecodes.KEY_BRIGHTNESSDOWN:
+                ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEUP, 1)
+                ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEUP, 0)
+                ui.syn()
+            elif event.code == ecodes.KEY_BRIGHTNESSUP:
                 ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEDOWN, 1)
                 ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEDOWN, 0)
+                ui.syn()
+            elif event.code == ecodes.KEY_MUTE:
+                ui.write(ecodes.EV_KEY, ecodes.KEY_PLAYPAUSE, 1)
+                ui.write(ecodes.EV_KEY, ecodes.KEY_PLAYPAUSE, 0)
                 ui.syn()
     finally:
         ui.close()
