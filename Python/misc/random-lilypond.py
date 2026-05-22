@@ -53,13 +53,14 @@ def random_note(note_names, min_pitch, max_pitch):
     return "%s%s%d" % (note_names[note_idx], octave_marks(octave), duration)
 
 def generate_lilypond(num_notes, language, clef, min_pitch, max_pitch):
-    note_names = ITALIAN_NOTES if language == "italian" else ENGLISH_NOTES
+    note_names = ITALIAN_NOTES if language == "italiano" else ENGLISH_NOTES
     notes = " ".join(random_note(note_names, min_pitch, max_pitch)
                      for _ in range(num_notes))
 
     return (
         '\\version "2.24.0"\n'
         '\\language "%s"\n'
+        '\\header { tagline = " " }\n'
         '\n'
         '\\score {\n'
         '  \\new Staff {\n'
@@ -73,7 +74,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate a LilyPond file with N random notes.")
     parser.add_argument("num_notes", type=int, help="Number of notes to generate")
-    parser.add_argument("-l", "--language", choices=["english", "italian"],
+    parser.add_argument("-l", "--language", choices=["english", "italiano"],
                         default="english",
                         help="Note naming convention (default: english)")
     parser.add_argument("-c", "--clef", choices=VALID_CLEFS, default="treble",
