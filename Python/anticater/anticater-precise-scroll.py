@@ -2,6 +2,7 @@
 #
 # Grabs the Anticater knob and re-emits fractional hi-res scroll events.
 
+import errno
 import evdev
 from evdev import InputDevice, UInput, ecodes
 import time
@@ -25,9 +26,6 @@ def find_device():
     raise RuntimeError("Anticater device not found")
 
 def main():
-    dev = find_device()
-    dev.grab()  # take exclusive control
-
     ui = UInput({
         ecodes.EV_REL: [
             ecodes.REL_WHEEL_HI_RES,
@@ -40,36 +38,56 @@ def main():
         ],
     }, name="anticater-scroll", version=0x1)
 
-    print(f"Grabbed {dev.name}, emitting hi-res scroll (step={HI_RES_STEP})")
-
     try:
-        for event in dev.read_loop():
-            if event.type != ecodes.EV_KEY:
-                continue
-            if event.value != 1:  # key down only
+        while True:
+            try:
+                dev = find_device()
+            except RuntimeError:
+                time.sleep(2)
                 continue
 
-            if event.code == ecodes.KEY_VOLUMEUP:
-                ui.write(ecodes.EV_REL, ecodes.REL_WHEEL_HI_RES, -HI_RES_STEP)
-                ui.syn()
-            elif event.code == ecodes.KEY_VOLUMEDOWN:
-                ui.write(ecodes.EV_REL, ecodes.REL_WHEEL_HI_RES, HI_RES_STEP)
-                ui.syn()
-            elif event.code == ecodes.KEY_BRIGHTNESSDOWN:
-                ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEUP, 1)
-                ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEUP, 0)
-                ui.syn()
-            elif event.code == ecodes.KEY_BRIGHTNESSUP:
-                ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEDOWN, 1)
-                ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEDOWN, 0)
-                ui.syn()
-            elif event.code == ecodes.KEY_MUTE:
-                ui.write(ecodes.EV_KEY, ecodes.KEY_PLAYPAUSE, 1)
-                ui.write(ecodes.EV_KEY, ecodes.KEY_PLAYPAUSE, 0)
-                ui.syn()
+            dev.grab()
+            print(f"Grabbed {dev.name}, emitting hi-res scroll (step={HI_RES_STEP})")
+
+            try:
+                for event in dev.read_loop():
+                    if event.type != ecodes.EV_KEY:
+                        continue
+                    if event.value != 1:  # key down only
+                        continue
+
+                    if event.code == ecodes.KEY_VOLUMEUP:
+                        ui.write(ecodes.EV_REL, ecodes.REL_WHEEL_HI_RES, -HI_RES_STEP)
+                        ui.syn()
+                    elif event.code == ecodes.KEY_VOLUMEDOWN:
+                        ui.write(ecodes.EV_REL, ecodes.REL_WHEEL_HI_RES, HI_RES_STEP)
+                        ui.syn()
+                    elif event.code == ecodes.KEY_BRIGHTNESSDOWN:
+                        ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEUP, 1)
+                        ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEUP, 0)
+                        ui.syn()
+                    elif event.code == ecodes.KEY_BRIGHTNESSUP:
+                        ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEDOWN, 1)
+                        ui.write(ecodes.EV_KEY, ecodes.KEY_PAGEDOWN, 0)
+                        ui.syn()
+                    elif event.code == ecodes.KEY_MUTE:
+                        ui.write(ecodes.EV_KEY, ecodes.KEY_PLAYPAUSE, 1)
+                        ui.write(ecodes.EV_KEY, ecodes.KEY_PLAYPAUSE, 0)
+                        ui.syn()
+            except OSError as e:
+                if e.errno == errno.ENODEV:
+                    print("Device disconnected, waiting to reconnect...")
+                else:
+                    raise
+            finally:
+                try:
+                    dev.ungrab()
+                except OSError:
+                    pass
+
+            time.sleep(2)
     finally:
         ui.close()
-        dev.ungrab()
 
 if __name__ == "__main__":
     main()
