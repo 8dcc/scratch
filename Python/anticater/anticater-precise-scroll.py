@@ -6,9 +6,8 @@ import evdev
 from evdev import InputDevice, UInput, ecodes
 import time
 
-# Obtain from 'lsusb'
-VENDOR  = 0x514c
-PRODUCT = 0x8850
+# List of [VENDOR, PRODUCT] elements, obtained from 'lsusb'
+PRODUCT_IDS=[[0x514c, 0x8850], [0x05AC, 0x022C]]
 
 # Scroll step: 120 = full tick, 30 = quarter tick
 HI_RES_STEP = 30
@@ -16,12 +15,13 @@ HI_RES_STEP = 30
 def find_device():
     for path in evdev.list_devices():
         dev = InputDevice(path)
-        if dev.info.vendor == VENDOR and dev.info.product == PRODUCT:
-            # We want the keyboard interface (emits KEY_VOLUMEUP/DOWN)
-            if ecodes.EV_KEY in dev.capabilities():
-                caps = dev.capabilities()[ecodes.EV_KEY]
-                if ecodes.KEY_VOLUMEUP in caps:
-                    return dev
+        for product_pair in PRODUCT_IDS:
+            if dev.info.vendor == product_pair[0] and dev.info.product == product_pair[1]:
+                # We want the keyboard interface (emits KEY_VOLUMEUP/DOWN)
+                if ecodes.EV_KEY in dev.capabilities():
+                    caps = dev.capabilities()[ecodes.EV_KEY]
+                    if ecodes.KEY_VOLUMEUP in caps:
+                        return dev
     raise RuntimeError("Anticater device not found")
 
 def main():
