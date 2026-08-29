@@ -27,7 +27,9 @@ begin
     -- Create an instance of the 'half_adder' component.
     --
     -- The 'port' connects the ports of the 'half_adder' entity to the
-    -- testbench signals (same names).
+    -- testbench signals. The symbol before the '=>' is the one of the
+    -- component, and the second one is the signal name (in this case,
+    -- they match).
     --
     -- dut = Device Under Test
     dut : half_adder
