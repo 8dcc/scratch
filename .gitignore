@@ -42,6 +42,12 @@
 /LaTeX/**/*.pdf
 /LaTeX/**/*.toc
 
+# VHDL
+/VHDL/**/impl/
+/VHDL/**/*.gprj.user
+/VHDL/**/*.vcd
+/VHDL/**/*.cf
+
 # C
 build/
 *.d
